@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Spine Skeleton Shader — 使用說明書</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
 :root{--pri:#0066cc;--pri-dk:#2997ff;--ink:#1d1d1f;--ink80:#333;--ink48:#7a7a7a;--canvas:#fff;--parch:#f5f5f7;--tile1:#272729;--tile2:#2a2a2c;--black:#000;--hair:#e0e0e0;--nav-h:44px;--rail:260px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -14,11 +15,6 @@ a:hover{text-decoration:underline}
 .g-nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:var(--nav-h);background:var(--black);display:flex;align-items:center;padding:0 20px;gap:12px}
 .g-nav__logo{color:#fff;font-size:14px;font-weight:600;letter-spacing:-.374px;white-space:nowrap;flex-shrink:0}
 .g-nav__sub{color:rgba(255,255,255,.45);font-size:12px;white-space:nowrap;flex-shrink:0}
-.g-nav__search-wrap{flex:1;max-width:280px;margin-left:auto;position:relative}
-.g-nav__search{width:100%;height:28px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:9999px;padding:0 14px 0 32px;color:#fff;font-size:13px;font-family:inherit;outline:none}
-.g-nav__search::placeholder{color:rgba(255,255,255,.4)}
-.g-nav__search:focus{background:rgba(255,255,255,.15)}
-.g-nav__sico{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.45;pointer-events:none}
 .g-nav__burger{display:none;background:none;border:none;cursor:pointer;width:32px;height:32px;flex-direction:column;justify-content:center;gap:5px;padding:4px;flex-shrink:0}
 .g-nav__burger span{display:block;width:20px;height:1.5px;background:#fff;border-radius:2px}
 .layout{display:flex;padding-top:var(--nav-h);min-height:100vh}
@@ -103,8 +99,8 @@ footer.site-footer{background:var(--tile2);color:rgba(255,255,255,.55);padding:4
 footer.site-footer a{color:rgba(255,255,255,.55)}
 @media(max-width:1068px){.sec{padding:56px 40px}footer.site-footer{padding:40px 40px}}
 @media(max-width:833px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.sb-backdrop.open{display:block}.main{margin-left:0}.g-nav__burger{display:flex}.sec-title{font-size:28px}}
-@media(max-width:640px){.sec{padding:40px 20px}.sec-title{font-size:24px}.sec-lead{font-size:17px}.g-nav__search-wrap{display:none}footer.site-footer{padding:32px 20px}}
-.sb-sub{list-style:none;padding:0;margin:0}.sb-sub li a{display:block;padding:5px 16px 5px 28px;font-size:12px;color:rgba(255,255,255,.45);border-left:2px solid transparent;text-decoration:none;transition:color .2s}.sb-sub li a:hover{color:rgba(255,255,255,.8)}.sb-sub li a.active{color:#fff;border-left-color:var(--pri)}.srch-nav{background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;padding:0 5px;font-size:15px;line-height:44px;height:44px;flex-shrink:0;transition:color .15s}.srch-nav:hover{color:#fff}.srch-nav:disabled{opacity:.3;cursor:default}.srch-count{font-size:11px;color:rgba(255,255,255,.45);min-width:38px;text-align:center;flex-shrink:0;white-space:nowrap}mark{background:#fff176;color:inherit;border-radius:2px;padding:0 1px}mark.mark-active{background:#ff9800;outline:2px solid #ff9800;border-radius:2px}
+@media(max-width:640px){.sec{padding:40px 20px}.sec-title{font-size:24px}.sec-lead{font-size:17px}footer.site-footer{padding:32px 20px}}
+.sb-sub{list-style:none;padding:0;margin:0}.sb-sub li a{display:block;padding:5px 16px 5px 28px;font-size:12px;color:rgba(255,255,255,.45);border-left:2px solid transparent;text-decoration:none;transition:color .2s}.sb-sub li a:hover{color:rgba(255,255,255,.8)}.sb-sub li a.active{color:#fff;border-left-color:var(--pri)}
 </style>
 </head>
 <body>
@@ -112,13 +108,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   <button class="g-nav__burger" id="burgerBtn"><span></span><span></span><span></span></button>
   <span class="g-nav__logo">Spine Skeleton Shader</span>
   <span class="g-nav__sub">使用說明書</span>
-  <div class="g-nav__search-wrap">
-    <svg class="g-nav__sico" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.6"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
-    <input class="g-nav__search" type="search" id="searchInput" placeholder="搜尋屬性或關鍵字… (/)" autocomplete="off"/>
-    <span class="srch-count" id="srchCount"></span>
-    <button class="srch-nav" id="prevMatch" title="上一筆 (Shift+Enter)" disabled>↑</button>
-    <button class="srch-nav" id="nextMatch" title="下一筆 (Enter)" disabled>↓</button>
-  </div>
+
 </nav>
 
 <div class="sb-backdrop" id="backdrop"></div>
@@ -1456,112 +1446,7 @@ const obs=new IntersectionObserver(entries=>{
 },{rootMargin:'-44px 0px -60% 0px',threshold:0});
 sections.forEach(s=>obs.observe(s));
 
-// Search
-const si=document.getElementById('searchInput');
-const prevBtn=document.getElementById('prevMatch');
-const nextBtn=document.getElementById('nextMatch');
-const srchCount=document.getElementById('srchCount');
-let matches=[],matchIdx=-1;
 
-function updateNavBtns(){
-  const has=matches.length>0;
-  prevBtn.disabled=!has;
-  nextBtn.disabled=!has;
-  srchCount.textContent=has?(matchIdx+1)+'/'+matches.length:'';
-}
-
-function goToMatch(i){
-  if(!matches.length) return;
-  if(matchIdx>=0&&matchIdx<matches.length) matches[matchIdx].classList.remove('mark-active');
-  matchIdx=((i%matches.length)+matches.length)%matches.length;
-  matches[matchIdx].classList.add('mark-active');
-  matches[matchIdx].scrollIntoView({behavior:'smooth',block:'center'});
-  updateNavBtns();
-}
-
-function runSearch(){
-  const q=si.value.trim().toLowerCase();
-  clearHL();
-  matches=[];matchIdx=-1;
-  if(!q){
-    sideLinks.forEach(a=>a.closest('li').classList.remove('hidden'));
-    document.querySelectorAll('.sb-grp').forEach(g=>g.classList.remove('collapsed'));
-    updateNavBtns();
-    return;
-  }
-  let first=null;
-  sideLinks.forEach(a=>{
-    const m=a.textContent.toLowerCase().includes(q);
-    const li=a.closest('li');
-    li.classList.toggle('hidden',!m);
-    if(m){
-      // sub-link match → also un-hide parent sb-links > li
-      const sub=li.closest('.sb-sub');
-      if(sub) sub.closest('li').classList.remove('hidden');
-      if(!first) first=a;
-    }
-  });
-  document.querySelectorAll('.sb-grp').forEach(g=>{
-    const hasVis=[...g.querySelectorAll('.sb-links > li')].some(li=>!li.classList.contains('hidden'));
-    g.classList.toggle('collapsed',!hasVis);
-  });
-  hlText(q);
-  matches=[...document.querySelectorAll('mark')];
-  if(matches.length){
-    goToMatch(0);
-  } else if(first){
-    const t=document.querySelector(first.getAttribute('href'));
-    if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
-    updateNavBtns();
-  } else {
-    updateNavBtns();
-  }
-}
-
-['input','search'].forEach(ev=>si.addEventListener(ev,runSearch));
-prevBtn&&prevBtn.addEventListener('click',()=>goToMatch(matchIdx-1));
-nextBtn&&nextBtn.addEventListener('click',()=>goToMatch(matchIdx+1));
-
-function hlText(q){
-  const main=document.querySelector('.main');
-  const w=document.createTreeWalker(main,NodeFilter.SHOW_TEXT,{
-    acceptNode(n){
-      const p=n.parentElement;
-      if(!p||p.closest('script,style,pre')||p.tagName==='MARK') return NodeFilter.FILTER_REJECT;
-      return n.textContent.toLowerCase().includes(q)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;
-    }
-  });
-  const ns=[];while(w.nextNode()) ns.push(w.currentNode);
-  ns.forEach(n=>{
-    const txt=n.textContent;
-    const lo=txt.toLowerCase();
-    const frag=document.createDocumentFragment();
-    let pos=0,idx;
-    while((idx=lo.indexOf(q,pos))>=0){
-      frag.append(document.createTextNode(txt.slice(pos,idx)));
-      const m=document.createElement('mark');
-      m.textContent=txt.slice(idx,idx+q.length);
-      frag.append(m);
-      pos=idx+q.length;
-    }
-    frag.append(document.createTextNode(txt.slice(pos)));
-    n.parentNode.replaceChild(frag,n);
-  });
-}
-function clearHL(){
-  document.querySelectorAll('mark').forEach(m=>{
-    m.parentNode.replaceChild(document.createTextNode(m.textContent),m);
-    m.parentNode.normalize();
-  });
-}
-document.addEventListener('keydown',e=>{
-  if(e.key==='/'&&document.activeElement!==si){e.preventDefault();si.focus();si.select();}
-  if(e.key==='Escape'){si.blur();si.value='';runSearch();}
-  if(e.key==='Enter'&&document.activeElement===si){
-    e.preventDefault();
-    if(e.shiftKey) goToMatch(matchIdx-1); else goToMatch(matchIdx+1);
-  }
-});
 </script>
 </body>
 </html>
