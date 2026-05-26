@@ -17,7 +17,7 @@ a:hover{text-decoration:underline}
 .g-nav__sub{color:rgba(255,255,255,.45);font-size:12px;white-space:nowrap;flex-shrink:0}
 .g-nav__burger{display:none;background:none;border:none;cursor:pointer;width:32px;height:32px;flex-direction:column;justify-content:center;gap:5px;padding:4px;flex-shrink:0}
 .g-nav__burger span{display:block;width:20px;height:1.5px;background:#fff;border-radius:2px}
-.g-nav__pagelink{margin-left:auto;display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.7);font-size:13px;text-decoration:none;padding:0 12px;height:44px;white-space:nowrap;flex-shrink:0;transition:color .15s}
+.g-nav__pagelink{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.7);font-size:13px;text-decoration:none;padding:0 12px;height:44px;white-space:nowrap;flex-shrink:0;transition:color .15s}
 .g-nav__pagelink:hover{color:#fff;text-decoration:none}
 .g-nav__pagelink svg{opacity:.6}
 .layout{display:flex;padding-top:var(--nav-h);min-height:100vh}
@@ -104,6 +104,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
 @media(max-width:833px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.sb-backdrop.open{display:block}.main{margin-left:0}.g-nav__burger{display:flex}.sec-title{font-size:28px}}
 @media(max-width:640px){.sec{padding:40px 20px}.sec-title{font-size:24px}.sec-lead{font-size:17px}footer.site-footer{padding:32px 20px}}
 .sb-sub{list-style:none;padding:0;margin:0}.sb-sub li a{display:block;padding:5px 16px 5px 28px;font-size:12px;color:rgba(255,255,255,.45);border-left:2px solid transparent;text-decoration:none;transition:color .2s}.sb-sub li a:hover{color:rgba(255,255,255,.8)}.sb-sub li a.active{color:#fff;border-left-color:var(--pri)}
+.theme-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;color:rgba(255,255,255,.65);padding:0 10px;height:44px;flex-shrink:0;transition:color .15s;margin-left:auto}.theme-btn:hover{color:#fff}.ti{display:none}.ti.on{display:block}[data-theme="dark"]{--canvas:#252527;--parch:#2a2a2c;--tile1:#1a1a1c;--tile2:#1c1c1e;--ink:#f0f0f0;--ink80:#c0c0c4;--ink48:#8e8e93;--hair:rgba(255,255,255,.07);--pri:#2997ff}[data-theme="dark"] body{background:var(--parch)}[data-theme="dark"] code{background:rgba(255,255,255,.09)!important;color:rgba(255,255,255,.85)}[data-theme="dark"] pre{background:#111!important;border-color:rgba(255,255,255,.08)!important}[data-theme="dark"] .badge-ok{background:#1c3525;color:#4ade80}[data-theme="dark"] .badge-warn{background:#382c00;color:#fbbf24}[data-theme="dark"] a:not(.sb-links a):not(.sb-sub a):not(.g-nav__pagelink){color:var(--pri)}
 </style>
 </head>
 <body>
@@ -111,6 +112,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   <button class="g-nav__burger" id="burgerBtn"><span></span><span></span><span></span></button>
   <span class="g-nav__logo">Spine Skeleton Shader</span>
   <span class="g-nav__sub">使用說明書</span>
+  <button class="theme-btn" id="themeBtn" title="切換主題"><svg class="ti" id="ti-light" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><line x1="8" y1="1" x2="8" y2="3"/><line x1="8" y1="13" x2="8" y2="15"/><line x1="1" y1="8" x2="3" y2="8"/><line x1="13" y1="8" x2="15" y2="8"/><line x1="3.3" y1="3.3" x2="4.8" y2="4.8"/><line x1="11.2" y1="11.2" x2="12.7" y2="12.7"/><line x1="12.7" y1="3.3" x2="11.2" y2="4.8"/><line x1="4.8" y1="11.2" x2="3.3" y2="12.7"/></svg><svg class="ti" id="ti-dark" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M13.5 10A6 6 0 1 1 6 2.5a4.5 4.5 0 0 0 7.5 7.5z"/></svg><svg class="ti" id="ti-system" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="14" height="10" rx="1.5"/><line x1="5" y1="14" x2="11" y2="14"/><line x1="8" y1="12" x2="8" y2="14"/></svg></button>
   <a class="g-nav__pagelink" href="viewer.html"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5" y1="5.5" x2="11" y2="5.5"/><line x1="5" y1="8" x2="11" y2="8"/><line x1="5" y1="10.5" x2="8" y2="10.5"/></svg>PDF 原文</a>
 </nav>
 
@@ -1449,6 +1451,33 @@ const obs=new IntersectionObserver(entries=>{
 },{rootMargin:'-44px 0px -60% 0px',threshold:0});
 sections.forEach(s=>obs.observe(s));
 
+// Theme
+(function(){
+  const THEMES=['light','dark','system'];
+  const ICONS={light:'ti-light',dark:'ti-dark',system:'ti-system'};
+  const KEY='spine-theme';
+  let cur=localStorage.getItem(KEY)||'system';
+  const btn=document.getElementById('themeBtn');
+  const mq=window.matchMedia('(prefers-color-scheme: dark)');
+
+  function apply(t){
+    const isDark=t==='dark'||(t==='system'&&mq.matches);
+    document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+    document.querySelectorAll('.ti').forEach(el=>el.classList.remove('on'));
+    const el=document.getElementById(ICONS[t]);
+    if(el) el.classList.add('on');
+    btn.title='目前：'+(t==='light'?'亮色':t==='dark'?'暗色':'跟隨裝置')+' — 點擊切換';
+  }
+
+  btn.addEventListener('click',()=>{
+    cur=THEMES[(THEMES.indexOf(cur)+1)%THEMES.length];
+    localStorage.setItem(KEY,cur);
+    apply(cur);
+  });
+
+  mq.addEventListener('change',()=>{if(cur==='system') apply('system');});
+  apply(cur);
+})();
 
 </script>
 </body>
