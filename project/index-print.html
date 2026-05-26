@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<title>Spine Skeleton Shader — 使用文檔</title>
+<script src="deck-stage.js"></script>
+<style>
+  :root {
+    --primary: #0066cc;
+    --primary-on-dark: #2997ff;
+    --ink: #1d1d1f;
+    --ink-muted-80: #333333;
+    --ink-muted-48: #7a7a7a;
+    --canvas: #ffffff;
+    --parchment: #f5f5f7;
+    --tile-1: #272729;
+    --tile-2: #2a2a2c;
+    --tile-3: #1d1d1f;
+    --on-dark: #ffffff;
+    --on-dark-muted: #a1a1a6;
+    --hairline: #e0e0e0;
+    --hairline-dark: #3a3a3c;
+
+    --cat-main:    #5abf73;
+    --cat-noise:   #00d9cc;
+    --cat-light:   #ffbf1a;
+    --cat-emit:    #ff7333;
+    --cat-effect:  #33b3ff;
+    --cat-line:    #bf66ff;
+
+    --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-text:    "SF Pro Text", -apple-system, BlinkMacSystemFont, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-mono:    "SF Mono", ui-monospace, "JetBrains Mono", "Menlo", "Consolas", monospace;
+  }
+
+  deck-stage > section {
+    width: 1920px; height: 1080px;
+    box-sizing: border-box;
+    font-family: var(--font-text);
+    color: var(--ink);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .light  { background: var(--canvas); }
+  .parch  { background: var(--parchment); }
+  .dark   { background: var(--tile-1); color: var(--on-dark); }
+  .black  { background: #000; color: var(--on-dark); }
+
+  .eyebrow {
+    font-family: var(--font-text);
+    font-size: 18px; font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+  .dark .eyebrow, .black .eyebrow { color: var(--primary-on-dark); }
+  .eyebrow.muted { color: var(--ink-muted-48); }
+  .dark .eyebrow.muted, .black .eyebrow.muted { color: var(--on-dark-muted); }
+
+  .hero { font-family: var(--font-display); font-size: 112px; font-weight: 600; line-height: 1.04; letter-spacing: -0.045em; margin: 0; }
+  .display-xl { font-family: var(--font-display); font-size: 92px; font-weight: 600; line-height: 1.05; letter-spacing: -0.035em; margin: 0; }
+  .display-lg { font-family: var(--font-display); font-size: 68px; font-weight: 600; line-height: 1.07; letter-spacing: -0.025em; margin: 0; }
+  .display-md { font-family: var(--font-display); font-size: 50px; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; margin: 0; }
+  .lead { font-family: var(--font-display); font-size: 28px; font-weight: 400; line-height: 1.36; letter-spacing: 0; color: var(--ink-muted-80); margin: 0; }
+  .dark .lead, .black .lead { color: var(--on-dark-muted); }
+  .tagline { font-family: var(--font-display); font-size: 24px; font-weight: 600; line-height: 1.22; letter-spacing: 0; }
+  .body { font-family: var(--font-text); font-size: 21px; font-weight: 400; line-height: 1.5; letter-spacing: -0.005em; color: var(--ink-muted-80); }
+  .dark .body, .black .body { color: var(--on-dark-muted); }
+  .caption { font-family: var(--font-text); font-size: 15px; font-weight: 400; line-height: 1.45; letter-spacing: 0; color: var(--ink-muted-48); }
+  .dark .caption, .black .caption { color: #8e8e93; }
+  .mono { font-family: var(--font-mono); letter-spacing: -0.01em; }
+
+  .deck-header {
+    position: absolute; top: 36px; left: 140px; right: 140px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--font-text); font-size: 14px;
+    letter-spacing: 0.04em;
+    color: var(--ink-muted-48);
+  }
+  .dark .deck-header, .black .deck-header { color: #8e8e93; }
+  .deck-header .pill {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 16px; border-radius: 9999px;
+    background: rgba(0,0,0,0.04);
+    color: var(--ink-muted-80); font-weight: 500;
+  }
+  .dark .deck-header .pill, .black .deck-header .pill { background: rgba(255,255,255,0.08); color: #fff; }
+  .deck-header .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+  .deck-footer {
+    position: absolute; left: 140px; right: 140px; bottom: 40px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    color: var(--ink-muted-48);
+    font-family: var(--font-text); font-size: 14px;
+    letter-spacing: 0.04em;
+  }
+  .dark .deck-footer, .black .deck-footer { color: #8e8e93; }
+
+  .cat-chip {
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: 10px 20px 10px 14px;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.06);
+    font-family: var(--font-text); font-size: 18px; font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .light .cat-chip, .parch .cat-chip { background: rgba(0,0,0,0.04); }
+  .cat-chip .swatch { width: 14px; height: 14px; border-radius: 4px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 36px 60px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 28px 36px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px 28px; }
+
+  .ptable { display: grid; grid-template-columns: 1fr; border-top: 1px solid var(--hairline); }
+  .dark .ptable, .black .ptable { border-top-color: var(--hairline-dark); }
+  .prow {
+    display: grid; grid-template-columns: 300px 1fr 220px;
+    gap: 28px; padding: 16px 0;
+    border-bottom: 1px solid var(--hairline);
+    align-items: baseline;
+  }
+  .dark .prow, .black .prow { border-bottom-color: var(--hairline-dark); }
+  .prow .pname { font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -0.015em; }
+  .prow .pdesc { font-family: var(--font-text); font-size: 16px; font-weight: 400; line-height: 1.42; color: var(--ink-muted-80); }
+  .dark .prow .pdesc, .black .prow .pdesc { color: var(--on-dark-muted); }
+  .prow .pcode { font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted-48); text-align: right; }
+  .dark .prow .pcode, .black .prow .pcode { color: #8e8e93; }
+  .prow .pcode .deps { display:block; color:#c8843c; font-size:11px; margin-top:4px; }
+  .dark .prow .pcode .deps { color:#d4a017; }
+
+  .info-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 26px 28px;
+  }
+  .light .info-card, .parch .info-card {
+    background: var(--canvas);
+    border: 1px solid var(--hairline);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  }
+
+  .callout {
+    border-radius: 11px;
+    padding: 18px 24px;
+    border-left: 3px solid var(--primary);
+    background: rgba(0,102,204,0.06);
+    font-family: var(--font-text); font-size: 17px; line-height: 1.46;
+    color: var(--ink-muted-80);
+  }
+  .dark .callout, .black .callout { background: rgba(41,151,255,0.10); border-left-color: var(--primary-on-dark); color: var(--on-dark-muted); }
+  .callout.warn { border-left-color: #e67700; background: rgba(230,119,0,0.08); }
+  .dark .callout.warn, .black .callout.warn { background: rgba(255,159,67,0.10); border-left-color: #ff9f43; }
+
+  .node {
+    border-radius: 16px;
+    padding: 22px 24px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .light .node, .parch .node { background: var(--canvas); border-color: var(--hairline); }
+  .node .t { font-family: var(--font-display); font-weight: 600; font-size: 20px; letter-spacing: -0.01em; }
+  .node .s { font-family: var(--font-text); font-size: 14px; color: var(--ink-muted-48); line-height: 1.42; }
+  .dark .node .s, .black .node .s { color: #8e8e93; }
+  .node.acc { border-top: 3px solid var(--node-color, var(--primary)); }
+
+  .kv-row {
+    display: grid; grid-template-columns: 160px 1fr;
+    gap: 24px; padding: 11px 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .dark .kv-row, .black .kv-row { border-bottom-color: var(--hairline-dark); }
+  .kv-row .k { font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted-48); letter-spacing: 0; }
+  .dark .kv-row .k, .black .kv-row .k { color: #8e8e93; }
+  .kv-row .v { font-family: var(--font-text); font-size: 16px; color: var(--ink-muted-80); line-height: 1.4; }
+  .dark .kv-row .v, .black .kv-row .v { color: var(--on-dark-muted); }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px 10px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 13px; border-radius: 9999px;
+    font-family: var(--font-mono); font-size: 12px;
+    background: rgba(0,0,0,0.04); color: var(--ink-muted-80);
+  }
+  .dark .chip, .black .chip { background: rgba(255,255,255,0.08); color: #fff; }
+  .chip.blue { background: rgba(0,102,204,0.10); color: var(--primary); }
+  .dark .chip.blue, .black .chip.blue { background: rgba(41,151,255,0.18); color: var(--primary-on-dark); }
+  .chip.warn { background: rgba(230,119,0,0.12); color: #b35a00; }
+  .dark .chip.warn, .black .chip.warn { background: rgba(255,159,67,0.18); color: #ff9f43; }
+
+  .code-block {
+    background: rgba(0,0,0,0.04);
+    border-radius: 11px;
+    padding: 20px 24px;
+    font-family: var(--font-mono); font-size: 14px; line-height: 1.62;
+    color: var(--ink);
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .dark .code-block, .black .code-block { background: rgba(255,255,255,0.05); color: #e8e8ed; }
+  .code-block .kw { color: var(--primary); }
+  .dark .code-block .kw, .black .code-block .kw { color: var(--primary-on-dark); }
+  .code-block .cm { color: var(--ink-muted-48); }
+  .dark .code-block .cm, .black .code-block .cm { color: #8e8e93; }
+  .code-block .st { color: #a3823b; }
+  .dark .code-block .st { color: #d4a017; }
+
+  .step-row { display: flex; align-items: flex-start; gap: 22px; padding: 16px 0; border-bottom: 1px solid var(--hairline); }
+  .dark .step-row, .black .step-row { border-bottom-color: var(--hairline-dark); }
+  .step-row .num {
+    font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.05em;
+    color: var(--primary); padding-top: 4px;
+    min-width: 32px;
+  }
+  .dark .step-row .num, .black .step-row .num { color: var(--primary-on-dark); }
+  .step-row .ct .t { font-family: var(--font-display); font-size: 22px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; }
+  .step-row .ct .d { font-family: var(--font-text); font-size: 16px; color: var(--ink-muted-80); line-height: 1.48; margin-top: 6px; }
+  .dark .step-row .ct .d, .black .step-row .ct .d { color: var(--on-dark-muted); }
+
+  .insp {
+    background: #2b2b2b;
+    border-radius: 16px;
+    box-shadow: 0 8px 60px rgba(0,0,0,0.18);
+    padding: 16px;
+    font-family: var(--font-text);
+    color: #ddd;
+  }
+  .insp .cat-bar {
+    background: #353535;
+    border-top: 3px solid var(--bar, var(--cat-main));
+    padding: 11px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 14px; font-weight: 700; color: #eee;
+  }
+  .insp .help-bar {
+    background: #353535; padding: 8px 14px; margin-top: 6px;
+    border-left: 3px solid var(--bar, #d96666);
+    color: #f6c074; font-size: 12px; text-align: center; font-weight: 600;
+  }
+  .insp .sub-bar {
+    background: #2f2f2f;
+    border-left: 3px solid var(--bar, var(--cat-main));
+    padding: 9px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 13px; color: #ddd; margin-top: 6px;
+  }
+  .insp .row {
+    padding: 5px 14px 5px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: #c8c8c8;
+    border-bottom: 1px solid #232323;
+  }
+  .insp .row .v { color: #9a9a9a; font-family: var(--font-mono); font-size: 11px; }
+  .insp .star { color: var(--primary-on-dark); margin-right: 6px; }
+
+  .help-window {
+    background: #232323;
+    border-radius: 12px;
+    overflow: hidden;
+    color: #ddd;
+    border: 1px solid #1a1a1a;
+  }
+  .help-window .hw-search {
+    background: #1f1f1f; padding: 10px 14px;
+    border-top: 3px solid var(--accent, #fdd34a);
+    color: #888; font-size: 13px; display: flex; align-items: center; gap: 10px;
+  }
+  .help-window .hw-title {
+    padding: 14px 16px 4px;
+    color: #eee; font-size: 14px; font-weight: 700;
+  }
+  .help-window .hw-section {
+    background: #2a2a2a;
+    border-top: 3px solid var(--sec, #5bb56b);
+    margin: 8px 0 0;
+    padding: 10px 14px;
+    font-size: 12px; font-weight: 700; color: #ddd;
+  }
+  .help-window .hw-prop {
+    padding: 8px 16px 6px 24px; font-size: 12px;
+    border-bottom: 1px solid #1c1c1c;
+  }
+  .help-window .hw-prop .pn { color: #66b2ff; font-weight: 600; }
+  .help-window .hw-prop .pc { color: #777; font-size: 11px; margin-left: 6px; }
+  .help-window .hw-prop .pd { color: #aaa; margin-top: 3px; }
+  .help-window .hw-prop .tag { display:inline-block; padding:1px 6px; border-radius:3px; font-size:10px; margin-right:4px; }
+  .help-window .hw-prop .tag.dep { background:#3a2d12; color:#d4a017; }
+  .help-window .hw-prop .tag.fix { background:#3a1818; color:#ee8888; }
+
+  .stat .n { font-family: var(--font-display); font-size: 120px; font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+  .stat .l { font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -0.005em; color: var(--ink-muted-80); margin-top: 12px; }
+  .dark .stat .l, .black .stat .l { color: var(--on-dark-muted); }
+
+  .section-art {
+    width: 280px; height: 280px;
+    border-radius: 9999px;
+    position: relative;
+    background: radial-gradient(circle at 30% 30%, var(--cat) 0%, transparent 70%),
+                radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--cat) 40%, transparent) 0%, transparent 60%);
+  }
+  .section-art::after {
+    content: ""; position: absolute; inset: 0;
+    border-radius: 9999px;
+    box-shadow: inset 0 0 70px rgba(0,0,0,0.5);
+  }
+</style>
+</head>
+<body>
+
+<deck-stage>
+
+<!-- ════════════ 01 COVER ════════════ -->
+<section class="dark" data-screen-label="01 Cover">
+  <div class="deck-header">
+    <span class="pill"><span class="dot"></span>Spine Skeleton Shader</span>
+    <span>VFXTool · Internal Documentation</span>
+  </div>
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center; padding: 0 140px;">
+    <div class="eyebrow" style="margin-bottom:40px;">User Documentation · Revision 2026.01</div>
+    <h1 class="hero" style="max-width: 1500px;">
+      Spine Skeleton Shader<br />
+      <span style="color:var(--primary-on-dark)">使用說明書。</span>
+    </h1>
+    <p class="lead" style="margin-top:40px; max-width: 1320px; font-size:30px;">
+      本文件供工作室美術、特效與程式同仁參閱。涵蓋 Shader、Inspector、EditorWindow、Runtime 元件、Preset 預設檔、打包設定，以及所有右鍵選單／頂部說明按鈕背後的指南視窗。
+    </p>
+    <div style="margin-top:48px; display:grid; grid-template-columns: repeat(3, 1fr); gap:14px 36px; font-family: var(--font-text); font-size: 16px; color: var(--on-dark-muted);">
+      <div><span class="mono" style="color:var(--primary-on-dark);">§ 1–5</span>　導讀：架構、Inspector、Help 系統</div>
+      <div><span class="mono" style="color:var(--primary-on-dark);">§ 6–11</span>　Shader 六大分區全部參數</div>
+      <div><span class="mono" style="color:var(--primary-on-dark);">§ 12–16</span>　元件 / 自動掛載 / Runtime</div>
+      <div><span class="mono" style="color:var(--primary-on-dark);">§ 17–24</span>　Preset 預設檔系統 + 程式 API</div>
+      <div><span class="mono" style="color:var(--primary-on-dark);">§ 25–28</span>　打包流程 · 平台變體中心</div>
+      <div><span class="mono" style="color:var(--primary-on-dark);">§ 29–33</span>　Layer 規約 · 排查器 · Quick Start</div>
+    </div>
+  </div>
+  <div class="deck-footer">
+    <span>Spine/Skeleton.shader · SpineCustomShaderGUI · 7 EditorWindows · 11 Runtime Scripts</span>
+    <span>01</span>
+  </div>
+</section>
+
+<!-- ════════════ 02 LAYERS ════════════ -->
+<section class="light" data-screen-label="02 Layers">
+  <div class="deck-header">
+    <span class="pill"><span class="dot"></span>Overview</span>
+    <span>§ 1 · 系統組成</span>
+  </div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:28px;">§ 1 · 系統組成</div>
+    <h2 class="display-lg" style="max-width: 1500px;">本系統由四層結構組成。</h2>
+    <p class="body" style="max-width:1500px; margin-top:18px;">
+      使用者僅需操作第 2 層 Inspector 與第 5 層 EditorWindow。其餘各層為自動運作 — 在勾選功能時自動掛載、注入資料、並於打包時依平台設定剝離不必要的變體。
+    </p>
+    <div class="grid-4" style="margin-top:64px;">
+      <div class="node acc" style="--node-color: #888;">
+        <span class="caption mono">層 1 · Shader 本體</span>
+        <span class="t">Spine-Skeleton.shader</span>
+        <span class="s">主 Pass + Outline Pass。15 個 shader_feature 可被打包剝離。</span>
+      </div>
+      <div class="node acc" style="--node-color: var(--primary);">
+        <span class="caption mono">層 2 · Inspector</span>
+        <span class="t">SpineCustomShaderGUI</span>
+        <span class="s">取代 Unity 預設 Material Inspector 的自製介面。</span>
+      </div>
+      <div class="node acc" style="--node-color: var(--cat-light);">
+        <span class="caption mono">層 3 · Runtime</span>
+        <span class="t">Manager · Receiver · Lights</span>
+        <span class="s">場景光收集、SH 取樣、MPB 推送、自動掛載。</span>
+      </div>
+      <div class="node acc" style="--node-color: var(--cat-line);">
+        <span class="caption mono">層 4 · Preset</span>
+        <span class="t">Profile · Animator · Helper</span>
+        <span class="s">ScriptableObject 預設檔、曲線動畫、程式 API。</span>
+      </div>
+      <div class="node acc" style="--node-color: var(--cat-emit);">
+        <span class="caption mono">層 5 · EditorWindow</span>
+        <span class="t">7 套說明 / 管理視窗</span>
+        <span class="s">美術指南、程式指南、命名規則、平台管理、3 套元件 Help。</span>
+      </div>
+      <div class="node acc" style="--node-color: var(--cat-noise);">
+        <span class="caption mono">層 6 · Build</span>
+        <span class="t">BuildConfig · BuildPipeline</span>
+        <span class="s">平台 ScriptableObject + IPreprocessShaders 變體剝離。</span>
+      </div>
+      <div class="node acc" style="--node-color: var(--cat-effect);">
+        <span class="caption mono">層 7 · Debug</span>
+        <span class="t">LightingIssueTroubleshooter</span>
+        <span class="s">八項自動診斷 + 一鍵修正 + 物件 Ping 跳轉。</span>
+      </div>
+      <div class="node acc" style="--node-color: var(--cat-main);">
+        <span class="caption mono">層 8 · 文件</span>
+        <span class="t">本說明書</span>
+        <span class="s">您正在閱讀。每章皆對應上述某個層級。</span>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>命名空間：VFXTool.SpineSkeletonShaderTool</span><span>02</span></div>
+</section>
+
+<!-- ════════════ 03 GUI MAP ════════════ -->
+<section class="parch" data-screen-label="03 GUI Map">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Architecture</span><span>§ 2 · GUI 分區地圖</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow muted" style="margin-bottom:24px;">§ 2 · GUI 分區總覽</div>
+    <h2 class="display-lg" style="max-width: 1400px;">Inspector 由六個可摺疊分區構成。</h2>
+    <p class="body" style="max-width:1500px; margin-top:18px;">
+      點擊任一分區色帶可摺疊／展開該區。<strong>右鍵</strong>分區色帶可「複製整區設定／貼上／重置」。每個子模組標題（如 Native Lighting Settings）右側皆有 <span class="mono">P</span> 圖示，展開後即為該子模組的 Preset 面板。詳細參數見 §6–§11。
+    </p>
+    <div class="grid-3" style="margin-top:48px;">
+      <div class="node acc" style="--node-color: var(--cat-main)">
+        <span class="caption mono">§ 6 · MAIN</span>
+        <span class="t">Main &amp; Shadow / Post-Processing</span>
+        <span class="s">主紋理、Tiling/Offset、主色、Cutoff、Straight Alpha、Bloom 抑制門檻同步。</span>
+      </div>
+      <div class="node acc" style="--node-color: var(--cat-noise)">
+        <span class="caption mono">§ 7 · NOISE</span>
+        <span class="t">Global Noise Settings</span>
+        <span class="s">UV 動態雜訊 — 提供 BackLight / Inline / Outline 共用的隨機遮罩。</span>
+      </div>
+      <div class="node acc" style="--node-color: var(--cat-light)">
+        <span class="caption mono">§ 8 · LIGHTING</span>
+        <span class="t">Native · ShadowLight Base · NormalMap · Probe</span>
+        <span class="s">Unity Realtime 燈、自製 ShadowLight、法線貼圖、Light Probe SH。</span>
+      </div>
+      <div class="node acc" style="--node-color: var(--cat-emit)">
+        <span class="caption mono">§ 9 · EMISSION</span>
+        <span class="t">Emission Settings</span>
+        <span class="s">獨立 Emission 貼圖 + HDR 顏色 + Multiply with MainTex 選項。</span>
+      </div>
+      <div class="node acc" style="--node-color: var(--cat-effect)">
+        <span class="caption mono">§ 10 · EFFECT</span>
+        <span class="t">Overlay · Hit Sweep · BackLight</span>
+        <span class="s">整體染色、受擊光帶、背光高光 — 三組可獨立啟用。</span>
+      </div>
+      <div class="node acc" style="--node-color: var(--cat-line)">
+        <span class="caption mono">§ 11 · LINE</span>
+        <span class="t">Inline · Outline</span>
+        <span class="s">內描邊（Rim 風格）、外描邊（Sobel 8 鄰域）— 共用 Light Source 結構。</span>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineCustomShaderGUI.OnGUI() · 共 12 個 shader_feature 模組</span><span>03</span></div>
+</section>
+
+<!-- ════════════ 04 INSPECTOR SYMBOLS ════════════ -->
+<section class="dark" data-screen-label="04 Inspector Symbols">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Inspector</span><span>§ 3 · 視覺符號</span></div>
+  <div style="flex:1; padding: 130px 140px 90px; display:grid; grid-template-columns: 1.1fr 1fr; gap: 80px;">
+    <div>
+      <div class="eyebrow" style="margin-bottom:24px;">§ 3 · Inspector 視覺符號</div>
+      <h2 class="display-lg" style="max-width: 800px;">每個符號都有固定含意。</h2>
+      <p class="body" style="margin-top:18px; max-width: 720px;">
+        本節列出 Inspector 中會反覆出現的五項視覺符號與其行為。理解這些符號後，可以從外觀立刻判斷每個欄位的狀態與可操作項目。
+      </p>
+      <div style="margin-top:40px; display:flex; flex-direction:column; gap:14px;">
+        <div class="kv-row"><span class="k">3px 上色帶</span><span class="v">分區頂部 — 點擊摺疊整區；右鍵彈出 Copy / Paste / Reset 選單</span></div>
+        <div class="kv-row"><span class="k">3px 左色條</span><span class="v">子模組標題（如 Native Lighting Settings）</span></div>
+        <div class="kv-row"><span class="k">✦</span><span class="v">該屬性當前正受某 Preset 驅動，數值被覆寫</span></div>
+        <div class="kv-row"><span class="k">∿</span><span class="v">將屬性切到 AnimationCurve 動畫驅動（按一次再展開曲線編輯區）</span></div>
+        <div class="kv-row"><span class="k">P</span><span class="v">開關該子模組的 Preset 面板（Profile 欄位 + Load / Save / Clear）</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">▤</span><span class="v">頂部「使用指南」按鈕 — 開啟 EditorWindow 顯示完整文件</span></div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:18px;">
+      <div class="insp" style="--bar: var(--cat-light);">
+        <div class="cat-bar"><span>❖ LIGHTING</span><span>−</span></div>
+        <div class="help-bar">▤ Spine Shader Tool — 使用指南</div>
+        <div class="sub-bar"><span>Native Lighting Settings</span><span style="color:var(--primary-on-dark); font-size:11px;">P&nbsp;&nbsp;−</span></div>
+        <div class="row"><span>Enable Native Lighting</span><span class="v">☑</span></div>
+        <div class="row"><span><span class="star">✦</span>Master Light Intensity</span><span class="v">1.20&nbsp;&nbsp;∿</span></div>
+        <div class="row"><span>Directional Intensity</span><span class="v">1.00</span></div>
+        <div class="row"><span>Light Affects Additive</span><span class="v">☐</span></div>
+        <div class="sub-bar" style="margin-top:8px;"><span>Shadow Light Base Settings</span><span style="font-size:11px;">P&nbsp;＋</span></div>
+        <div class="sub-bar"><span>Normal Map Settings</span><span style="font-size:11px;">P&nbsp;＋</span></div>
+      </div>
+      <p class="caption" style="text-align:right;">圖示：實際 Inspector 顯示樣式（簡化示意）</p>
+    </div>
+  </div>
+  <div class="deck-footer"><span>右鍵任一參數可從快選單跳至該屬性的指南頁</span><span>04</span></div>
+</section>
+
+<!-- ════════════ 05 CONTEXT MENU ════════════ -->
+<section class="light" data-screen-label="05 Context Menu">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Inspector</span><span>§ 4 · 右鍵 · 頂部按鈕</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:24px;">§ 4 · 兩個入口 — 找到任一屬性的說明</div>
+    <h2 class="display-lg" style="max-width: 1500px;">每個參數都能立刻查到完整文件。</h2>
+    <p class="body" style="max-width:1500px; margin-top:18px;">
+      所有自製 Inspector（Material GUI、ShadowLight、HitSweep、Profile）皆內建統一的查詢介面。當你不確定某個欄位的用途、依賴條件或排錯方式時，請使用以下兩個入口：
+    </p>
+    <div class="grid-2" style="margin-top:48px;">
+      <div class="info-card">
+        <div class="tagline" style="margin-bottom:10px;">① 右鍵任一屬性</div>
+        <p class="body" style="font-size:18px;">
+          對 Inspector 上任何一個屬性欄位按下滑鼠右鍵，會跳出 GenericMenu，選單中含「📖 查看使用說明」項目。
+        </p>
+        <p class="body" style="font-size:18px; margin-top:12px;">
+          點擊後系統會：
+        </p>
+        <ul style="margin: 8px 0 0 24px; color: var(--ink-muted-80); font-size:18px; line-height:1.7;">
+          <li>開啟對應的 EditorWindow（美術指南 / 元件 Help）</li>
+          <li>自動展開包含該屬性的章節</li>
+          <li>自動捲動到該屬性卡片並以 Ping 黃色閃爍 2 秒</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="tagline" style="margin-bottom:10px;">② 頂部 ▤ 使用指南按鈕</div>
+        <p class="body" style="font-size:18px;">
+          每個 Inspector 頂部都會繪製一條紅色／藍色／黃色橫條，標題為「▤ XXX 使用指南」。點擊可開啟對應的完整 EditorWindow。
+        </p>
+        <p class="body" style="font-size:18px; margin-top:12px;">
+          每個 EditorWindow 都包含：
+        </p>
+        <ul style="margin: 8px 0 0 24px; color: var(--ink-muted-80); font-size:18px; line-height:1.7;">
+          <li>頂部搜尋框 — 可搜尋屬性名／關鍵字</li>
+          <li>可摺疊的模組分區（按色條展開）</li>
+          <li>每個屬性附「依賴條件」與「排錯檢查」標籤</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:32px;">
+      <strong>設計理念</strong> — 任何在 Inspector 看到的欄位都應該能在 30 秒內找到對應說明。若某個屬性沒有右鍵說明或頂部按鈕無法開啟，請通報維護者。
+    </div>
+  </div>
+  <div class="deck-footer"><span>實作：DrawPropWithContextMenu + DrawTopHelpButton（每個 Inspector 共用）</span><span>05</span></div>
+</section>
+
+<!-- ════════════ 06 HELP WINDOWS ════════════ -->
+<section class="parch" data-screen-label="06 Help Windows">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Editor</span><span>§ 5 · 七個 Help Window</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow muted" style="margin-bottom:24px;">§ 5 · 七個 EditorWindow 一覽</div>
+    <h2 class="display-lg" style="max-width: 1500px;">說明文件本身也是工具的一部分。</h2>
+    <p class="body" style="max-width:1500px; margin-top:18px;">
+      系統內建七個 EditorWindow — 五個是「說明指南」、一個是「平台管理」、一個是「Profile 編輯器」。下表列出全部入口、用途與本書的對應章節。
+    </p>
+    <div class="ptable" style="margin-top:36px;">
+      <div class="prow"><div class="pname">SpineArtHelpWindow</div><div class="pdesc">美術視覺開發指南 — 每個 Shader 屬性的友善名稱、用途、依賴、排錯說明。Material Inspector 頂部按鈕可開啟。</div><div class="pcode">▤ 美術使用指南<span class="deps">→ §6–§11</span></div></div>
+      <div class="prow"><div class="pname">SpineDebugHelpWindow</div><div class="pdesc">常見問題排錯 Q&amp;A：角色為何全黑、勾選效果為何無效。整合 SpineLightingIssueTroubleshooter 排查面板。</div><div class="pcode">▤ 除錯指南<span class="deps">→ §30</span></div></div>
+      <div class="prow"><div class="pname">SpineProfileHelpWindow</div><div class="pdesc">程式調用 + MPB 衝突防護指南。含 ApplyProfileRuntime、ApplyTempProfile、SetFloat/Color/Vector 程式碼範例。</div><div class="pcode">▤ 程式 API 指南<span class="deps">→ §22–§24</span></div></div>
+      <div class="prow"><div class="pname">SpineNamingRuleWindow</div><div class="pdesc">Preset 預設檔命名規則 — 每個模組附通用型與角色特化型範例 + 一鍵複製名稱。</div><div class="pcode">▤ 命名規則<span class="deps">→ §21</span></div></div>
+      <div class="prow"><div class="pname">SpineShadowLightHelpWindow</div><div class="pdesc">SpineShadowLight 元件指南 — Light Settings 與 Cookie Settings 全部欄位說明。最多 8 盞同時影響角色。</div><div class="pcode">▤ 場景燈光指南<span class="deps">→ §12</span></div></div>
+      <div class="prow"><div class="pname">SpineHitSweepHelpWindow</div><div class="pdesc">Hit Sweep 動畫設定指南 + PlaySweep(Vector3) 程式 API 範例與一鍵複製。</div><div class="pcode">▤ 掃光指南<span class="deps">→ §13</span></div></div>
+      <div class="prow" style="border-bottom:none;"><div class="pname">SpinePlatformManagerWindow</div><div class="pdesc">平台變體管理中心 — 滑動切換不同平台的 Shader Feature 啟用組合、即時刷新全專案材質。</div><div class="pcode">Window 選單入口<span class="deps">→ §25–§28</span></div></div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>所有 Help Window 共用統一的折疊／搜尋／Ping 高亮 UI 設計</span><span>06</span></div>
+</section>
+
+<!-- ════════════ 07 HELP WINDOW DEMO ════════════ -->
+<section class="dark" data-screen-label="07 Help Window Demo">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Editor</span><span>§ 5.1 · Help Window 介面</span></div>
+  <div style="flex:1; padding: 130px 140px 90px; display:grid; grid-template-columns: 1fr 1fr; gap:80px;">
+    <div>
+      <div class="eyebrow" style="margin-bottom:24px;">§ 5.1 · 通用 Help Window 介面</div>
+      <h2 class="display-md" style="max-width: 900px;">搜尋、摺疊、Ping 高亮 — 七套 Window 一致行為。</h2>
+      <p class="body" style="margin-top:18px;">
+        所有 Help Window 採同一個 UI 範本。除了內容不同，操作邏輯完全一致。學一次即可。
+      </p>
+      <div style="margin-top:32px;">
+        <div class="kv-row"><span class="k">頂部搜尋</span><span class="v">即時過濾屬性名稱、友善名稱、描述、解決方案文本。</span></div>
+        <div class="kv-row"><span class="k">模組色帶</span><span class="v">點擊整條色帶可摺疊／展開該模組。搜尋時自動展開有命中的模組。</span></div>
+        <div class="kv-row"><span class="k">屬性卡片</span><span class="v">標題顯示友善名稱 + ()內顯示 Shader 變數名稱 + 描述 + [依賴條件] + [排錯檢查]。</span></div>
+        <div class="kv-row"><span class="k">Ping 高亮</span><span class="v">由右鍵跳轉時，目標卡片會被黃色矩形閃爍 2 秒以利視覺定位。</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">複製按鈕</span><span class="v">程式 API 區的程式碼方塊可一鍵複製到剪貼簿。</span></div>
+      </div>
+    </div>
+    <div class="help-window" style="--accent: var(--cat-light); align-self:start;">
+      <div class="hw-search">🔍 輸入關鍵字搜尋效果或屬性...</div>
+      <div class="hw-title">Spine Shader 美術視覺開發指南</div>
+      <div class="hw-section" style="--sec: var(--cat-light)">❖ Lighting Settings (光照系統)</div>
+      <div class="hw-prop">
+        <div><span class="pn">🔹 Master Light Intensity</span><span class="pc">(_NativeLightIntensity)</span></div>
+        <div class="pd">全域控制所有 Unity 燈光對角色的影響強度。</div>
+        <div style="margin-top:5px;"><span class="tag dep">依賴</span>需開啟 Enable Native Lighting。</div>
+      </div>
+      <div class="hw-prop">
+        <div><span class="pn">🔹 Enable Light Probe</span><span class="pc">(_EnableLightProbe)</span></div>
+        <div class="pd">讓角色受到烘焙環境光影響。場景開啟 LightMap + LightProbe 時自動開啟。</div>
+        <div style="margin-top:5px;"><span class="tag fix">排錯</span>若按鈕一直跳回關閉，代表場景缺乏 Lightmap 或 Probe 資料。</div>
+      </div>
+      <div class="hw-section" style="--sec: var(--cat-effect)">❖ Effect Overlay &amp; BackLight</div>
+      <div class="hw-prop">
+        <div><span class="pn">🔹 Tint By Light Color</span><span class="pc">(_BackLightTintByLight)</span></div>
+        <div class="pd">勾選後，背光顏色會與場景燈光顏色混合。</div>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>實作位置：SpineCustomShaderGUI.cs · SpineShadowLight.cs · SpineHitSweepEffect.cs 末段</span><span>07</span></div>
+</section>
+
+<!-- ════════════ 08 MAIN OPENER ════════════ -->
+<section class="dark" data-screen-label="08 MAIN Opener">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-main)"></span>Category · 01 / 06</span><span>§ 6 · MAIN</span></div>
+  <div style="flex:1; display:grid; grid-template-columns: 1fr 0.7fr; padding: 0 140px; align-items:center;">
+    <div>
+      <span class="cat-chip" style="margin-bottom:28px;"><span class="swatch" style="background:var(--cat-main)"></span>§ 6 · MAIN</span>
+      <h2 class="display-lg" style="max-width: 1000px;">主紋理與基礎參數。</h2>
+      <p class="body" style="margin-top:20px; max-width: 900px;">
+        本章說明 MAIN 分區所含兩個子模組（Main &amp; Shadow / Post-Processing Control）的所有屬性。本分區為所有材質必要設定，無法停用。
+      </p>
+      <div class="kv-row" style="margin-top:36px;"><span class="k">章節範圍</span><span class="v">Main &amp; Shadow Settings · Post-Processing Control</span></div>
+      <div class="kv-row"><span class="k">自動掛載</span><span class="v">Suppress Bloom 開啟 → 自動掛載 SpineBloomThresholdSync</span></div>
+      <div class="kv-row" style="border-bottom:none;"><span class="k">前置條件</span><span class="v">無</span></div>
+    </div>
+    <div style="display:flex; justify-content:center;"><div class="section-art" style="--cat: var(--cat-main);"></div></div>
+  </div>
+  <div class="deck-footer"><span>5 + 2 = 7 個屬性</span><span>08</span></div>
+</section>
+
+<!-- ════════════ 09 MAIN Main&Shadow ════════════ -->
+<section class="light" data-screen-label="09 MAIN Main and Shadow">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-main)"></span>MAIN · Module 01</span><span>§ 6.1 · Main &amp; Shadow Settings</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="color:#3a8c4a; margin-bottom:18px;">§ 6.1 · MAIN</div>
+    <h2 class="display-md">Main &amp; Shadow Settings</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      系統會自動偵測同名後綴貼圖（_Normal / _BackLight / _Emission）並掛載。將材質拖到 SpriteRenderer 時亦會自動同步 MainTex 與 Straight Alpha 設定。
+    </p>
+    <div class="ptable" style="margin-top:36px;">
+      <div class="prow"><div class="pname">Main Texture</div><div class="pdesc">主紋理。拖材質到 SpriteRenderer 時系統會自動讀取 Sprite 貼圖並開啟 Straight Alpha。</div><div class="pcode">_MainTex</div></div>
+      <div class="prow"><div class="pname">Shared Tiling &amp; Offset</div><div class="pdesc">共用 UV (XY=Tiling, ZW=Offset)。此值會同步影響 MainTex、Emission、BackLight、Normal Map 確保所有疊加層對齊。</div><div class="pcode">_MainTex_ST</div></div>
+      <div class="prow"><div class="pname">Main Color (RGBA)</div><div class="pdesc">基礎顏色與全域透明度。Alpha 若小於 1 會連同 BackLight / Inline / Outline 一起變透明。Alpha 為 0 時若出現鬼影，多為 Beautify 壓暗或 Straight Alpha 未勾選所致。</div><div class="pcode">_Color</div></div>
+      <div class="prow"><div class="pname">Shadow Alpha Cutoff</div><div class="pdesc">Shadow Pass 的 Alpha 裁切閾值；小於此值的像素不投射陰影。</div><div class="pcode">_Cutoff · 0–1</div></div>
+      <div class="prow"><div class="pname">Straight Alpha Texture</div><div class="pdesc">切換貼圖透明度計算模式。Spine 預設為 PMA；若邊緣出現黑邊或白邊請切換此項。</div><div class="pcode">_StraightAlphaInput</div></div>
+    </div>
+    <div class="callout" style="margin-top:24px;">
+      <strong>自動偵測</strong> — 若主紋理位於與 _Normal / _BackLight / _Emission 同目錄且檔名遵循「主貼圖名稱_後綴」格式（例如 <span class="mono">Char_A.png</span> 與 <span class="mono">Char_A_Normal.png</span>），系統會在材質選取時自動填入。
+    </div>
+  </div>
+  <div class="deck-footer"><span>Reset 整顆材質會清除所有 Preset 綁定與自動掛載元件</span><span>09</span></div>
+</section>
+
+<!-- ════════════ 10 MAIN Post-Processing ════════════ -->
+<section class="parch" data-screen-label="10 MAIN Post Processing">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-main)"></span>MAIN · Module 02</span><span>§ 6.2 · Post-Processing Control</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="color:#3a8c4a; margin-bottom:18px;">§ 6.2 · MAIN</div>
+    <h2 class="display-md">Post-Processing Control — 後製 Bloom 抑制</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      後製管線（如 WinkingBeautify）的 Bloom 經常將 HDR 描邊與發光過度過曝。本模組讓 Shader 取得目前後製 Bloom 強度，並依 AnimationCurve 反向換算出本材質專屬的抑制門檻。
+    </p>
+    <div class="grid-2" style="margin-top:32px;">
+      <div>
+        <div class="ptable">
+          <div class="prow"><div class="pname">Suppress Bloom</div><div class="pdesc">啟用後系統自動掛載 SpineBloomThresholdSync 元件至角色。</div><div class="pcode">_EnableBloomSuppression<span class="deps">→ Layer 必須正確</span></div></div>
+          <div class="prow"><div class="pname">Bloom Threshold</div><div class="pdesc">當前計算出的抑制門檻 — 由 SpineBloomThresholdSync 自動填入，唯讀，不需手動修改。</div><div class="pcode">_BloomSuppressThreshold</div></div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="margin-bottom:10px;">SpineBloomThresholdSync 預設曲線</div>
+        <div class="kv-row"><span class="k">起點</span><span class="v">Bloom = 1.0 → Threshold = 0.6000</span></div>
+        <div class="kv-row"><span class="k">終點</span><span class="v">Bloom = 10.0 → Threshold = 0.5209</span></div>
+        <div class="kv-row"><span class="k">資料來源</span><span class="v">Reflection 抓取 WinkingBeautify.finalBloomIntensity</span></div>
+        <div class="kv-row"><span class="k">寫入方式</span><span class="v">MaterialPropertyBlock（不污染材質球）</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">效能策略</span><span class="v">髒標記（lastAppliedBloom）— 數值未變則跳過寫入</span></div>
+      </div>
+    </div>
+    <div class="callout warn" style="margin-top:24px;">
+      <strong>排錯</strong> — 若 Suppress Bloom 勾選後仍過曝，請確認角色 Layer ∈ {8, 9, 12, 13, 18, 20}。Layer 不正確時自動化機制會將 BloomThresholdSync 元件移除。
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineBloomThresholdSync.cs · 詳見 §16</span><span>10</span></div>
+</section>
+
+<!-- ════════════ 11 NOISE OPENER + Settings ════════════ -->
+<section class="dark" data-screen-label="11 NOISE">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-noise)"></span>Category · 02 / 06</span><span>§ 7 · NOISE</span></div>
+  <div style="flex:1; padding: 130px 140px 90px; display:grid; grid-template-columns: 0.9fr 1fr; gap:80px; align-items:center;">
+    <div>
+      <span class="cat-chip" style="margin-bottom:24px;"><span class="swatch" style="background:var(--cat-noise)"></span>§ 7 · NOISE</span>
+      <h2 class="display-md" style="max-width:850px;">Global Noise Settings — 全域雜訊取樣。</h2>
+      <p class="body" style="margin-top:18px; max-width:850px;">
+        本模組不直接影響畫面 — 它是供 BackLight、Inline、Outline 等模組選用的「亂度遮罩」來源。三者讀取同一張動態雜訊，因此節奏、速度、方向保持一致。當其他模組啟用 Noise Mask 時，本分區自動連動開啟。
+      </p>
+    </div>
+    <div>
+      <div class="ptable">
+        <div class="prow"><div class="pname">Enable Global Noise</div><div class="pdesc">啟用 Shader 全域噪點運算，可用於消融、火焰外框等動態效果。</div><div class="pcode">_EnableGlobalNoise<span class="deps">→ 啟用後需於子模組勾選 Noise Mask</span></div></div>
+        <div class="prow"><div class="pname">Noise Scale (X, Y)</div><div class="pdesc">UV 平鋪倍率。值越大顆粒越細密；建議 X 與 Y 同步調整。</div><div class="pcode">_GlobalNoiseScale</div></div>
+        <div class="prow"><div class="pname">Noise Speed (X, Y)</div><div class="pdesc">UV 流動速度。若感覺沒在流動，請將此值調大。</div><div class="pcode">_GlobalNoiseSpeed</div></div>
+      </div>
+      <div class="callout" style="margin-top:20px;">
+        <strong>設計守則</strong> — Noise 為共用資源。若你在多個模組同時啟用 Noise，預期它們會同節奏變化；需要差異感請改用各模組獨立的 Intensity 調幅。
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>Shader Feature · _MODULE_GLOBAL_NOISE</span><span>11</span></div>
+</section>
+
+<!-- ════════════ 12 LIGHTING OPENER ════════════ -->
+<section class="dark" data-screen-label="12 LIGHTING Opener">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-light)"></span>Category · 03 / 06</span><span>§ 8 · LIGHTING</span></div>
+  <div style="flex:1; display:grid; grid-template-columns: 1fr 0.7fr; padding: 0 140px; align-items:center;">
+    <div>
+      <span class="cat-chip" style="margin-bottom:28px;"><span class="swatch" style="background:var(--cat-light)"></span>§ 8 · LIGHTING</span>
+      <h2 class="display-lg" style="max-width: 1000px;">光照系統 — 四個子模組。</h2>
+      <p class="body" style="margin-top:20px; max-width: 1000px;">
+        本章依序介紹 Native Lighting（Unity Realtime）、Shadow Light Base（自製 SpineShadowLight）、Normal Map（法線取樣）、Light Probe（環境光 SH 取樣）。後三者皆建立於 Native Lighting 的資料流之上，由 SpineLightManager 集中處理。
+      </p>
+      <div class="kv-row" style="margin-top:36px;"><span class="k">章節範圍</span><span class="v">4 子模組 · 共 14 個屬性</span></div>
+      <div class="kv-row"><span class="k">自動掛載</span><span class="v">啟用任一子模組 → 自動掛載 SpineLightReceiver；EnsureInstance 建立 LightManager</span></div>
+      <div class="kv-row" style="border-bottom:none;"><span class="k">前置條件</span><span class="v">角色 Layer ∈ {8, 9, 12, 13, 18, 20}</span></div>
+    </div>
+    <div style="display:flex; justify-content:center;"><div class="section-art" style="--cat: var(--cat-light);"></div></div>
+  </div>
+  <div class="deck-footer"><span>SpineLightManager 為場景單例 — 首次需求時自動建立</span><span>12</span></div>
+</section>
+
+<!-- ════════════ 13 LIGHTING Native ════════════ -->
+<section class="light" data-screen-label="13 LIGHTING Native">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-light)"></span>LIGHTING · Module 01</span><span>§ 8.1 · Native Lighting</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="color:#8c6a00; margin-bottom:18px;">§ 8.1 · LIGHTING</div>
+    <h2 class="display-md">Native Lighting Settings</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      接收 Unity 場景的 Realtime Directional / Point / Spot Light。所有燈光資料由 SpineLightManager 依距離排序取前 8 盞，透過 MaterialPropertyBlock 推送 — 不需手動寫腳本。
+    </p>
+    <div class="ptable" style="margin-top:32px;">
+      <div class="prow"><div class="pname">Enable Native Lighting</div><div class="pdesc">啟用接收 Unity Realtime Light；關閉後本模組所有屬性失效。</div><div class="pcode">_EnableNativeLighting<span class="deps">→ 角色全黑時請確認 Master Intensity 不為 0</span></div></div>
+      <div class="prow"><div class="pname">Master Light Intensity</div><div class="pdesc">所有 Realtime 光的總強度倍率 — 用於整體角色亮度調節。</div><div class="pcode">_NativeLightIntensity · 0–5</div></div>
+      <div class="prow"><div class="pname">Directional Intensity</div><div class="pdesc">場景中 Directional Light（太陽光）的獨立倍率。</div><div class="pcode">_DirectionalLightIntensity</div></div>
+      <div class="prow"><div class="pname">Additional Intensity</div><div class="pdesc">場景中 Point / Spot Light 等附加光源的倍率，與 Directional 分開控制。</div><div class="pcode">_AdditionalLightIntensity</div></div>
+      <div class="prow"><div class="pname">Light Affects Additive</div><div class="pdesc">是否讓光照影響 Spine Additive Slot；預設關閉避免粒子過曝。</div><div class="pcode">_LightAffectsAdditive</div></div>
+      <div class="prow"><div class="pname">Probe → Native Lighting</div><div class="pdesc">Light Probe 取樣值疊加到 Native Lighting 結果的比重；需先啟用 Light Probe。讓暗部不至於死黑。</div><div class="pcode">_LightProbeNativeBlend · 0–1<span class="deps">→ 需 Enable Light Probe</span></div></div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>運作前提 — SpineLightReceiver 自動掛載 · 角色 Layer ∈ {8,9,12,13,18,20}</span><span>13</span></div>
+</section>
+
+<!-- ════════════ 14 LIGHTING Shadow Light Base + Normal Map ════════════ -->
+<section class="parch" data-screen-label="14 LIGHTING ShadowLight and NormalMap">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-light)"></span>LIGHTING · Module 02 + 03</span><span>§ 8.2 · Shadow Light Base · § 8.3 · Normal Map</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="grid-2" style="gap:48px 60px;">
+      <div>
+        <div class="eyebrow" style="color:#8c6a00; margin-bottom:14px;">§ 8.2 · Shadow Light Base</div>
+        <h2 class="display-md" style="font-size:42px;">Shadow Light Base Settings</h2>
+        <p class="body" style="margin-top:14px;">接收所有 SpineShadowLight 元件投射的自製光照 — 區域光、聚光、Cookie 投影、Caustics 波光。</p>
+        <div class="ptable" style="margin-top:20px;">
+          <div class="prow"><div class="pname">Enable Shadow Light Base</div><div class="pdesc">影響 BaseColor 的基底光照層（不含描邊與背光）。</div><div class="pcode">_EnableShadowLight</div></div>
+          <div class="prow"><div class="pname">Base Intensity</div><div class="pdesc">ShadowLight 在 BaseColor 上的整體強度乘數。</div><div class="pcode">_ShadowLightBaseIntensity · 0–5</div></div>
+          <div class="prow" style="border-bottom:none;"><div class="pname">Affects Normal Map</div><div class="pdesc">是否參與 Normal Map 計算 — 開啟後光源方向會推算法線著色。</div><div class="pcode">_SL_AffectsNormalMap<span class="deps">→ 需開啟 Normal Map</span></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow" style="color:#8c6a00; margin-bottom:14px;">§ 8.3 · Normal Map</div>
+        <h2 class="display-md" style="font-size:42px;">Normal Map Settings</h2>
+        <p class="body" style="margin-top:14px;">讓 2D Sprite 接收方向性光照。自動偵測同目錄的 _Normal 後綴貼圖並掛載。</p>
+        <div class="ptable" style="margin-top:20px;">
+          <div class="prow"><div class="pname">Enable Normal Map Module</div><div class="pdesc">啟用法線採樣與光照計算。</div><div class="pcode">_EnableNormalMap</div></div>
+          <div class="prow"><div class="pname">Normal Map</div><div class="pdesc">法線貼圖。若主紋理同目錄有 {name}_Normal，會自動填入。</div><div class="pcode">_NormalMap</div></div>
+          <div class="prow"><div class="pname">Invert Normal Height</div><div class="pdesc">反轉法線 Z 軸高度（凹凸方向）。</div><div class="pcode">_InvertNormalMap</div></div>
+          <div class="prow" style="border-bottom:none;"><div class="pname">Normal Intensity</div><div class="pdesc">法線強度。0 為平面、1 為原始、5 為極度誇張。</div><div class="pcode">_NormalIntensity · 0–5</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:28px;">
+      <strong>協同運作</strong> — Normal Map 啟用後會被 Native Lighting、Light Probe、ShadowLight（若 Affects Normal Map = ON）三者同時取用。一張法線貼圖即可撐起整個立體感。
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineShadowLight 元件完整參數見 §12</span><span>14</span></div>
+</section>
+
+<!-- ════════════ 15 LIGHTING Light Probe + Light Source Concept ════════════ -->
+<section class="dark" data-screen-label="15 LIGHTING Probe and Source">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-light)"></span>LIGHTING · Module 04 + Concept</span><span>§ 8.4 · Light Probe · § 8.5 · Light Source 概念</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="grid-2" style="gap:48px 60px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:14px;">§ 8.4 · Light Probe</div>
+        <h2 class="display-md" style="font-size:42px;">Light Probe Settings</h2>
+        <p class="body" style="margin-top:14px;">取樣場景烘焙好的 Light Probe Group，把 9 個 SH 係數傳入 Shader。若場景開啟 LightMap + LightProbe 時此選項自動開啟。</p>
+        <div class="ptable" style="margin-top:20px;">
+          <div class="prow"><div class="pname">Enable Light Probe</div><div class="pdesc">總開關。BackLight / Inline / Outline 若選 LightProbe 光源，本選項必須啟用。若按鈕一直跳回關閉，代表場景缺乏 Lightmap / Probe 資料。</div><div class="pcode">_EnableLightProbe</div></div>
+          <div class="prow" style="border-bottom:none;"><div class="pname">Probe Intensity</div><div class="pdesc">SH 採樣的整體強度倍率。</div><div class="pcode">_LightProbeIntensity · 0–3</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:14px;">§ 8.5 · Light Source 多選旗標</div>
+        <h2 class="display-md" style="font-size:42px;">三種光源 · 共用結構</h2>
+        <p class="body" style="margin-top:14px;">BackLight、Inline、Outline 三個模組共用一套 Light Source 多選欄位（EnumFlagsField）。每勾選一個光源，下方展開該光源獨立的 Power / Color Blend / Intensity 三組旋鈕。</p>
+        <div class="grid-3" style="margin-top:20px; gap:10px;">
+          <div class="info-card" style="padding:14px 16px;"><div class="caption mono" style="color:var(--primary-on-dark);">Flag 1</div><div style="font-weight:700; margin-top:4px;">Realtime</div><div class="caption" style="margin-top:4px;">Unity 場景燈，前 8 盞</div></div>
+          <div class="info-card" style="padding:14px 16px;"><div class="caption mono" style="color:var(--primary-on-dark);">Flag 2</div><div style="font-weight:700; margin-top:4px;">LightProbe</div><div class="caption" style="margin-top:4px;">烘焙環境光 SH</div></div>
+          <div class="info-card" style="padding:14px 16px;"><div class="caption mono" style="color:var(--primary-on-dark);">Flag 4</div><div style="font-weight:700; margin-top:4px;">ShadowLight</div><div class="caption" style="margin-top:4px;">自製 SpineShadowLight</div></div>
+        </div>
+        <p class="caption" style="margin-top:14px;">對應 Shader 變數：_BackLightLightingMode · _InlineLightingMode · _OutlineLightingMode（整數位元欄位）</p>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:28px;">
+      <strong>進階區塊三件套</strong> — 當 Light Source ≠ Disabled 時，BackLight / Inline / Outline 模組會額外展開三組進階區塊：<strong>A. Mask By Light Direction</strong>（方向遮罩，三光源各有 Power 指數）；<strong>B. Tint By Light Color</strong>（光源染色，三光源各有 Blend + Intensity）；<strong>C. Noise Mask</strong>（噪點侵蝕，需 Global Noise 啟用）。三個模組結構完全相同。
+    </div>
+  </div>
+  <div class="deck-footer"><span>選了 LightProbe 卻沒開全域 Light Probe — Inspector 會自動跳出修正按鈕</span><span>15</span></div>
+</section>
+
+<!-- ════════════ 16 EMISSION ════════════ -->
+<section class="light" data-screen-label="16 EMISSION">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-emit)"></span>Category · 04 / 06</span><span>§ 9 · EMISSION</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="color:#b34a1a; margin-bottom:18px;">§ 9 · EMISSION</div>
+    <h2 class="display-md">Emission Settings — 自體發光</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      自動偵測 <span class="mono">{name}_Emission</span> 後綴貼圖。Emission 不接收任何光源 — 用於符文、機甲、武器尖端、Magic 物件等需要持續發光的區域。
+    </p>
+    <div class="ptable" style="margin-top:32px;">
+      <div class="prow"><div class="pname">Enable Emission</div><div class="pdesc">啟用發光通道；關閉後完全跳過該段 Shader 計算。</div><div class="pcode">_EnableEmission</div></div>
+      <div class="prow"><div class="pname">Emission Texture</div><div class="pdesc">指定發光部位遮罩 (黑白或彩色)。自動偵測同目錄 {主貼圖名稱}_Emission。</div><div class="pcode">_EmissionTex</div></div>
+      <div class="prow"><div class="pname">Emission Color (HDR)</div><div class="pdesc">疊加的發光顏色 — HDR 強度大於 1 會觸發後製 Bloom 過曝。</div><div class="pcode">_EmissionColor</div></div>
+      <div class="prow"><div class="pname">Blend Weight</div><div class="pdesc">發光與底色的混合權重 (0 = 不顯示，1 = 完全替換)。</div><div class="pcode">_EmissionBlend · 0–1</div></div>
+      <div class="prow"><div class="pname">Intensity</div><div class="pdesc">發光整體強度倍率，0–10。配合 HDR Color 推 Bloom。</div><div class="pcode">_EmissionIntensity · 0–10</div></div>
+      <div class="prow" style="border-bottom:none;"><div class="pname">Multiply With MainTex</div><div class="pdesc">開啟後發光被主紋理乘調 — 讓符文受角色顏色影響；關閉則完全獨立。</div><div class="pcode">_EmissionMulMain</div></div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>Emission 不受任何光源影響 — 它是「自體發光」</span><span>16</span></div>
+</section>
+
+<!-- ════════════ 17 EFFECT Opener + Overlay ════════════ -->
+<section class="parch" data-screen-label="17 EFFECT Overlay">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-effect)"></span>Category · 05 / 06</span><span>§ 10 · EFFECT · § 10.1 · Overlay</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="grid-2" style="gap:48px 60px;">
+      <div>
+        <span class="cat-chip" style="margin-bottom:20px;"><span class="swatch" style="background:var(--cat-effect)"></span>§ 10 · EFFECT</span>
+        <h2 class="display-md" style="font-size:46px;">三個獨立特效模組。</h2>
+        <p class="body" style="margin-top:18px;">
+          EFFECT 分區包含三個彼此獨立的特效模組：Effect Overlay（瞬間整體染色）、Hit Sweep（受擊光帶掃光）、BackLight（背光高光）。前兩者為時間性特效、適合配合動畫；BackLight 為常駐光照特效、結構最為複雜。
+        </p>
+        <div class="kv-row" style="margin-top:24px;"><span class="k">章節範圍</span><span class="v">3 子模組</span></div>
+        <div class="kv-row"><span class="k">自動掛載</span><span class="v">Hit Sweep → SpineHitSweepEffect 元件</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">前置條件</span><span class="v">BackLight 建議搭配 §8 LIGHTING 已配置完成</span></div>
+      </div>
+      <div>
+        <div class="eyebrow" style="color:#0079b8; margin-bottom:14px;">§ 10.1 · Effect Overlay</div>
+        <h2 class="display-md" style="font-size:42px;">整體色彩疊加</h2>
+        <p class="body" style="margin-top:14px;">將指定 HDR 顏色按 Intensity 線性疊到最終畫面色。瞬間性特效 — 用於受擊閃白、變身、無敵、燃燒、冰凍。</p>
+        <div class="ptable" style="margin-top:18px;">
+          <div class="prow"><div class="pname">Effect Color (HDR)</div><div class="pdesc">受擊閃白用 (5,5,5)；火焰用 (3,1.2,0.4)。</div><div class="pcode">_EffectColor<span class="deps">→ 若由程式 Runtime 控制，Preset 請取消勾選此項</span></div></div>
+          <div class="prow" style="border-bottom:none;"><div class="pname">Effect Intensity</div><div class="pdesc">0–1 疊加比例。常配合 Curve 做 0→1→0 三幀閃光。</div><div class="pcode">_EffectIntensity</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>本模組無 Toggle — Effect Intensity = 0 時自動視為關閉</span><span>17</span></div>
+</section>
+
+<!-- ════════════ 18 EFFECT Hit Sweep ════════════ -->
+<section class="light" data-screen-label="18 EFFECT HitSweep">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-effect)"></span>EFFECT · Module 02</span><span>§ 10.2 · Hit Sweep</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="color:#0079b8; margin-bottom:18px;">§ 10.2 · EFFECT</div>
+    <h2 class="display-md">Hit Sweep Settings — 受擊掃光特效</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      「打擊閃光」特效。傳入受擊點世界座標後，光帶從受擊點向外掃過整個角色。常用於武器命中、技能擊發、無敵讀條的視覺反饋。Shader 屬性在 Material Inspector 設定外觀；觸發則由 SpineHitSweepEffect 元件腳本控制（詳見 §13）。
+    </p>
+    <div class="ptable" style="margin-top:32px;">
+      <div class="prow"><div class="pname">Enable Hit Sweep</div><div class="pdesc">啟用打擊光帶；同時系統自動掛載 SpineHitSweepEffect 至角色。</div><div class="pcode">_EnableHitSweep<span class="deps">→ 角色 Layer 須正確</span></div></div>
+      <div class="prow"><div class="pname">Sweep Color (HDR)</div><div class="pdesc">光帶顏色。預設 HDR 白光 (2, 2, 2) 觸發 Bloom 過曝產生亮邊。</div><div class="pcode">_SweepColor</div></div>
+      <div class="prow"><div class="pname">Sweep Width</div><div class="pdesc">光帶寬度，以角色直徑比例計算。0.15 為標準，0.3 較粗。</div><div class="pcode">_SweepWidth · 0.01–1</div></div>
+      <div class="prow" style="border-bottom:none;"><div class="pname">Sweep Softness</div><div class="pdesc">光帶邊緣的羽化柔和度，數值越大邊緣越糊。</div><div class="pcode">_SweepSoftness · 0.001–1</div></div>
+    </div>
+    <div class="callout" style="margin-top:24px;">
+      <strong>進階控制屬性</strong>（位於 SpineHitSweepEffect 元件 Inspector 而非 Material）—
+      <span class="mono">duration</span>（掃光總時間，秒）、<span class="mono">sweepRange</span>（Shader 中光帶起點到終點的座標範圍，預設 -4 → 4）、<span class="mono">sweepCenterOffset</span>（角色中心校正向量，因 Spine 原點通常在腳底）。詳見 §13。
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineHitSweepEffect.cs · ExecuteInEditMode 可在 Editor 中預覽</span><span>18</span></div>
+</section>
+
+<!-- ════════════ 19 EFFECT BackLight Basic ════════════ -->
+<section class="parch" data-screen-label="19 EFFECT BackLight Basic">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-effect)"></span>EFFECT · Module 03 · A</span><span>§ 10.3 · BackLight 基底</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="color:#0079b8; margin-bottom:18px;">§ 10.3 · EFFECT</div>
+    <h2 class="display-md">BackLight Settings — 基底參數</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      背光／高光通道。BackLight 是 EFFECT 分區中最複雜的模組 — 接受三種光源並產生獨立的 Power / Blend / Intensity 旋鈕集合。自動偵測 <span class="mono">{name}_BackLight</span> 後綴貼圖並掛載。
+    </p>
+    <div class="ptable" style="margin-top:28px;">
+      <div class="prow"><div class="pname">Enable BackLight</div><div class="pdesc">總開關。啟用後出現 Light Source 多選欄位與下方進階區塊。</div><div class="pcode">_EnableBackLight</div></div>
+      <div class="prow"><div class="pname">Light Source</div><div class="pdesc">EnumFlags — Realtime / LightProbe / ShadowLight 多選；每選一個展開該光源的 Power / Blend / Intensity 三組旋鈕。</div><div class="pcode">_BackLightLightingMode</div></div>
+      <div class="prow"><div class="pname">Ignore Behind Fade (Shadow Light)</div><div class="pdesc">當 Shadow Light 位於角色背後時忽略漸隱衰減。常用於「全方向光罩」效果。</div><div class="pcode">_BL_SL_IgnoreBehind<span class="deps">→ Light Source 需包含 ShadowLight</span></div></div>
+      <div class="prow"><div class="pname">BackLight Texture</div><div class="pdesc">背光紋理 — 通常是手繪的高光遮罩。預設為純白。自動偵測 {name}_BackLight。</div><div class="pcode">_SpecularTex</div></div>
+      <div class="prow"><div class="pname">Specular Color (HDR)</div><div class="pdesc">背光顏色 (HDR)。冷色銀邊用 (0.6, 0.9, 1.5)；火焰邊用 (1.5, 0.8, 0.3)。</div><div class="pcode">_SpecularColor</div></div>
+      <div class="prow"><div class="pname">Blend Intensity</div><div class="pdesc">背光疊加比例 0–1。</div><div class="pcode">_SpecularBlend</div></div>
+      <div class="prow"><div class="pname">Blend Mode</div><div class="pdesc">Replace（蓋上去）或 Additive（加上去）。</div><div class="pcode">_BackLightMode</div></div>
+      <div class="prow" style="border-bottom:none;"><div class="pname">Multiply With MainTex</div><div class="pdesc">背光是否受主紋理顏色影響。開啟讓邊緣高光更貼著角色。</div><div class="pcode">_SpecularMulMain</div></div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>進階區塊（Directional Mask、Tint By Light、Noise）見下一頁</span><span>19</span></div>
+</section>
+
+<!-- ════════════ 20 EFFECT BackLight Advanced ════════════ -->
+<section class="light" data-screen-label="20 EFFECT BackLight Advanced">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-effect)"></span>EFFECT · Module 03 · B</span><span>§ 10.3 · BackLight 進階</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="color:#0079b8; margin-bottom:18px;">§ 10.3 · EFFECT</div>
+    <h2 class="display-md">BackLight Settings — 進階控制（與 Inline / Outline 共用結構）</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      當 Light Source 不為 Disabled 時，會展開三個進階區塊。本頁說明的結構同時適用於 Inline (§11.1) 與 Outline (§11.2) — 一次學會三處受用。
+    </p>
+    <div class="grid-3" style="margin-top:32px;">
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:8px;">A · Mask By Light Direction</div>
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">方向遮罩</div>
+        <p class="body" style="font-size:18px;">開啟後背光只顯示在受光面。為三種光源各提供 Power 指數，控制聚焦銳利度。</p>
+        <div class="chip-row" style="margin-top:12px;">
+          <span class="chip">_BL_RT_Power</span>
+          <span class="chip">_BL_Probe_Power</span>
+          <span class="chip">_BL_Shadow_Power</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:8px;">B · Tint By Light Color</div>
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">光源染色</div>
+        <p class="body" style="font-size:18px;">開啟後 BackLight 顏色被光源色染色。每個光源獨立的 Blend 與 Intensity 控制深度。</p>
+        <div class="chip-row" style="margin-top:12px;">
+          <span class="chip">_BL_RT_Blend / _Intensity</span>
+          <span class="chip">_BL_Probe_Blend / _Intensity</span>
+          <span class="chip">_BL_Shadow_Blend / _Intensity</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:8px;">C · Noise Mask</div>
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">流動噪點</div>
+        <p class="body" style="font-size:18px;">開啟後背光受 Global Noise 調幅 — 邊緣像火焰般顫動。需啟用 §7 Global Noise。</p>
+        <div class="chip-row" style="margin-top:12px;">
+          <span class="chip">_BL_EnableNoise</span>
+          <span class="chip">_BL_NoiseIntensity</span>
+        </div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:28px;">
+      <strong>對應命名規則</strong> — Inline 模組的進階屬性以 <span class="mono">_IL_</span> 前綴（_IL_RT_Power、_IL_RT_Blend ⋯）；Outline 模組以 <span class="mono">_OL_</span> 前綴。命名規律一致。
+    </div>
+  </div>
+  <div class="deck-footer"><span>Inline 與 Outline 的進階區塊結構與本頁完全相同 — 同套設計語言</span><span>20</span></div>
+</section>
+
+<!-- ════════════ 21 LINE Opener + Inline ════════════ -->
+<section class="dark" data-screen-label="21 LINE Inline">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-line)"></span>Category · 06 / 06</span><span>§ 11 · LINE · § 11.1 · Inline</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="grid-2" style="gap:48px 60px;">
+      <div>
+        <span class="cat-chip" style="margin-bottom:20px;"><span class="swatch" style="background:var(--cat-line)"></span>§ 11 · LINE</span>
+        <h2 class="display-md" style="font-size:46px;">兩種描邊 — 向內與向外。</h2>
+        <p class="body" style="margin-top:18px;">
+          Inline 從角色 Alpha 邊緣向內取樣漸層（Rim Light 風格）；Outline 在外側以 Sobel 8 鄰域偵測繪製外輪廓。兩者共用同一套 Light Source 多選 + Directional Mask / Tint By Light / Noise Mask 結構（§10.3 進階區塊）。
+        </p>
+        <div class="kv-row" style="margin-top:24px;"><span class="k">章節範圍</span><span class="v">2 子模組 + 進階屬性</span></div>
+        <div class="kv-row"><span class="k">自動掛載</span><span class="v">Inline → SpineAlphaMaskRenderer</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">前置條件</span><span class="v">Outline 為獨立 Pass，可被打包剝離</span></div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:14px;">§ 11.1 · Inline (Rim Light)</div>
+        <h2 class="display-md" style="font-size:42px;">Inline Settings</h2>
+        <p class="body" style="margin-top:14px;">內描邊。啟用後系統自動掛載 SpineAlphaMaskRenderer，離線渲染一張 Alpha Mask RT 供 Shader 取樣（§16）。</p>
+        <div class="ptable" style="margin-top:18px;">
+          <div class="prow"><div class="pname">Enable Inline</div><div class="pdesc">啟用內描邊；自動掛載 AlphaMaskRenderer。</div><div class="pcode">_EnableInline<span class="deps">→ Layer 須正確</span></div></div>
+          <div class="prow"><div class="pname">Light Source</div><div class="pdesc">同 BackLight 結構。可全停用做純色內描邊。</div><div class="pcode">_InlineLightingMode</div></div>
+          <div class="prow"><div class="pname">Inline Color (HDR)</div><div class="pdesc">內描邊顏色，HDR。</div><div class="pcode">_InlineColor</div></div>
+          <div class="prow"><div class="pname">Inline Width</div><div class="pdesc">描邊寬度（像素）。</div><div class="pcode">_InlineWidth · 0–10</div></div>
+          <div class="prow"><div class="pname">Fade Steps</div><div class="pdesc">內描邊階梯數 2–8。值越大邊緣越平滑。</div><div class="pcode">_InlineFadeSteps</div></div>
+          <div class="prow" style="border-bottom:none;"><div class="pname">Inline ZTest</div><div class="pdesc">LessEqual / Always；後者可穿透前景顯示。</div><div class="pcode">_InlineZTest</div></div>
+        </div>
+        <p class="caption" style="margin-top:14px;">進階區塊（Directional Mask / Tint / Noise）以 <span class="mono">_IL_</span> 前綴，結構同 §10.3。</p>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>Inline 共有 6 + 9 = 15 個屬性（基底 + 進階）</span><span>21</span></div>
+</section>
+
+<!-- ════════════ 22 LINE Outline Basic ════════════ -->
+<section class="parch" data-screen-label="22 LINE Outline Basic">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-line)"></span>LINE · Module 02 · A</span><span>§ 11.2 · Outline 基底</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="color:#7a3acc; margin-bottom:18px;">§ 11.2 · LINE</div>
+    <h2 class="display-md">Outline Settings — 基底</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      外輪廓描邊。獨立 Pass「Outline」以 Sobel 邊緣偵測在 Alpha 邊界外側繪製描邊。支援被 Stencil 標記、被光源染色、被深度測試覆蓋等策略。
+    </p>
+    <div class="ptable" style="margin-top:28px;">
+      <div class="prow"><div class="pname">Enable Outline</div><div class="pdesc">啟用外描邊；Pass「Outline」會被啟動，需在 Build Config 中放行。</div><div class="pcode">_EnableOutline</div></div>
+      <div class="prow"><div class="pname">Light Source</div><div class="pdesc">同 BackLight / Inline 結構，三光源多選。</div><div class="pcode">_OutlineLightingMode</div></div>
+      <div class="prow"><div class="pname">Ignore Behind Fade (Shadow Light)</div><div class="pdesc">Shadow Light 位於角色背後時忽略漸隱衰減。</div><div class="pcode">_OL_SL_IgnoreBehind</div></div>
+      <div class="prow"><div class="pname">Outline Color (HDR)</div><div class="pdesc">外描邊顏色，HDR 過曝可推 Bloom 形成光暈邊。</div><div class="pcode">_OutlineColor</div></div>
+      <div class="prow"><div class="pname">Outline Width</div><div class="pdesc">外描邊寬度，0–8 像素或螢幕空間單位。</div><div class="pcode">_OutlineWidth</div></div>
+      <div class="prow"><div class="pname">Multiply Edge Color</div><div class="pdesc">將外描邊與主紋理邊緣顏色相乘 — 讓邊緣繼承角色本色。</div><div class="pcode">_MultiplyEdgeColor</div></div>
+      <div class="prow"><div class="pname">Outline Smoothness</div><div class="pdesc">邊緣柔和度 (Threshold End)，控制 Alpha 漸變開始位置。</div><div class="pcode">_ThresholdEnd · 0–1</div></div>
+      <div class="prow"><div class="pname">Alpha Cutoff</div><div class="pdesc">取樣的 Alpha 裁切閾值。</div><div class="pcode">_OutlineAlphaCutoff · 0–1</div></div>
+      <div class="prow" style="border-bottom:none;"><div class="pname">Outline ZTest</div><div class="pdesc">LessEqual / Always；後者可穿透前景物件顯示。</div><div class="pcode">_OutlineZTest</div></div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>進階屬性與 Sobel 取樣設定見下一頁</span><span>22</span></div>
+</section>
+
+<!-- ════════════ 23 LINE Outline Advanced ════════════ -->
+<section class="light" data-screen-label="23 LINE Outline Advanced">
+  <div class="deck-header"><span class="pill"><span class="dot" style="background:var(--cat-line)"></span>LINE · Module 02 · B</span><span>§ 11.2 · Outline 進階</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="color:#7a3acc; margin-bottom:18px;">§ 11.2 · LINE</div>
+    <h2 class="display-md">Outline · 取樣演算法與 Shader Variant 控制</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      外描邊的繪製方法可由以下開關精細調整。這些是 Shader Variant 級別的設定，影響 GPU 編譯出的指令數量。Outline 為整顆 Shader 中最重的 Pass，手機平台建議於 §25 BuildConfig 中關閉。
+    </p>
+    <div class="ptable" style="margin-top:28px;">
+      <div class="prow"><div class="pname">Screen Space Width</div><div class="pdesc">啟用後 Outline Width 以螢幕空間像素計算（距離鏡頭遠近也保持等粗）；關閉則為模型空間。</div><div class="pcode">_USE_SCREENSPACE_OUTLINE_WIDTH</div></div>
+      <div class="prow"><div class="pname">Fill Inside</div><div class="pdesc">啟用後外描邊填入主紋理內部 — 受擊閃白/紅效果。若由程式 Runtime 控制，Preset 請取消勾選此項。</div><div class="pcode">_OUTLINE_FILL_INSIDE</div></div>
+      <div class="prow"><div class="pname">Sample 8 Neighbours</div><div class="pdesc">啟用 8 鄰域 Sobel（標準）；關閉則為 4 鄰域，速度較快但有鋸齒。</div><div class="pcode">_USE8NEIGHBOURHOOD_ON</div></div>
+      <div class="prow"><div class="pname">Reference Texture Width</div><div class="pdesc">Outline Width 的單位參考解析度，預設 1024。若主紋理 2048，須相應調整。</div><div class="pcode">_OutlineReferenceTexWidth</div></div>
+      <div class="prow"><div class="pname">Opaque Alpha Threshold</div><div class="pdesc">主紋理 Alpha 大於此值視為完全不透明 — 避免半透明區域產生雜訊邊緣。</div><div class="pcode">_OutlineOpaqueAlpha · 0–1</div></div>
+      <div class="prow" style="border-bottom:none;"><div class="pname">Outline Mip Level</div><div class="pdesc">取樣 Mip Level (0–3)。Mip 越高描邊越柔但會抖動；常用 0。</div><div class="pcode">_OutlineMipLevel</div></div>
+    </div>
+    <p class="caption" style="margin-top:14px;">進階區塊（Directional Mask / Tint / Noise）以 <span class="mono">_OL_</span> 前綴，結構同 §10.3。</p>
+  </div>
+  <div class="deck-footer"><span>Stencil 設定（_StencilRef / _StencilComp）用於 UI/角色互動，一般不需修改</span><span>23</span></div>
+</section>
+
+<!-- ════════════ 24 SpineShadowLight Component ════════════ -->
+<section class="dark" data-screen-label="24 SpineShadowLight Component">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Runtime · 01</span><span>§ 12 · SpineShadowLight 元件</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 12 · SpineShadowLight</div>
+    <h2 class="display-md" style="color:#fff;">自製光源元件 — Point · Spot · Area + Cookie</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      與 Unity Light 平行的自製光源系統。在 Hierarchy 中右鍵「GameObject / Light / Spine Shadow Light」即可建立。Inspector 由兩個可摺疊區塊組成：💡 Light Settings 與 🍪 Cookie Settings。Scene View 提供 Range / Spot Angle / Area Size 的拖曳 Handle。
+    </p>
+    <div class="grid-2" style="margin-top:32px;">
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--cat-light); margin-bottom:8px;">💡 Light Settings</div>
+        <div class="kv-row"><span class="k">type</span><span class="v">Point / Spot / Area — 全向、聚光、體積區域光</span></div>
+        <div class="kv-row"><span class="k">blendMode</span><span class="v">Multiply (陰影層) / Add (純發光) / Screen (柔和提亮) / Overlay (高飽和對比)</span></div>
+        <div class="kv-row"><span class="k">color (HDR)</span><span class="v">本體顏色。HDR 大於 1 觸發 Bloom；預設純黑表示「投射陰影」</span></div>
+        <div class="kv-row"><span class="k">intensity</span><span class="v">Master 倍率 0–10</span></div>
+        <div class="kv-row"><span class="k">spineIntensity</span><span class="v">針對 Spine / Sprite 的強度倍率</span></div>
+        <div class="kv-row"><span class="k">terrainIntensity</span><span class="v">針對 Terrain 渲染的強度倍率</span></div>
+        <div class="kv-row"><span class="k">range</span><span class="v">影響距離 — 若燈光無效請優先檢查此項</span></div>
+        <div class="kv-row"><span class="k">spotAngle</span><span class="v">聚光張角 1–179°（僅 Spot 生效）</span></div>
+        <div class="kv-row"><span class="k">areaSize</span><span class="v">區域光長寬 Vector2（僅 Area 生效；Z 軸由 range）</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">cullingMask</span><span class="v">LayerMask — 預設 {8, 9, 12, 13, 18, 20}。若不包含角色 Layer 則無效</span></div>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:#4dc0ff; margin-bottom:8px;">🍪 Cookie Settings</div>
+        <div class="kv-row"><span class="k">cookieMode</span><span class="v">Normal（單層靜態投影）/ Caustics（雙層錯位水波焦散）</span></div>
+        <div class="kv-row"><span class="k">cookieTexture</span><span class="v">投影紋理。Caustics 模式會嘗試自動載入預設 T_Caustics_0100</span></div>
+        <div class="kv-row"><span class="k">colorChannel</span><span class="v">RGBA / R / G / B / Alpha — 單通道萃取作為強度遮罩</span></div>
+        <div class="kv-row"><span class="k">cookieScale (X, Y)</span><span class="v">投影縮放 — 值越小投出的圖案越大</span></div>
+        <div class="kv-row"><span class="k">autoScroll</span><span class="v">啟用後 Offset 轉為 UV/秒 流動速度；Edit Mode 也運作</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">cookieOffset</span><span class="v">未開 Auto Scroll 時為靜態 UV；開啟後為每秒流動速度 Vector2</span></div>
+        <div class="callout warn" style="margin-top:18px; padding:14px 18px; font-size:15px;">
+          <strong>限制</strong> — 場景中同一角色最多同時受 <strong>8 盞</strong> Shadow Light 影響。超過時 SpineLightManager 依距離排序，取最近 8 盞。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>OnDrawGizmos 在 Scene View 即時預覽光形 — 不需 Play</span><span>24</span></div>
+</section>
+
+<!-- ════════════ 25 SpineHitSweepEffect Component ════════════ -->
+<section class="light" data-screen-label="25 SpineHitSweepEffect Component">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Runtime · 02</span><span>§ 13 · SpineHitSweepEffect 元件</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 13 · SpineHitSweepEffect</div>
+    <h2 class="display-md">受擊掃光控制元件</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      Material 上的 Enable Hit Sweep 勾選後，本元件會自動掛載到角色 GameObject。Inspector 含兩個區塊：Animation Settings（節奏控制）與 Debug &amp; Test Tools（編輯器測試介面）。實際遊戲中由戰鬥邏輯呼叫 <span class="mono">PlaySweep(Vector3)</span>。
+    </p>
+    <div class="grid-2" style="margin-top:28px;">
+      <div>
+        <div class="info-card">
+          <div class="tagline" style="font-size:22px; margin-bottom:10px;">Animation Settings</div>
+          <div class="kv-row"><span class="k">duration</span><span class="v">PlaySweep 呼叫後光帶掃完全身的時間（秒）</span></div>
+          <div class="kv-row"><span class="k">sweepRange</span><span class="v">Shader 中光帶起點 X 到終點 Y 的座標範圍，預設 -4 → 4。角色巨大時請加大為 -8 → 8</span></div>
+          <div class="kv-row" style="border-bottom:none;"><span class="k">sweepCenterOffset</span><span class="v">抵銷 Spine 原點通常在腳底的問題。讓系統知道角色「胸口」位置</span></div>
+        </div>
+        <div class="info-card" style="margin-top:18px;">
+          <div class="tagline" style="font-size:22px; margin-bottom:10px;">Debug &amp; Test Tools</div>
+          <div class="kv-row"><span class="k">📍 取自身座標</span><span class="v">將 debugHitPosition 設為角色 transform.position</span></div>
+          <div class="kv-row"><span class="k">在 Scene 編輯點位</span><span class="v">於 Scene View 拖曳紅色 Handle 設定打擊點。同時顯示紅色虛線指向角色中心</span></div>
+          <div class="kv-row" style="border-bottom:none;"><span class="k">▶ Test Sweep Effect</span><span class="v">立即觸發 PlaySweep(debugHitPosition) 測試動畫</span></div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:10px;">程式呼叫範例 — 戰鬥腳本</div>
+        <pre class="code-block" style="font-size:14px;"><span class="cm">// 1. 取得角色身上的特效腳本</span>
+SpineHitSweepEffect hitEffect
+    = GetComponent&lt;SpineHitSweepEffect&gt;();
+
+<span class="kw">if</span> (hitEffect != <span class="kw">null</span>)
+{
+    <span class="cm">// 2. 傳入受擊點的世界座標</span>
+    <span class="cm">//    協程驅動 _SweepProgress 由 0 至 1</span>
+    hitEffect.PlaySweep(hitWorldPosition);
+}</pre>
+        <div class="callout" style="margin-top:18px;">
+          <strong>運作原理</strong> — 元件透過 MaterialPropertyBlock 寫入 _SweepProgress、_SweepHitPosOS（本地座標）、_SweepRange、_SweepCenterOffset，不打斷 SRP Batching。協程結束後恢復 0，下次呼叫從頭開始。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineHitSweepHelpWindow 含一鍵複製範例代碼按鈕</span><span>25</span></div>
+</section>
+
+<!-- ════════════ 26 SpineLightManager ════════════ -->
+<section class="parch" data-screen-label="26 SpineLightManager">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Runtime · 03</span><span>§ 14 · SpineLightManager</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 14 · SpineLightManager 場景單例</div>
+    <h2 class="display-md">光照資料的中央交換站</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      SpineLightManager 為每個 Scene 一個單例。任一光照模組首次啟用時 <span class="mono">EnsureInstance()</span> 自動建立 GameObject — 無需手動新增。每幀以 LateUpdate 進行光源收集、排序、SH 取樣、MaterialPropertyBlock 注入。
+    </p>
+    <div class="grid-2" style="margin-top:28px;">
+      <div>
+        <div class="caption mono" style="margin-bottom:8px;">資料 · Inputs</div>
+        <div class="kv-row"><span class="k">collectLightMask</span><span class="v">LayerMask — 哪些 Layer 上的 Light 會被收集</span></div>
+        <div class="kv-row"><span class="k">targetLights</span><span class="v">List&lt;Light&gt; — Unity Realtime Light 列表</span></div>
+        <div class="kv-row"><span class="k">targetShadowLights</span><span class="v">List&lt;SpineShadowLight&gt; — 自製光源列表</span></div>
+        <div class="kv-row"><span class="k">targetCharacters</span><span class="v">List&lt;Renderer&gt; — 已註冊接收的角色</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">probeSampleNormal</span><span class="v">Vector3 — SH 取樣方向（預設 up）</span></div>
+      </div>
+      <div>
+        <div class="caption mono" style="margin-bottom:8px;">流程 · Per Frame (LateUpdate)</div>
+        <div class="step-row" style="padding: 10px 0;">
+          <span class="num">01</span>
+          <div class="ct"><div class="t" style="font-size:18px;">收集 &amp; 排序</div><div class="d" style="font-size:14px;">以「光源 ↔ 角色」距離平方計算，取最近 8 盞放入 _SpineLightPos / Color / Spot 陣列。</div></div>
+        </div>
+        <div class="step-row" style="padding: 10px 0;">
+          <span class="num">02</span>
+          <div class="ct"><div class="t" style="font-size:18px;">SH 取樣</div><div class="d" style="font-size:14px;">LightProbes.GetInterpolatedProbe → 9 個係數轉成 _SpineSHAr ~ _SpineSHC。</div></div>
+        </div>
+        <div class="step-row" style="padding: 10px 0;">
+          <span class="num">03</span>
+          <div class="ct"><div class="t" style="font-size:18px;">Cookie 綁定</div><div class="d" style="font-size:14px;">為每盞 ShadowLight 設定 _SpineShadowCookie0–7 + UV 參數。</div></div>
+        </div>
+        <div class="step-row" style="padding: 10px 0; border-bottom:none;">
+          <span class="num">04</span>
+          <div class="ct"><div class="t" style="font-size:18px;">MaterialPropertyBlock</div><div class="d" style="font-size:14px;">逐 Renderer 套用 SetPropertyBlock — 不污染共享材質球。</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineLightReceiver 在 OnEnable 註冊、OnDisable 主動清除殘留 MPB</span><span>26</span></div>
+</section>
+
+<!-- ════════════ 27 SpineLightReceiver ════════════ -->
+<section class="light" data-screen-label="27 SpineLightReceiver">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Runtime · 04</span><span>§ 15 · SpineLightReceiver</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 15 · SpineLightReceiver</div>
+    <h2 class="display-md">角色端接收元件 + Active Lights Debug 面板</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      LightReceiver 是 LightManager 在角色端的對等元件。OnEnable 時呼叫 Manager.RegisterCharacter 完成註冊。Inspector 提供「🔍 Active Lights」唯讀面板，即時顯示當下打在這個角色身上的所有光源 — 對偵錯「燈光該打到卻沒打到」極為有用。
+    </p>
+    <div class="grid-2" style="margin-top:32px;">
+      <div>
+        <div class="caption mono" style="margin-bottom:8px;">自動掛載條件</div>
+        <p class="body" style="margin-bottom:14px;">當以下任一勾選時系統會自動為角色掛載 LightReceiver：</p>
+        <ul style="margin: 0 0 18px 24px; color: var(--ink-muted-80); font-size:18px; line-height:1.8;">
+          <li>Enable Normal Map</li>
+          <li>Enable BackLight（光照模式 ≠ Disabled）</li>
+          <li>Enable Inline（光照模式 ≠ Disabled）</li>
+          <li>Enable Outline（光照模式 ≠ Disabled）</li>
+          <li>Enable Light Probe</li>
+          <li>Enable Shadow Light Base</li>
+        </ul>
+        <div class="callout">
+          <strong>OnDisable 行為</strong> — 元件被停用或角色被銷毀時主動清除所有殘留的 MaterialPropertyBlock 資料，避免「光照不消失」、「上一場景的光延續到新場景」等 bug。
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:10px;">🔍 Active Lights — Runtime Debug 面板</div>
+        <div class="kv-row"><span class="k">Realtime Lights</span><span class="v" style="color:#b8870b;">金黃色條 — 列出當下被本角色取用的 Unity Realtime Light 物件，可點擊跳轉</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">Shadow Lights</span><span class="v" style="color:#338bce;">天藍色條 — 列出當下被本角色取用的 SpineShadowLight 物件</span></div>
+        <div style="margin-top:18px;">
+          <p class="body" style="font-size:18px;">
+            清單於 Edit Mode 與 Play Mode 都會每幀刷新。每個條目顯示為唯讀的 ObjectField，可直接點擊 Ping 場景中的對應物件。
+          </p>
+        </div>
+        <div class="callout warn" style="margin-top:18px; padding:14px 18px; font-size:15px;">
+          清單為空但角色看起來受光不正常 — 多為角色 Layer 不在收集名單，或燈源 cullingMask 未包含角色 Layer。請啟用 §30 排查器。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineLightReceiver.cs · 自動偵測 / 註冊 / 清除三段邏輯</span><span>27</span></div>
+</section>
+
+<!-- ════════════ 28 OTHER AUTO COMPONENTS ════════════ -->
+<section class="dark" data-screen-label="28 Other Auto Components">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Runtime · 05</span><span>§ 16 · 其他自動掛載元件</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 16 · 其他三個自動管理的元件</div>
+    <h2 class="display-md" style="color:#fff;">SpineAlphaMaskRenderer · SpineBloomThresholdSync · SpineEffectBootstrapper</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      這三個元件不會在角色 Inspector 上被直接操作 — 它們由 SpineCustomShaderGUI 在屬性變動時自動掛載／移除。本節說明各元件的職責、觸發條件、與重要欄位。
+    </p>
+    <div class="grid-3" style="margin-top:32px;">
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--primary-on-dark); margin-bottom:8px;">觸發：Enable Inline 勾選</div>
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">SpineAlphaMaskRenderer</div>
+        <p class="body" style="font-size:18px;">使用 CommandBuffer 在主相機 BeforeForwardOpaque 時繪製一張 RenderTexture（Alpha Mask）供 Inline Shader 取樣。</p>
+        <div class="kv-row" style="padding:8px 0;"><span class="k">resolutionScale</span><span class="v">RT 解析度倍率，預設 0.75</span></div>
+        <div class="kv-row" style="padding:8px 0; border-bottom:none;"><span class="k">綁定相機</span><span class="v">Camera.main，場景切換時自動重新綁定</span></div>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--primary-on-dark); margin-bottom:8px;">觸發：Suppress Bloom 勾選</div>
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">SpineBloomThresholdSync</div>
+        <p class="body" style="font-size:18px;">透過 Reflection 抓取後製 Beautify 的 finalBloomIntensity，依 AnimationCurve 推算 _BloomSuppressThreshold 寫入 MPB。</p>
+        <div class="kv-row" style="padding:8px 0;"><span class="k">髒標記</span><span class="v">lastAppliedBloom 未變則跳過寫入</span></div>
+        <div class="kv-row" style="padding:8px 0; border-bottom:none;"><span class="k">預設曲線</span><span class="v">1.0 → 0.60；10.0 → 0.52</span></div>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--primary-on-dark); margin-bottom:8px;">手動使用（程式 API）</div>
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">SpineEffectBootstrapper</div>
+        <p class="body" style="font-size:18px;">執行階段一次性套用一份 Profile，並自動補齊所有依賴元件（Receiver / AlphaMask / HitSweep / BloomSync）。適合角色切換特效時引入完整效果包。</p>
+        <div class="kv-row" style="padding:8px 0;"><span class="k">ApplyProfile()</span><span class="v">套用 + 補齊依賴</span></div>
+        <div class="kv-row" style="padding:8px 0; border-bottom:none;"><span class="k">ClearAllEffects()</span><span class="v">一次清除所有 Spine 特效</span></div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:32px;">
+      <strong>共同前提</strong> — 自動掛載僅對 Layer ∈ {8, 9, 12, 13, 18, 20} 的物件作用。Validate 機制會在每次選取時掃描；若 Layer 不正確會把元件移除並在 Inspector 頂部跳出醒目警告。
+    </div>
+  </div>
+  <div class="deck-footer"><span>另外兩個輔助元件：SpineProfileTester（人工測試）、SpineProfileHelper（靜態 API） — 見 §22–§24</span><span>28</span></div>
+</section>
+
+<!-- ════════════ 29 PRESET OVERVIEW ════════════ -->
+<section class="light" data-screen-label="29 Preset Overview">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Preset · 01</span><span>§ 17 · Preset 預設檔系統</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 17 · Preset 系統概念</div>
+    <h2 class="display-md" style="max-width: 1500px;">把模組設定存成資產 — 跨材質球共用。</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      每個子模組（Main &amp; Shadow、Inline、Outline 等）皆可獨立儲存為一個 ScriptableObject (<span class="mono">SpineModuleProfile.asset</span>)。掛載後 Inspector 中該模組的屬性會顯示 ✦ 符號，並由 SpineProfileAnimator 透過 MaterialPropertyBlock 即時驅動 — 不寫入材質球本體，多個角色可共用。
+    </p>
+    <div class="grid-2" style="margin-top:32px;">
+      <div>
+        <div class="caption mono" style="margin-bottom:8px;">操作步驟（Inspector 端）</div>
+        <div class="step-row"><span class="num">01</span><div class="ct"><div class="t" style="font-size:20px;">點 P 按鈕展開 Preset 面板</div><div class="d">每個子模組標題右側皆有 P 圖示。</div></div></div>
+        <div class="step-row"><span class="num">02</span><div class="ct"><div class="t" style="font-size:20px;">設定 Save Mask 後 Save</div><div class="d">勾選想保存的屬性 — 未勾選的不會寫入 Preset。</div></div></div>
+        <div class="step-row"><span class="num">03</span><div class="ct"><div class="t" style="font-size:20px;">自動防呆路由</div><div class="d">將 Inline 的 Preset 拖到 Outline 區？系統會偵測 moduleName 並自動導向正確分區。</div></div></div>
+        <div class="step-row" style="border-bottom:none;"><span class="num">04</span><div class="ct"><div class="t" style="font-size:20px;">綁定持久化</div><div class="d">Preset GUID 寫入 Material.SetOverrideTag — 重新打開 Inspector 也會記得。</div></div></div>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:10px;">關鍵設計原則</div>
+        <div class="kv-row"><span class="k">儲存類型</span><span class="v">Float / Color (HDR) / Vector4 / Texture</span></div>
+        <div class="kv-row"><span class="k">每個屬性</span><span class="v">可選擇靜態值，或開啟 ∿ 切到 AnimationCurve 驅動</span></div>
+        <div class="kv-row"><span class="k">寫入機制</span><span class="v">SpineProfileAnimator 每幀更新 MaterialPropertyBlock，不污染材質</span></div>
+        <div class="kv-row"><span class="k">忽略名單</span><span class="v">ProfileIgnoredProperties — Enable Toggle 與 LightingMode 不入 Preset，避免動畫切換模組</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">場景同步</span><span class="v">SpineModuleProfileEditor.SyncAllRenderersUsingThisProfile — 詳見 §18</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineModuleProfile.cs · ScriptableObject — 可被 Prefab 引用、被 Addressable 打包</span><span>29</span></div>
+</section>
+
+<!-- ════════════ 30 Profile Editor + Scene Sync ════════════ -->
+<section class="parch" data-screen-label="30 Profile Editor">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Preset · 02</span><span>§ 18 · SpineModuleProfileEditor</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 18 · 直接點選 Profile 資產時的編輯介面</div>
+    <h2 class="display-md" style="max-width: 1500px;">SpineModuleProfileEditor — 全場景自動同步</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      在 Project 視窗中直接點選一個 <span class="mono">.asset</span> 預設檔時，會由 SpineModuleProfileEditor 接管 Inspector。此編輯器最關鍵的特性 — 修改 Profile 的同時，會自動掃描全場景所有套用此 Profile 的角色，刷新自動掛載狀態。
+    </p>
+    <div class="grid-2" style="margin-top:28px;">
+      <div>
+        <div class="caption mono" style="margin-bottom:8px;">編輯器特性</div>
+        <div class="kv-row"><span class="k">頂部色帶</span><span class="v">依 moduleName 自動著色 — 一眼看出這份 Profile 是哪個分區</span></div>
+        <div class="kv-row"><span class="k">屬性切換</span><span class="v">「顯示 Shader 變數名稱」Toggle，可在友善名稱與 _PropertyName 間切換</span></div>
+        <div class="kv-row"><span class="k">∿ 曲線編輯</span><span class="v">每個屬性右側可切換靜態值 / AnimationCurve 模式（含預設關鍵幀）</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">Color/Vector</span><span class="v">展開後分別顯示 R/G/B/A 或 X/Y/Z/W 四條獨立曲線</span></div>
+        <p class="caption" style="margin-top:18px;">
+          屬性類型自動判斷：開頭為 _Enable / _Use / _Fill / _Invert 或含 Affects 顯示為 Toggle；含 LightingMode 顯示為 EnumFlagsField；含 ZTest 顯示為 EnumPopup。
+        </p>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:10px;">SyncAllRenderersUsingThisProfile — 修改後自動同步</div>
+        <p class="body" style="font-size:18px;">當你修改 Profile 的任一屬性，編輯器會：</p>
+        <div class="step-row" style="padding:10px 0;"><span class="num">01</span><div class="ct"><div class="t" style="font-size:18px;">掃描全場景 Renderer</div><div class="d" style="font-size:14px;">FindObjectsByType&lt;Renderer&gt;()。</div></div></div>
+        <div class="step-row" style="padding:10px 0;"><span class="num">02</span><div class="ct"><div class="t" style="font-size:18px;">篩 Layer 與 Profile</div><div class="d" style="font-size:14px;">Layer ∈ {8,9,12,13,18,20}，且 SpineProfileAnimator.profiles 含本 Profile。</div></div></div>
+        <div class="step-row" style="padding:10px 0;"><span class="num">03</span><div class="ct"><div class="t" style="font-size:18px;">Profile &gt; Material 雙重驗證</div><div class="d" style="font-size:14px;">先查 Profile 中是否定義該功能；無則查 Material — 決定是否需自動掛載。</div></div></div>
+        <div class="step-row" style="padding:10px 0; border-bottom:none;"><span class="num">04</span><div class="ct"><div class="t" style="font-size:18px;">SyncAutoComponent</div><div class="d" style="font-size:14px;">補齊 AlphaMaskRenderer、HitSweepEffect、LightReceiver、BloomThresholdSync；若需光照則 EnsureSpineLightManager()。</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>修改 Profile 不需手動同步場景 — 系統自動完成所有依賴元件補齊</span><span>30</span></div>
+</section>
+
+<!-- ════════════ 31 Save Mask + Conflict ════════════ -->
+<section class="dark" data-screen-label="31 Save Mask">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Preset · 03</span><span>§ 19 · Save Mask · § 20 · Curve</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="grid-2" style="gap:48px 60px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:18px;">§ 19 · Save Mask</div>
+        <h2 class="display-md" style="font-size:42px; color:#fff;">參數遮罩 — 程式衝突的最佳解</h2>
+        <p class="body" style="margin-top:14px;">
+          優先權：<span style="color:#ff9f43;">MaterialPropertyBlock（最高）</span> &gt; Material Instance &gt; Shared Material。
+        </p>
+        <p class="body" style="margin-top:12px;">
+          若某個參數需由程式在 Update 中「每幀高頻控制」（如閃爍、變色），請在 ShaderGUI 的 Save Properties 中<strong style="color:#ff9f43;">取消勾選</strong>該參數。
+        </p>
+        <p class="body" style="margin-top:12px;">
+          如此 Profile 不會綁定該參數，程式可安全用 SpineProfileHelper.SetFloat 直接修改 MPB，不會被 Animator 覆寫。
+        </p>
+        <div class="callout warn" style="margin-top:20px;">
+          <strong>常見錯誤</strong> — 把 Effect Color 或 Fill Inside 等需要程式控制的屬性寫入 Preset，導致受擊閃白功能無效。
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:18px;">§ 20 · ∿ AnimationCurve 驅動</div>
+        <h2 class="display-md" style="font-size:42px; color:#fff;">逐屬性的曲線動畫引擎</h2>
+        <p class="body" style="margin-top:14px;">每個 ✦ 屬性右側都有 ∿ 按鈕。點開後該值改由 AnimationCurve 取代靜態值；時間軸從 GameObject 生命週期開始，可由 Animator.Restart() 重置。</p>
+        <div class="info-card" style="margin-top:18px;">
+          <div class="kv-row" style="padding:8px 0;"><span class="k">Float</span><span class="v">一條 curveX 控制 0–1 數值</span></div>
+          <div class="kv-row" style="padding:8px 0;"><span class="k">Color</span><span class="v">四條曲線 (R/G/B/A) 各自驅動</span></div>
+          <div class="kv-row" style="padding:8px 0;"><span class="k">Vector4</span><span class="v">四條曲線 (X/Y/Z/W) 各自驅動</span></div>
+          <div class="kv-row" style="padding:8px 0; border-bottom:none;"><span class="k">Texture</span><span class="v">不支援曲線（僅靜態值）</span></div>
+        </div>
+        <p class="caption" style="margin-top:14px;">
+          被忽略的屬性 — Profile 不儲存 Enable 類 Toggle 與 LightingMode（避免動畫意外切換整個模組）。詳見 <span class="mono">ProfileIgnoredProperties</span> 清單。
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineProfileAnimator 每幀讀取 Profile + 評估曲線 + 寫入 MPB</span><span>31</span></div>
+</section>
+
+<!-- ════════════ 32 Naming Rule ════════════ -->
+<section class="parch" data-screen-label="32 Naming Rule">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Preset · 04</span><span>§ 21 · 命名規則</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 21 · SpineNamingRuleWindow — 預設檔命名規則</div>
+    <h2 class="display-md" style="max-width: 1500px;">兩種命名格式 — 角色特化與通用型。</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      所有 Preset 預設檔都應遵循下列其中一種命名格式。SpineNamingRuleWindow 為每個 Shader 模組提供範例與一鍵複製按鈕，避免拼錯字。
+    </p>
+    <div class="grid-2" style="margin-top:32px;">
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:8px;">A · 角色特化功能</div>
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">{角色英文代稱}_{模塊名稱}_{序號}</div>
+        <p class="body" style="font-size:18px;">為單一角色設計、不會跨角色共用的特效。例：</p>
+        <div class="chip-row" style="margin-top:10px;">
+          <span class="chip">Player_Outline_001</span>
+          <span class="chip">Boss_BackLight_001</span>
+          <span class="chip">NPC_Emission_002</span>
+        </div>
+        <p class="caption" style="margin-top:14px;">序號從 001 起跳。預設為 Index — 請手動改為實際序號。</p>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:8px;">B · 通用型功能</div>
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">General_{模塊名稱}_{用途}_{序號}</div>
+        <p class="body" style="font-size:18px;">可被多角色重用的狀態效果。用途為實際效果簡稱，例：</p>
+        <div class="chip-row" style="margin-top:10px;">
+          <span class="chip">General_Overlay_Toxic_001</span>
+          <span class="chip">General_Outline_Frozen_001</span>
+          <span class="chip">General_BackLight_Default_001</span>
+        </div>
+        <p class="caption" style="margin-top:14px;">用途預設為 Default — 請改為實際效果簡稱（Toxic、Frozen、Burn 等）。</p>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:28px;">
+      <strong>支援的模組名稱</strong> — Main / Shadow、PostProcessing、GlobalNoise、NativeLighting、ShadowLight、NormalMap、LightProbe、Emission、EffectOverlay、HitSweep、BackLight、Inline、Outline。NamingRuleWindow 內含複製按鈕。
+    </div>
+  </div>
+  <div class="deck-footer"><span>命名規則統一 — 方便 Addressable 打包與資產搜尋</span><span>32</span></div>
+</section>
+
+<!-- ════════════ 33 Profile API ════════════ -->
+<section class="dark" data-screen-label="33 Profile API">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Preset · 05</span><span>§ 22 · SpineProfileHelper API</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 22 · 程式端動態 Profile 控制</div>
+    <h2 class="display-md" style="color:#fff;">SpineProfileHelper — 三個核心 API</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      強烈建議使用 SpineProfileHelper 靜態類別控制 Profile，而非自行操作 SpineProfileAnimator 元件。Helper 內建生命週期防錯、重複掛載偵測與效能自動回收。
+    </p>
+    <div class="grid-2" style="margin-top:32px;">
+      <div class="info-card">
+        <div class="tagline" style="font-size:22px; margin-bottom:10px;">三個高階 API（推薦）</div>
+        <pre class="code-block" style="font-size:13px;"><span class="cm">// 1. 動態加載 / 替換 Profile</span>
+<span class="cm">//    自動掛載 Animator、防重複、強制刷新</span>
+SpineProfileHelper.ApplyProfileRuntime(
+    myRenderer, newProfile);
+
+<span class="cm">// 2. 移除指定模塊 (Enum 避免拼錯)</span>
+SpineProfileHelper.RemoveProfileRuntime(
+    myRenderer,
+    SpineProfileModule.Outline);
+
+<span class="cm">// 3. 一鍵清除角色身上所有 Profile</span>
+<span class="cm">//    與緩存</span>
+SpineProfileHelper.ClearAllProfiles(myRenderer);</pre>
+      </div>
+      <div class="info-card">
+        <div class="tagline" style="font-size:22px; margin-bottom:10px;">SpineProfileModule Enum</div>
+        <p class="body" style="font-size:18px;">取代字串避免拼錯：</p>
+        <div class="chip-row" style="margin-top:14px;">
+          <span class="chip blue">.Main</span>
+          <span class="chip blue">.PostProcessing</span>
+          <span class="chip blue">.GlobalNoise</span>
+          <span class="chip blue">.NativeLighting</span>
+          <span class="chip blue">.ShadowLight</span>
+          <span class="chip blue">.NormalMap</span>
+          <span class="chip blue">.LightProbe</span>
+          <span class="chip blue">.Emission</span>
+          <span class="chip blue">.EffectOverlay</span>
+          <span class="chip blue">.HitSweep</span>
+          <span class="chip blue">.BackLight</span>
+          <span class="chip blue">.Inline</span>
+          <span class="chip blue">.Outline</span>
+        </div>
+        <div class="callout" style="margin-top:18px;">
+          <strong>輔助方法</strong> — ToModuleName()、ToTagKey()、IsValidProfile() — 編譯時即可發現錯誤，不用等執行才知道 typo。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>對應 EditorWindow：SpineProfileHelpWindow（▤ 程式 API 指南）</span><span>33</span></div>
+</section>
+
+<!-- ════════════ 34 Temp Profile ════════════ -->
+<section class="light" data-screen-label="34 Temp Profile">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Preset · 06</span><span>§ 23 · ApplyTempProfile</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 23 · 進階 — 臨時副本竄改法</div>
+    <h2 class="display-md" style="max-width: 1500px;">ApplyTempProfile — 狀態切換的最佳解</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      當角色進入特殊狀態（中毒、冰凍、變身）時，<strong>不建議</strong>直接修改 MPB — 因為會被曲線蓋掉。最佳解：呼叫 ApplyTempProfile，系統會複製一份 Profile，將指定參數強制覆寫，並關閉該參數的曲線動畫。
+    </p>
+    <div class="grid-2" style="margin-top:28px; gap:36px 60px;">
+      <div>
+        <pre class="code-block" style="font-size:13px;"><span class="cm">// 1. 準備參數字典</span>
+<span class="kw">var</span> overrides = <span class="kw">new</span> Dictionary&lt;<span class="kw">string</span>, <span class="kw">object</span>&gt; {
+    { <span class="st">"_OutlineColor"</span>, Color.green },
+    { <span class="st">"_OutlineWidth"</span>, 5.0f }
+};
+
+<span class="cm">// 2. 套用副本，回傳實體存起來</span>
+SpineModuleProfile activeTempProfile
+    = SpineProfileHelper.ApplyTempProfile(
+        myRenderer, baseProfile, overrides);
+
+<span class="cm">// 3. 狀態結束時，移除效果並銷毀副本</span>
+SpineProfileHelper.RemoveProfileRuntime(
+    myRenderer, activeTempProfile.moduleName);
+Destroy(activeTempProfile);</pre>
+      </div>
+      <div>
+        <div class="callout warn">
+          <strong>記憶體洩漏警告</strong> — ApplyTempProfile 回傳的 TempProfile 實體<strong>必須手動 Destroy</strong>。否則每次狀態切換都會在記憶體中產生新的 ScriptableObject 殘留。
+        </div>
+        <div class="callout" style="margin-top:18px;">
+          <strong>底層原理</strong> — Temp Profile 為原 Profile 的深拷貝，在 overrides 中指定的屬性會被覆寫且 useCurve = false（停用曲線）。原 Profile 不會被修改。
+        </div>
+        <p class="body" style="margin-top:20px;">
+          典型使用場景 — 受擊瞬間將 Outline 變紅、變身時將整個角色 Emission 染色、無敵狀態下將描邊閃光放大 — 任何「臨時改某個 Profile 的某幾個屬性」的場景。
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineProfileHelpWindow → 「進階：Temp Profile 實體竄改」章節</span><span>34</span></div>
+</section>
+
+<!-- ════════════ 35 Low-level MPB API ════════════ -->
+<section class="parch" data-screen-label="35 MPB Safe API">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Preset · 07</span><span>§ 24 · 底層 MPB 安全 API</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 24 · 底層 MaterialPropertyBlock 控制</div>
+    <h2 class="display-md" style="max-width: 1500px;">當 Save Mask 中的屬性未被勾選 — 用這組 API。</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      若某個參數在 Save Mask 中未被勾選（即 Profile 不會驅動該屬性），程式可使用 Helper 封裝的靜態 API 安全寫入 MPB — 與系統底層的 MPB 狀態無縫融合，不打架，並保持極致合批效能。
+    </p>
+    <div class="grid-2" style="margin-top:32px; gap:36px 60px;">
+      <div>
+        <div class="tagline" style="margin-bottom:14px; color:#1a7f3a;">✓ 正確寫法</div>
+        <pre class="code-block" style="font-size:13px;"><span class="cm">// 寫入 Float</span>
+SpineProfileHelper.SetFloat(myRenderer,
+    <span class="st">"_OutlineWidth"</span>, 0.1f);
+
+<span class="cm">// 寫入 Color</span>
+SpineProfileHelper.SetColor(myRenderer,
+    <span class="st">"_EffectColor"</span>, Color.red);
+
+<span class="cm">// 寫入 Vector4</span>
+SpineProfileHelper.SetVector(myRenderer,
+    <span class="st">"_GlobalNoiseSpeed"</span>,
+    <span class="kw">new</span> Vector4(1, 1, 0, 0));</pre>
+        <p class="caption" style="margin-top:10px;">無材質實例化、不污染 sharedMaterial、不打斷 SRP Batching。</p>
+      </div>
+      <div>
+        <div class="tagline" style="margin-bottom:14px; color:#c44;">✗ 錯誤寫法</div>
+        <pre class="code-block" style="font-size:13px;"><span class="cm">// ✗ 會產生材質實例</span>
+<span class="cm">// ✗ 可能被 Animator 覆寫</span>
+<span class="cm">// ✗ 打斷 SRP Batching</span>
+myRenderer.material.SetFloat(
+    <span class="st">"_OutlineWidth"</span>, 0.1f);
+
+<span class="cm">// ✗ 也是錯的</span>
+myRenderer.sharedMaterial.SetFloat(
+    <span class="st">"_OutlineWidth"</span>, 0.1f);
+<span class="cm">// 修改所有共享此材質的角色！</span></pre>
+        <div class="callout warn" style="margin-top:14px;">
+          <strong>前提</strong> — 必須確保該參數在 ShaderGUI 儲存 Preset 時<strong>沒被勾選</strong>。否則 Animator 會把你寫入的值覆蓋掉。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineProfileTester 提供完整的 API 行為測試介面 — 詳見下一頁</span><span>35</span></div>
+</section>
+
+<!-- ════════════ 36 Profile Tester ════════════ -->
+<section class="dark" data-screen-label="36 Profile Tester">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Preset · 08</span><span>§ 24.1 · SpineProfileTester</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 24.1 · 互動式測試工具</div>
+    <h2 class="display-md" style="color:#fff;">SpineProfileTester — 滑鼠左鍵 / 右鍵 / 中鍵測試</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      在 Hierarchy 內加入此測試元件後進入 Play Mode，可用滑鼠快速驗證 Profile 系統的完整流程。建議在新建 Profile 後使用此測試器確認運作正確再正式接入專案。
+    </p>
+    <div class="grid-3" style="margin-top:32px;">
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--primary-on-dark); margin-bottom:8px;">滑鼠左鍵</div>
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">套用 / 移除 Profile</div>
+        <p class="body" style="font-size:18px;">在指定 Renderer 上動態套用 / 移除指定的 Profile 資產。對應呼叫：ApplyProfileRuntime 與 RemoveProfileRuntime。</p>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--primary-on-dark); margin-bottom:8px;">滑鼠右鍵</div>
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">切換 MPB 數值</div>
+        <p class="body" style="font-size:18px;">直接修改指定 _PropertyName 的 MPB 數值（不經 Profile），用以驗證 Save Mask 未勾選屬性的程式控制是否正常。</p>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--primary-on-dark); margin-bottom:8px;">滑鼠中鍵</div>
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">產生臨時 Profile</div>
+        <p class="body" style="font-size:18px;">呼叫 ApplyTempProfile 產生竄改副本，用以驗證 §23 的臨時覆寫流程。</p>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:32px;">
+      <strong>建議流程</strong> — 新建 Profile 後 → 拖入測試器 → Play → 左鍵套用 → 右鍵竄改未勾選屬性 → 中鍵測試臨時 Profile → 三項都正常即可正式接入專案戰鬥邏輯。
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineProfileTester.cs · 唯一目的是覆蓋 Profile API 的完整驗證流程</span><span>36</span></div>
+</section>
+
+<!-- ════════════ 37 Platform Manager ════════════ -->
+<section class="light" data-screen-label="37 Platform Manager">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Build · 01</span><span>§ 25 · SpinePlatformManagerWindow</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 25 · 平台變體管理中心 EditorWindow</div>
+    <h2 class="display-md" style="max-width: 1500px;">SpinePlatformManagerWindow — 滑動式平台切換器</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      Window 選單可開啟「Spine 平台變體管理」視窗。視窗以滑動卡片方式列出 Editor Default 與所有平台 Config (iOS / Android / Windows / Switch / PS5 / Xbox / WebGL ⋯)。每張卡片顯示該平台啟用的 Shader Feature 開關。
+    </p>
+    <div class="grid-2" style="margin-top:28px;">
+      <div>
+        <div class="caption mono" style="margin-bottom:8px;">操作機制</div>
+        <div class="kv-row"><span class="k">滑動切換</span><span class="v">左右拖曳卡片選擇平台。卡片中心放大，遠端淡出。</span></div>
+        <div class="kv-row"><span class="k">即時開關</span><span class="v">點擊功能列即時切換該模組的啟用狀態 — 設有滑動防誤觸機制。</span></div>
+        <div class="kv-row"><span class="k">套用按鈕</span><span class="v">底部「套用 {平台名}」按鈕 — 一鍵刷新全專案 Spine 材質球的 Shader Keyword。</span></div>
+        <div class="kv-row"><span class="k">頂部狀態</span><span class="v">顯示「當前套用：{平台名}」與動態色彩漸變橫條。</span></div>
+        <div class="kv-row"><span class="k">＋ 新建</span><span class="v">右上 ＋ 按鈕建立新的 ShaderConfig_{Platform}.asset。</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">🗑 移除</span><span class="v">非 Editor 卡片可按移除鍵刪除該平台 Config 資產。</span></div>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:8px;">每個平台卡片內含三組區塊</div>
+        <div class="tagline" style="margin-bottom:6px; font-size:20px;">LIGHTING MODULES</div>
+        <p class="body" style="font-size:17px;">Native Lighting · Shadow Light Base · Light Probe · Normal Map</p>
+        <div class="tagline" style="margin: 16px 0 6px; font-size:20px;">VFX MODULES</div>
+        <p class="body" style="font-size:17px;">BackLight · Emission · Inline (Rim) · Outline · Hit Sweep · Effect Overlay</p>
+        <div class="tagline" style="margin: 16px 0 6px; font-size:20px;">GLOBAL SETTINGS</div>
+        <p class="body" style="font-size:17px;">Global Noise；Outline 啟用時展開 ├ 8 Neighbourhood · ├ Screen Space Width · └ Fill Inside</p>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:24px;">
+      <strong>「❓ 指南」按鈕</strong> — 視窗右上角的指南按鈕會打開重疊式說明面板，內含程式 API 範例（SpineShaderBuildPipeline.SyncKeywordsForTarget）與一鍵複製、一鍵跳轉設定檔目錄的按鈕。
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineShaderBuildPipeline.cs · 編輯器 UI 部分</span><span>37</span></div>
+</section>
+
+<!-- ════════════ 38 Build Config Double-Lock ════════════ -->
+<section class="parch" data-screen-label="38 BuildConfig DoubleLock">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Build · 02</span><span>§ 26 · 雙重鎖驗證</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 26 · SpineShaderBuildConfig + 雙重驗證</div>
+    <h2 class="display-md" style="max-width: 1500px;">Editor Default 與 Platform Config 的差異。</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      系統提供兩種運作模式 — 編輯器中所有 Keyword 強制全開以供美術預覽（Editor Default）；切換到平台 Config 時則以「雙重鎖」決定材質球的 Keyword 啟用狀態。
+    </p>
+    <div class="grid-2" style="margin-top:32px;">
+      <div class="info-card">
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">A · Editor Default 模式</div>
+        <p class="body" style="font-size:18px;">執行 SpineShaderBuildPipeline.SyncAllEnabled() 後，會強制掃描全專案的 Spine 材質球，將所有 15 個 Module Keyword 一律 EnableKeyword。SessionState 記為 EditorMode = true。</p>
+        <p class="body" style="font-size:18px; margin-top:12px;">
+          適合美術做設計時 — 不論勾不勾，都能看到效果。<strong>不影響</strong>正式打包效能。
+        </p>
+      </div>
+      <div class="info-card">
+        <div class="tagline" style="margin-bottom:10px; font-size:22px;">B · Platform Config 模式</div>
+        <p class="body" style="font-size:18px;">執行 SyncForPlatformConfig() 後改用雙重驗證：</p>
+        <div class="kv-row" style="padding:8px 0;"><span class="k">isAllowedByConfig</span><span class="v">該 Keyword 在平台 Config 中是否被勾選</span></div>
+        <div class="kv-row" style="padding:8px 0;"><span class="k">isToggledByUser</span><span class="v">材質球中對應 _Enable* 屬性是否為 ON</span></div>
+        <div class="kv-row" style="padding:8px 0; border-bottom:none;"><span class="k">最終結果</span><span class="v">只有「兩者都成立」時才 EnableKeyword</span></div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:28px;">
+      <strong>第三道過濾 — OnProcessShader（打包時）</strong> — IPreprocessShaders 介面在編譯每個 Variant 時，會檢查兩件事：(1) 平台 Config 是否放行此 Keyword；(2) 全專案是否有任一材質球實際用到此 Keyword。任一不符即將該 Variant 從 IList&lt;ShaderCompilerData&gt; 中移除。Outline / Inline 等重 Pass 在不需要時<strong>完全不會編譯</strong>。
+    </div>
+  </div>
+  <div class="deck-footer"><span>Config 路徑：Assets/Scripts/VFXTool/BuildConfigs/SpineSkeletonShaderTool/</span><span>38</span></div>
+</section>
+
+<!-- ════════════ 39 Build API ════════════ -->
+<section class="dark" data-screen-label="39 Build API">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Build · 03</span><span>§ 27 · 程式 API</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 27 · SpineShaderBuildPipeline 程式 API</div>
+    <h2 class="display-md" style="color:#fff;">為打包自動化腳本使用。</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      若你的專案有自動化打包流程（CI / 一鍵打包按鈕），可透過 SpineShaderBuildPipeline 的靜態方法在 OnPreprocessBuild 階段刷新材質球設定。
+    </p>
+    <div class="grid-2" style="margin-top:28px;">
+      <div>
+        <pre class="code-block" style="font-size:14px;"><span class="kw">public class</span> SpineBuildAutomation {
+    <span class="kw">public void</span> PrepareForTarget() {
+        <span class="cm">// 傳入名稱，刷新全專案材質球</span>
+        <span class="cm">// 例如切到 Android</span>
+        SpineShaderBuildPipeline
+            .SyncKeywordsForTarget(<span class="st">"Android"</span>);
+    }
+}</pre>
+        <p class="caption" style="margin-top:10px;">命令式 API — 無需開啟 EditorWindow。可在 CI 中執行。</p>
+      </div>
+      <div>
+        <div class="caption mono" style="margin-bottom:8px;">完整 API 清單</div>
+        <div class="kv-row"><span class="k">SyncAllEnabled()</span><span class="v">恢復 Editor Default 全效預覽模式</span></div>
+        <div class="kv-row"><span class="k">SyncForPlatformConfig(cfg)</span><span class="v">依指定 Config 套用平台雙重鎖</span></div>
+        <div class="kv-row"><span class="k">SyncKeywordsForTarget(name)</span><span class="v">依平台名稱（字串）切換 — CI 用</span></div>
+        <div class="kv-row"><span class="k">IsEditorDefaultMode()</span><span class="v">查詢當前是否為 Editor Default 模式</span></div>
+        <div class="kv-row" style="border-bottom:none;"><span class="k">OnPreprocessBuild</span><span class="v">自動於打包前掃描，按 BuildTarget 套用對應 Config</span></div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:32px;">
+      <strong>關於 MissingReferenceException</strong> — 若 Config 資產被外部刪除或遺失，PlatformManager 視窗會偵測並顯示「⚠️ 發生異常 (MissingReferenceException)」面板，提供「重新整理」按鈕讓你恢復視圖。
+    </div>
+  </div>
+  <div class="deck-footer"><span>OnPreprocessBuild + OnProcessShader 為 IPreprocessShaders 介面實作</span><span>39</span></div>
+</section>
+
+<!-- ════════════ 40 Layer Convention ════════════ -->
+<section class="light" data-screen-label="40 Layer Convention">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Convention</span><span>§ 28 · Layer 規約</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 28 · Layer 規約 — 所有自動化的基礎</div>
+    <h2 class="display-md" style="max-width: 1500px;">角色必須在六個 Layer 之一。</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      SpineLightManager 的 collectLightMask、SpineShadowLight 的 cullingMask、SpineCustomShaderGUI 的 Validate 機制 — 全部都鎖定在下列六個 Layer。Layer 不正確時，自動化機制會在每次選取角色時將 SpineAlphaMaskRenderer / SpineHitSweepEffect / SpineLightReceiver / SpineBloomThresholdSync 全部移除。
+    </p>
+    <div class="grid-3" style="margin-top:48px; gap:24px 36px;">
+      <div class="stat"><div class="n" style="color:var(--primary)">8</div><div class="l">主角區</div></div>
+      <div class="stat"><div class="n" style="color:var(--primary)">9</div><div class="l">敵人區</div></div>
+      <div class="stat"><div class="n" style="color:var(--primary)">12</div><div class="l">NPC 區</div></div>
+      <div class="stat"><div class="n" style="color:var(--primary)">13</div><div class="l">道具區</div></div>
+      <div class="stat"><div class="n" style="color:var(--primary)">18</div><div class="l">特效層</div></div>
+      <div class="stat"><div class="n" style="color:var(--primary)">20</div><div class="l">UI 角色</div></div>
+    </div>
+    <div class="callout warn" style="margin-top:48px;">
+      <strong>違規後果</strong> — Inspector 頂部會跳出醒目警告「⚠ 此角色 Layer 不在自動化白名單」與一鍵修正按鈕。光照與描邊都會失效。請點擊提示一鍵修正。
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineLightManager.collectLightMask 與 SpineShadowLight.cullingMask 預設均鎖定此六層</span><span>40</span></div>
+</section>
+
+<!-- ════════════ 41 Troubleshooter ════════════ -->
+<section class="parch" data-screen-label="41 Troubleshooter">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Debug · 01</span><span>§ 29 · LightingIssueTroubleshooter</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 29 · 光照問題自動排查器</div>
+    <h2 class="display-md" style="max-width: 1500px;">SpineLightingIssueTroubleshooter — 八項自動檢測</h2>
+    <p class="body" style="margin-top:14px; max-width:1500px;">
+      選取場景中的角色 GameObject，於 SpineDebugHelpWindow 中按「光照問題排查」按鈕。工具會檢測八項常見問題，並提供「點此修正」與物件 Ping 跳轉。
+    </p>
+    <div class="grid-4" style="margin-top:36px; gap:14px 24px;">
+      <div class="info-card" style="padding:18px 20px;"><div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:6px;">01</div><div class="tagline" style="margin-bottom:6px; font-size:19px;">SpineLightManager 存在</div><p class="body" style="font-size:15px;">若無提供建立按鈕</p></div>
+      <div class="info-card" style="padding:18px 20px;"><div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:6px;">02</div><div class="tagline" style="margin-bottom:6px; font-size:19px;">Mask 含角色 Layer</div><p class="body" style="font-size:15px;">collectLightMask 包含此 Layer</p></div>
+      <div class="info-card" style="padding:18px 20px;"><div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:6px;">03</div><div class="tagline" style="margin-bottom:6px; font-size:19px;">材質球 Shader 正確</div><p class="body" style="font-size:15px;">Spine/Skeleton + Native Lighting ON</p></div>
+      <div class="info-card" style="padding:18px 20px;"><div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:6px;">04</div><div class="tagline" style="margin-bottom:6px; font-size:19px;">Layer 在白名單</div><p class="body" style="font-size:15px;">8 · 9 · 12 · 13 · 18 · 20</p></div>
+      <div class="info-card" style="padding:18px 20px;"><div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:6px;">05</div><div class="tagline" style="margin-bottom:6px; font-size:19px;">至少一盞 Realtime</div><p class="body" style="font-size:15px;">cullingMask 與角色 Layer 交集</p></div>
+      <div class="info-card" style="padding:18px 20px;"><div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:6px;">06</div><div class="tagline" style="margin-bottom:6px; font-size:19px;">Directional Light 存在</div><p class="body" style="font-size:15px;">否則無方向光著色</p></div>
+      <div class="info-card" style="padding:18px 20px;"><div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:6px;">07</div><div class="tagline" style="margin-bottom:6px; font-size:19px;">Keyword 已啟用</div><p class="body" style="font-size:15px;">Build Config 未剝離</p></div>
+      <div class="info-card" style="padding:18px 20px;"><div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:6px;">08</div><div class="tagline" style="margin-bottom:6px; font-size:19px;">Receiver 已掛載</div><p class="body" style="font-size:15px;">否則 Manager 不推送資料</p></div>
+    </div>
+    <div class="callout" style="margin-top:36px;">
+      <strong>輸出格式</strong> — 每條失敗結果都附帶「調整方式」、紅色高亮關鍵字（如「沒有」「找不到」「不在」），以及可點擊的 Ping 連結直接跳到問題物件。沒問題的項目以綠色高亮（「有」「是」「已」「正確」「完成」）。
+    </div>
+  </div>
+  <div class="deck-footer"><span>SpineDebugHelpWindow → 「光照與陰影問題」章節 → 嵌入式排查面板</span><span>41</span></div>
+</section>
+
+<!-- ════════════ 42 Debug Q&A ════════════ -->
+<section class="dark" data-screen-label="42 Debug QA">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Debug · 02</span><span>§ 30 · DebugHelp Q&amp;A</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 30 · SpineDebugHelpWindow — 常見問題</div>
+    <h2 class="display-md" style="color:#fff;">兩個最常出現的問題與標準解法。</h2>
+    <div class="grid-2" style="margin-top:32px;">
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--cat-light); margin-bottom:8px;">Q1 · 光照與陰影問題</div>
+        <div class="tagline" style="font-size:22px; margin-bottom:10px;">「為何角色看起來黑黑的，明明有開燈但沒受光照？」</div>
+        <p class="body" style="font-size:18px;">標準排查順序（DebugHelpWindow 列出）：</p>
+        <ol style="margin: 8px 0 0 24px; color: var(--on-dark-muted); font-size:18px; line-height:1.8;">
+          <li>SpineLightManager 層級規範 — 該 Layer 是否被加入收集名單</li>
+          <li>確認材質球已勾選 Enable Native Lighting</li>
+          <li>確認 GameObject Layer ∈ {8, 9, 12, 13, 18, 20}</li>
+          <li>確認場景燈光的 Culling Mask 包含上述 Layer</li>
+          <li>按 ▤ 全效預覽按鈕 — 若恢復正常，代表是平台 Config 剝離了該模組</li>
+        </ol>
+      </div>
+      <div class="info-card">
+        <div class="caption mono" style="color:var(--cat-effect); margin-bottom:8px;">Q2 · 特效與模組缺失</div>
+        <div class="tagline" style="font-size:22px; margin-bottom:10px;">「為何勾選內外框、背光、掃光都不起作用？」</div>
+        <p class="body" style="font-size:18px;">標準解法：</p>
+        <ol style="margin: 8px 0 0 24px; color: var(--on-dark-muted); font-size:18px; line-height:1.8;">
+          <li>再次確認 Layer ∈ {8, 9, 12, 13, 18, 20} — 許多特效依賴腳本抓取資料</li>
+          <li>按 ▤ 全效預覽 — 強制開啟此材質的所有 Shader 變體</li>
+          <li>若全效預覽下恢復正常，代表「平台變體管理」剝離了該 Keyword</li>
+        </ol>
+        <div class="callout" style="margin-top:18px; padding:14px 18px; font-size:15px;">
+          <strong>本地完整預覽</strong> — 全效預覽僅影響當前編輯器，不影響打包效能。隨時可開關。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>所有問題卡片均可在頂部搜尋框輸入關鍵字過濾</span><span>42</span></div>
+</section>
+
+<!-- ════════════ 43 Quick Start ════════════ -->
+<section class="light" data-screen-label="43 Quick Start">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>Workflow</span><span>§ 31 · 入門教學</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:18px;">§ 31 · 從零建立一個受光照的 Spine 角色</div>
+    <h2 class="display-md" style="max-width: 1500px;">六個步驟。</h2>
+    <p class="body" style="margin-top:14px; max-width:1500px;">
+      本節為最短上手流程。任一步驟出問題請翻閱 §29 排查器章節。
+    </p>
+    <div style="margin-top:32px;">
+      <div class="step-row"><span class="num">01</span><div class="ct"><div class="t">建立材質球，Shader 選 Spine / Skeleton</div><div class="d">拖到 SpriteRenderer — 主紋理、Straight Alpha、_Normal / _BackLight / _Emission 系列檔自動就位。</div></div></div>
+      <div class="step-row"><span class="num">02</span><div class="ct"><div class="t">角色 GameObject 設到 Layer 8（或 9 / 12 / 13 / 18 / 20）</div><div class="d">否則自動化機制會清除所有掛載元件。Inspector 頂部有一鍵修正按鈕。</div></div></div>
+      <div class="step-row"><span class="num">03</span><div class="ct"><div class="t">開啟需要的模組 — 例如 LIGHTING / Normal Map / Outline</div><div class="d">SpineLightReceiver、AlphaMaskRenderer、LightManager 會在勾下 Toggle 時自動掛載。</div></div></div>
+      <div class="step-row"><span class="num">04</span><div class="ct"><div class="t">在場景放一盞 Realtime Directional Light</div><div class="d">確保其 Culling Mask 包含角色 Layer。可加入 SpineShadowLight 做特殊光罩或 Caustics 波光。</div></div></div>
+      <div class="step-row"><span class="num">05</span><div class="ct"><div class="t">需要動畫？將模組存成 Preset 並加入 ∿ 曲線</div><div class="d">SpineProfileAnimator 即時驅動。命名請遵循 §21 規則。</div></div></div>
+      <div class="step-row" style="border-bottom:none;"><span class="num">06</span><div class="ct"><div class="t">打包前檢查 — 開啟 §25 SpinePlatformManagerWindow，切到目標平台</div><div class="d">確認該平台 Config 中啟用了你需要的所有 Module Keyword，按「套用 {平台名}」刷新材質球。</div></div></div>
+    </div>
+  </div>
+  <div class="deck-footer"><span>遇到問題 — 選取角色後按 ▤ 除錯指南 → 光照問題排查</span><span>43</span></div>
+</section>
+
+<!-- ════════════ 44 Closing ════════════ -->
+<section class="parch" data-screen-label="44 Closing">
+  <div class="deck-header"><span class="pill"><span class="dot"></span>End</span><span>§ 32 · 附錄</span></div>
+  <div style="flex:1; padding: 130px 140px 90px;">
+    <div class="eyebrow" style="margin-bottom:24px;">§ 32 · 文件結束 — 取得協助</div>
+    <h2 class="display-lg" style="max-width: 1500px;">三個取得協助的管道。</h2>
+    <p class="body" style="margin-top:16px; max-width:1500px;">
+      本文件描述的所有功能於 Inspector 中皆可直接操作 — 大多數情境不需閱讀程式碼。若遇到本文件未涵蓋之情況，請依下列順序處理。
+    </p>
+    <div class="grid-3" style="margin-top:48px;">
+      <div class="info-card"><div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:10px;">A · 線上文件</div><div class="tagline" style="font-size:22px;">右鍵任一參數</div><p class="body" style="margin-top:10px; font-size:17px;">「📖 查看使用說明」自動跳轉至對應 Help Window 並 Ping 高亮。</p></div>
+      <div class="info-card"><div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:10px;">B · 視覺檢查</div><div class="tagline" style="font-size:22px;">▤ 全效預覽 / Reset</div><p class="body" style="margin-top:10px; font-size:17px;">切換平台模擬比對效果，或重置整顆材質。</p></div>
+      <div class="info-card"><div class="caption mono" style="color:var(--ink-muted-48); margin-bottom:10px;">C · 系統檢查</div><div class="tagline" style="font-size:22px;">SpineLightingIssueTroubleshooter</div><p class="body" style="margin-top:10px; font-size:17px;">逐項自動診斷 8 個常見光照問題 + 一鍵修正。</p></div>
+    </div>
+    <div class="grid-3" style="margin-top:36px;">
+      <div class="kv-row"><span class="k">命名空間</span><span class="v">VFXTool.SpineSkeletonShaderTool</span></div>
+      <div class="kv-row"><span class="k">Shader 路徑</span><span class="v">Spine / Skeleton</span></div>
+      <div class="kv-row"><span class="k">文件版本</span><span class="v">Revision 2026.01</span></div>
+    </div>
+    <p class="caption" style="margin-top:48px; text-align:center; max-width:none;">
+      Spine Skeleton Shader · 11 個 Runtime 腳本 · 7 個 EditorWindow · 1 套 Shader · 1 條打包流水線 · 1 份說明書。
+    </p>
+  </div>
+  <div class="deck-footer"><span>Spine-Skeleton.shader · SpineCustomShaderGUI.cs · Internal Use Only</span><span>44 / 44</span></div>
+</section>
+
+</deck-stage>
+
+<script>
+(async () => {
+  try { await customElements.whenDefined('deck-stage'); } catch (e) {}
+  const ds = document.querySelector('deck-stage');
+  if (ds) {
+    // Weigh only slide children — same filter as deck-stage.length. Skipping
+    // slotted script/style/template keeps inline Babel/CSS from registering
+    // as stable "content" before the framework has mounted anything.
+    const weigh = () => {
+      let text = 0, media = 0;
+      for (const c of ds.children) {
+        const t = c.tagName;
+        if (t === 'SCRIPT' || t === 'STYLE' || t === 'TEMPLATE') continue;
+        text += (c.textContent || '').trim().length;
+        media += c.querySelectorAll('img,svg,canvas,video').length;
+      }
+      return text + media * 100;
+    };
+    const deadline = Date.now() + 15000;
+    let last = -1, stable = 0;
+    while (Date.now() < deadline) {
+      const n = weigh();
+      if (n > 0 && n === last) { if (++stable >= 2) break; } else { stable = 0; }
+      last = n;
+      await new Promise((r) => setTimeout(r, 250));
+    }
+  }
+  try { await document.fonts.ready; } catch (e) {}
+  setTimeout(() => { try { window.print(); } catch (e) {} }, 200);
+})();
+</script>
+</body>
+</html>
