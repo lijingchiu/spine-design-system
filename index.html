@@ -1,1622 +1,1387 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Apple Design System — Analysis & Reference</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Spine Skeleton Shader — 使用說明書</title>
 <style>
-:root {
-  --primary: #0066cc;
-  --primary-focus: #0071e3;
-  --primary-on-dark: #2997ff;
-  --ink: #1d1d1f;
-  --ink-80: #333333;
-  --ink-48: #7a7a7a;
-  --canvas: #ffffff;
-  --parchment: #f5f5f7;
-  --pearl: #fafafc;
-  --tile-1: #272729;
-  --tile-2: #2a2a2c;
-  --tile-3: #252527;
-  --black: #000000;
-  --chip-gray: #d2d2d7;
-  --divider: #f0f0f0;
-  --hairline: #e0e0e0;
-  --body-muted: #cccccc;
-  --nav-h: 44px;
-  --rail-w: 260px;
-  --transition: 0.2s ease;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 17px;
-  line-height: 1.47;
-  letter-spacing: -0.374px;
-  color: var(--ink);
-  background: var(--parchment);
-}
-a { color: var(--primary); text-decoration: none; }
-a:hover { text-decoration: underline; }
-
-/* ── Global Nav ── */
-.g-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-  height: var(--nav-h);
-  background: var(--black);
-  display: flex; align-items: center;
-  padding: 0 20px;
-  gap: 16px;
-}
-.g-nav__logo {
-  color: #fff;
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -0.374px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.g-nav__search-wrap {
-  flex: 1; max-width: 320px; margin-left: auto;
-  position: relative;
-}
-.g-nav__search {
-  width: 100%;
-  height: 32px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 9999px;
-  padding: 0 16px 0 36px;
-  color: #fff;
-  font-size: 14px;
-  font-family: inherit;
-  outline: none;
-}
-.g-nav__search::placeholder { color: rgba(255,255,255,0.45); }
-.g-nav__search:focus { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
-.g-nav__search-icon {
-  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
-  width: 14px; height: 14px; opacity: 0.55; pointer-events: none;
-}
-.g-nav__burger {
-  display: none;
-  background: none; border: none; cursor: pointer;
-  width: 32px; height: 32px;
-  flex-direction: column; justify-content: center; gap: 5px; padding: 4px;
-}
-.g-nav__burger span { display: block; width: 20px; height: 1.5px; background: #fff; border-radius: 2px; }
-
-/* ── Layout ── */
-.layout {
-  display: flex;
-  padding-top: var(--nav-h);
-  min-height: 100vh;
-}
-
-/* ── Sidebar ── */
-.sidebar {
-  position: fixed;
-  top: var(--nav-h); bottom: 0; left: 0;
-  width: var(--rail-w);
-  background: #1c1c1e;
-  overflow-y: auto;
-  z-index: 900;
-  padding: 20px 0 40px;
-  transition: transform var(--transition);
-}
-.sidebar::-webkit-scrollbar { width: 4px; }
-.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
-.sidebar-backdrop {
-  display: none;
-  position: fixed; inset: 0; z-index: 850;
-  background: rgba(0,0,0,0.5);
-}
-.sidebar-group { margin-bottom: 4px; }
-.sidebar-group-title {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 20px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
-  cursor: pointer;
-  user-select: none;
-}
-.sidebar-group-title .chevron {
-  width: 10px; height: 10px; opacity: 0.4;
-  transition: transform 0.2s;
-}
-.sidebar-group.collapsed .chevron { transform: rotate(-90deg); }
-.sidebar-group.collapsed .sidebar-links { display: none; }
-.sidebar-links { list-style: none; }
-.sidebar-links a {
-  display: block;
-  padding: 6px 20px 6px 28px;
-  font-size: 13px;
-  line-height: 1.4;
-  color: rgba(255,255,255,0.65);
-  letter-spacing: -0.1px;
-  transition: color var(--transition), background var(--transition);
-}
-.sidebar-links a:hover { color: #fff; text-decoration: none; background: rgba(255,255,255,0.05); }
-.sidebar-links a.active {
-  color: #fff;
-  background: rgba(255,255,255,0.08);
-}
-.sidebar-links li.hidden { display: none; }
-
-/* ── Main content ── */
-.main {
-  margin-left: var(--rail-w);
-  flex: 1;
-  min-width: 0;
-}
-
-/* ── Sections ── */
-.doc-section {
-  padding: 80px 64px;
-  border-bottom: 1px solid var(--hairline);
-  background: var(--canvas);
-  scroll-margin-top: var(--nav-h);
-}
-.doc-section:nth-child(even) { background: var(--parchment); }
-.doc-section--dark {
-  background: var(--tile-1);
-  color: #fff;
-  border-bottom-color: rgba(255,255,255,0.08);
-}
-.doc-section--black {
-  background: var(--black);
-  color: #fff;
-  border-bottom-color: rgba(255,255,255,0.08);
-}
-.section-eyebrow {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-48);
-  margin-bottom: 12px;
-}
-.doc-section--dark .section-eyebrow,
-.doc-section--black .section-eyebrow { color: rgba(255,255,255,0.4); }
-.section-title {
-  font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
-  font-size: 40px;
-  font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: 0;
-  margin-bottom: 16px;
-}
-.section-lead {
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 1.4;
-  letter-spacing: 0.196px;
-  color: var(--ink-80);
-  max-width: 640px;
-  margin-bottom: 48px;
-}
-.doc-section--dark .section-lead,
-.doc-section--black .section-lead { color: var(--body-muted); }
-.subsection-title {
-  font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
-  font-size: 28px;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.2px;
-  margin: 48px 0 20px;
-}
-.subsection-title:first-of-type { margin-top: 0; }
-h4 {
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 1.24;
-  letter-spacing: -0.374px;
-  margin: 28px 0 10px;
-}
-p { margin-bottom: 16px; max-width: 720px; }
-p:last-child { margin-bottom: 0; }
-ul, ol { max-width: 720px; padding-left: 20px; margin-bottom: 16px; }
-li { margin-bottom: 6px; }
-strong { font-weight: 600; }
-code {
-  font-family: "SF Mono", ui-monospace, monospace;
-  font-size: 13px;
-  background: rgba(0,0,0,0.06);
-  padding: 2px 6px;
-  border-radius: 4px;
-  letter-spacing: 0;
-}
-.doc-section--dark code,
-.doc-section--black code { background: rgba(255,255,255,0.1); }
-
-/* ── Tables ── */
-.table-wrap { overflow-x: auto; margin: 24px 0; }
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  letter-spacing: -0.224px;
-}
-th {
-  text-align: left;
-  padding: 10px 16px;
-  background: rgba(0,0,0,0.04);
-  font-weight: 600;
-  border-bottom: 1px solid var(--hairline);
-  white-space: nowrap;
-}
-td {
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--hairline);
-  vertical-align: top;
-}
-tr:last-child td { border-bottom: none; }
-.doc-section--dark th { background: rgba(255,255,255,0.06); border-bottom-color: rgba(255,255,255,0.1); }
-.doc-section--dark td { border-bottom-color: rgba(255,255,255,0.06); }
-
-/* ── Color swatches ── */
-.swatch-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
-  margin: 24px 0;
-}
-.swatch-card {
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--hairline);
-}
-.swatch-color { height: 72px; }
-.swatch-info {
-  padding: 12px 14px;
-  background: var(--canvas);
-}
-.swatch-name { font-size: 13px; font-weight: 600; letter-spacing: -0.1px; margin-bottom: 2px; }
-.swatch-hex { font-family: "SF Mono", monospace; font-size: 12px; color: var(--ink-48); letter-spacing: 0; }
-.swatch-desc { font-size: 12px; color: var(--ink-48); margin-top: 4px; line-height: 1.4; }
-
-/* ── Type specimens ── */
-.type-table { width: 100%; border-collapse: collapse; margin: 24px 0; }
-.type-row td { padding: 16px; border-bottom: 1px solid var(--hairline); vertical-align: middle; }
-.type-row td:first-child { width: 38%; }
-.type-specimen { display: block; }
-.type-meta { font-size: 12px; color: var(--ink-48); font-family: "SF Mono", monospace; letter-spacing: 0; line-height: 1.6; }
-
-/* ── Spacing ruler ── */
-.spacing-grid { display: flex; flex-direction: column; gap: 16px; margin: 24px 0; }
-.spacing-row { display: flex; align-items: center; gap: 16px; }
-.spacing-label { font-family: "SF Mono", monospace; font-size: 12px; color: var(--ink-48); width: 80px; flex-shrink: 0; letter-spacing: 0; }
-.spacing-bar { background: var(--primary); height: 20px; border-radius: 3px; min-width: 4px; }
-.spacing-value { font-size: 13px; color: var(--ink-48); }
-
-/* ── Radius demos ── */
-.radius-grid { display: flex; flex-wrap: wrap; gap: 16px; margin: 24px 0; }
-.radius-card {
-  width: 100px; height: 80px;
-  background: var(--primary);
-  opacity: 0.85;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 6px;
-}
-.radius-label { font-size: 12px; color: var(--canvas); font-weight: 600; }
-.radius-value { font-family: "SF Mono", monospace; font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 0; }
-
-/* ── Elevation demos ── */
-.elevation-grid { display: flex; flex-wrap: wrap; gap: 32px; margin: 24px 0; align-items: flex-end; }
-.elev-card {
-  width: 140px; height: 90px;
-  background: var(--canvas);
-  border-radius: 12px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 6px;
-}
-.elev-label { font-size: 12px; font-weight: 600; color: var(--ink); }
-.elev-sub { font-size: 11px; color: var(--ink-48); text-align: center; padding: 0 8px; }
-
-/* ── Button demos ── */
-.component-grid { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0 32px; align-items: center; }
-.btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  cursor: pointer; border: none; font-family: inherit;
-  transition: transform 0.15s ease, opacity 0.15s;
-  text-decoration: none;
-}
-.btn:active { transform: scale(0.95); }
-.btn-primary {
-  background: var(--primary); color: #fff;
-  font-size: 17px; font-weight: 400; letter-spacing: -0.374px;
-  border-radius: 9999px; padding: 11px 22px;
-}
-.btn-secondary-pill {
-  background: transparent; color: var(--primary);
-  border: 1px solid var(--primary);
-  font-size: 17px; font-weight: 400; letter-spacing: -0.374px;
-  border-radius: 9999px; padding: 11px 22px;
-}
-.btn-dark-utility {
-  background: var(--ink); color: #fff;
-  font-size: 14px; font-weight: 400; letter-spacing: -0.224px;
-  border-radius: 8px; padding: 8px 15px;
-}
-.btn-pearl {
-  background: var(--pearl); color: var(--ink-80);
-  font-size: 14px; font-weight: 400; letter-spacing: -0.224px;
-  border: 3px solid var(--divider);
-  border-radius: 11px; padding: 8px 14px;
-}
-.btn-store-hero {
-  background: var(--primary); color: #fff;
-  font-size: 18px; font-weight: 300; letter-spacing: 0;
-  border-radius: 9999px; padding: 14px 28px;
-}
-.btn-icon-circular {
-  background: rgba(210,210,215,0.64); color: var(--ink);
-  width: 44px; height: 44px; border-radius: 50%;
-  font-size: 16px;
-}
-
-/* ── Nav demo ── */
-.nav-demo {
-  background: var(--black);
-  height: 44px;
-  display: flex; align-items: center;
-  padding: 0 20px;
-  gap: 20px;
-  border-radius: 8px;
-  margin: 16px 0;
-}
-.nav-demo span {
-  font-size: 12px;
-  color: rgba(255,255,255,0.75);
-  letter-spacing: -0.12px;
-  cursor: pointer;
-}
-.nav-demo span:hover { color: #fff; }
-.nav-demo .logo { font-size: 16px; font-weight: 600; margin-right: auto; }
-
-/* ── Product tile demo ── */
-.tile-demo {
-  padding: 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 12px;
-  border-radius: 8px;
-  margin: 16px 0;
-}
-.tile-demo--light { background: var(--canvas); color: var(--ink); }
-.tile-demo--parchment { background: var(--parchment); color: var(--ink); }
-.tile-demo--dark { background: var(--tile-1); color: #fff; }
-.tile-demo .tile-title {
-  font-family: "SF Pro Display", system-ui, sans-serif;
-  font-size: 32px; font-weight: 600; line-height: 1.1;
-}
-.tile-demo .tile-sub { font-size: 21px; font-weight: 400; opacity: 0.7; }
-.tile-demo .tile-btns { display: flex; gap: 10px; margin-top: 8px; }
-
-/* ── Utility card demo ── */
-.utility-grid-demo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0; }
-.utility-card {
-  background: var(--canvas);
-  border: 1px solid var(--hairline);
-  border-radius: 18px;
-  padding: 20px;
-}
-.utility-card .uc-img {
-  width: 100%; aspect-ratio: 1;
-  background: var(--parchment);
-  border-radius: 8px;
-  margin-bottom: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 32px;
-}
-.utility-card .uc-name { font-size: 15px; font-weight: 600; letter-spacing: -0.374px; }
-.utility-card .uc-price { font-size: 14px; color: var(--ink-48); margin-top: 2px; }
-.utility-card .uc-link { font-size: 14px; color: var(--primary); margin-top: 8px; display: block; }
-
-/* ── Search input demo ── */
-.search-demo {
-  position: relative; max-width: 400px; margin: 16px 0;
-}
-.search-demo input {
-  width: 100%;
-  height: 44px;
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 9999px;
-  padding: 0 20px 0 44px;
-  font-size: 17px;
-  font-family: inherit;
-  letter-spacing: -0.374px;
-  outline: none;
-  background: var(--canvas);
-}
-.search-demo input:focus { border-color: var(--primary); }
-.search-demo svg {
-  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-  opacity: 0.4;
-}
-
-/* ── Chip demo ── */
-.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
-.chip {
-  background: var(--canvas);
-  border: 1px solid var(--hairline);
-  border-radius: 9999px;
-  padding: 10px 16px;
-  font-size: 14px; letter-spacing: -0.224px;
-  cursor: pointer;
-}
-.chip.selected { border: 2px solid var(--primary-focus); }
-
-/* ── Do's / Don'ts ── */
-.dos-donts { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 32px 0; }
-.dos-donts h3 { font-size: 17px; font-weight: 600; margin-bottom: 16px; }
-.do-col h3 { color: #1a7f37; }
-.dont-col h3 { color: #cf222e; }
-.rule-list { list-style: none; padding: 0; }
-.rule-list li {
-  padding: 10px 0;
-  border-bottom: 1px solid var(--hairline);
-  font-size: 15px;
-  display: flex; gap: 10px; align-items: flex-start;
-}
-.rule-list li:last-child { border-bottom: none; }
-.rule-icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-top: 1px; }
-.do-col .rule-icon { background: #d3f4e0; color: #1a7f37; }
-.dont-col .rule-icon { background: #fcd9dc; color: #cf222e; }
-
-/* ── Footer ── */
-.site-footer {
-  background: var(--parchment);
-  padding: 64px;
-  color: var(--ink-80);
-  border-top: 1px solid var(--hairline);
-}
-.footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-bottom: 48px; }
-.footer-col h5 { font-size: 14px; font-weight: 600; letter-spacing: -0.224px; margin-bottom: 12px; }
-.footer-col ul { list-style: none; padding: 0; }
-.footer-col li { margin-bottom: 0; }
-.footer-col a {
-  font-size: 17px; line-height: 2.41;
-  color: var(--ink-80);
-  display: block;
-}
-.footer-col a:hover { color: var(--primary); text-decoration: none; }
-.footer-legal { font-size: 12px; color: var(--ink-48); line-height: 1.4; }
-.footer-legal p { max-width: none; }
-
-/* ── Highlight ── */
-mark { background: #fff176; color: inherit; border-radius: 2px; padding: 0 1px; }
-
-/* ── Responsive ── */
-@media (max-width: 1068px) {
-  .doc-section { padding: 64px 40px; }
-  .site-footer { padding: 48px 40px; }
-  .dos-donts { gap: 20px; }
-  .utility-grid-demo { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 833px) {
-  .sidebar { transform: translateX(-100%); }
-  .sidebar.open { transform: translateX(0); }
-  .sidebar-backdrop.open { display: block; }
-  .main { margin-left: 0; }
-  .g-nav__burger { display: flex; }
-  .g-nav__search-wrap { max-width: 200px; }
-  .footer-grid { grid-template-columns: repeat(2, 1fr); }
-  .section-title { font-size: 32px; }
-  .dos-donts { grid-template-columns: 1fr; }
-}
-@media (max-width: 640px) {
-  .doc-section { padding: 48px 20px; }
-  .site-footer { padding: 40px 20px; }
-  .section-title { font-size: 28px; }
-  .section-lead { font-size: 17px; }
-  .swatch-grid { grid-template-columns: repeat(2, 1fr); }
-  .utility-grid-demo { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
-  .g-nav__search-wrap { display: none; }
-}
+:root{--pri:#0066cc;--pri-dk:#2997ff;--ink:#1d1d1f;--ink80:#333;--ink48:#7a7a7a;--canvas:#fff;--parch:#f5f5f7;--tile1:#272729;--tile2:#2a2a2c;--black:#000;--hair:#e0e0e0;--nav-h:44px;--rail:260px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"SF Pro Text",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;font-size:17px;line-height:1.47;letter-spacing:-.374px;color:var(--ink);background:var(--parch)}
+a{color:var(--pri);text-decoration:none}
+a:hover{text-decoration:underline}
+.g-nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:var(--nav-h);background:var(--black);display:flex;align-items:center;padding:0 20px;gap:12px}
+.g-nav__logo{color:#fff;font-size:14px;font-weight:600;letter-spacing:-.374px;white-space:nowrap;flex-shrink:0}
+.g-nav__sub{color:rgba(255,255,255,.45);font-size:12px;white-space:nowrap;flex-shrink:0}
+.g-nav__search-wrap{flex:1;max-width:280px;margin-left:auto;position:relative}
+.g-nav__search{width:100%;height:28px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:9999px;padding:0 14px 0 32px;color:#fff;font-size:13px;font-family:inherit;outline:none}
+.g-nav__search::placeholder{color:rgba(255,255,255,.4)}
+.g-nav__search:focus{background:rgba(255,255,255,.15)}
+.g-nav__sico{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.45;pointer-events:none}
+.g-nav__burger{display:none;background:none;border:none;cursor:pointer;width:32px;height:32px;flex-direction:column;justify-content:center;gap:5px;padding:4px;flex-shrink:0}
+.g-nav__burger span{display:block;width:20px;height:1.5px;background:#fff;border-radius:2px}
+.layout{display:flex;padding-top:var(--nav-h);min-height:100vh}
+.sidebar{position:fixed;top:var(--nav-h);bottom:0;left:0;width:var(--rail);background:#1c1c1e;overflow-y:auto;z-index:900;padding:16px 0 40px;transition:transform .2s ease}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
+.sb-backdrop{display:none;position:fixed;inset:0;z-index:850;background:rgba(0,0,0,.5)}
+.sb-grp{margin-bottom:2px}
+.sb-grp-title{display:flex;align-items:center;justify-content:space-between;padding:7px 16px;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.3);cursor:pointer;user-select:none}
+.sb-grp-title .chev{width:9px;height:9px;opacity:.35;transition:transform .18s}
+.sb-grp.collapsed .chev{transform:rotate(-90deg)}
+.sb-grp.collapsed .sb-links{display:none}
+.sb-links{list-style:none}
+.sb-links a{display:block;padding:5px 16px 5px 24px;font-size:12px;line-height:1.4;color:rgba(255,255,255,.58);letter-spacing:-.1px;transition:color .15s,background .15s}
+.sb-links a:hover{color:#fff;text-decoration:none;background:rgba(255,255,255,.05)}
+.sb-links a.active{color:#fff;background:rgba(255,255,255,.08)}
+.sb-links li.hidden{display:none}
+.main{margin-left:var(--rail);flex:1;min-width:0}
+.sec{padding:72px 64px;border-bottom:1px solid var(--hair);background:var(--canvas);scroll-margin-top:var(--nav-h)}
+.sec:nth-child(even){background:var(--parch)}
+.sec--dark{background:var(--tile1)!important;color:#fff;border-bottom-color:rgba(255,255,255,.07)}
+.sec--dark2{background:var(--tile2)!important;color:#fff;border-bottom-color:rgba(255,255,255,.07)}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink48);margin-bottom:10px}
+.sec--dark .eyebrow,.sec--dark2 .eyebrow{color:rgba(255,255,255,.38)}
+.sec-title{font-family:"SF Pro Display",system-ui,-apple-system,sans-serif;font-size:38px;font-weight:600;line-height:1.1;margin-bottom:14px}
+.sec-lead{font-size:20px;font-weight:400;line-height:1.4;letter-spacing:.1px;color:var(--ink80);max-width:620px;margin-bottom:40px}
+.sec--dark .sec-lead,.sec--dark2 .sec-lead{color:rgba(255,255,255,.6)}
+h3{font-family:"SF Pro Display",system-ui,-apple-system,sans-serif;font-size:24px;font-weight:600;line-height:1.2;margin:40px 0 14px}
+h3:first-of-type{margin-top:0}
+h4{font-size:17px;font-weight:600;line-height:1.24;letter-spacing:-.374px;margin:24px 0 8px}
+p{margin-bottom:14px;max-width:720px}
+p:last-child{margin-bottom:0}
+ul,ol{max-width:720px;padding-left:20px;margin-bottom:14px}
+li{margin-bottom:5px}
+strong{font-weight:600}
+code{font-family:"SF Mono",ui-monospace,monospace;font-size:12.5px;background:rgba(0,0,0,.06);padding:2px 5px;border-radius:3px;letter-spacing:0}
+.sec--dark code,.sec--dark2 code{background:rgba(255,255,255,.12)}
+pre{background:#1c1c1e;border-radius:10px;padding:20px;overflow-x:auto;margin:16px 0;max-width:720px}
+pre code{background:none;color:#e5e5ea;font-size:13px;padding:0}
+.sec--dark pre,.sec--dark2 pre{background:rgba(0,0,0,.4)}
+.table-wrap{overflow-x:auto;margin:20px 0;max-width:840px}
+table{width:100%;border-collapse:collapse;font-size:14px;letter-spacing:-.224px}
+th{text-align:left;padding:9px 14px;background:rgba(0,0,0,.04);font-weight:600;border-bottom:1px solid var(--hair);white-space:nowrap}
+td{padding:9px 14px;border-bottom:1px solid var(--hair);vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:none}
+.sec--dark th,.sec--dark2 th{background:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.1)}
+.sec--dark td,.sec--dark2 td{border-bottom-color:rgba(255,255,255,.06)}
+.prop-grid{display:grid;grid-template-columns:1fr 1fr 2fr;gap:0;margin:16px 0;border:1px solid var(--hair);border-radius:10px;overflow:hidden;max-width:840px;font-size:14px}
+.prop-head{padding:8px 14px;background:rgba(0,0,0,.04);font-weight:600;border-bottom:1px solid var(--hair)}
+.prop-cell{padding:8px 14px;border-bottom:1px solid var(--hair);vertical-align:top;line-height:1.5}
+.prop-row:last-child .prop-cell{border-bottom:none}
+.sec--dark .prop-grid,.sec--dark2 .prop-grid{border-color:rgba(255,255,255,.1)}
+.sec--dark .prop-head,.sec--dark2 .prop-head{background:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.1)}
+.sec--dark .prop-cell,.sec--dark2 .prop-cell{border-bottom-color:rgba(255,255,255,.06)}
+.layer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0;max-width:500px}
+.layer-card{background:rgba(0,102,204,.1);border:1px solid rgba(0,102,204,.25);border-radius:10px;padding:14px;text-align:center}
+.layer-num{font-size:28px;font-weight:600;color:var(--pri);line-height:1}
+.layer-name{font-size:12px;color:var(--ink48);margin-top:4px}
+.sec--dark .layer-card{background:rgba(41,151,255,.1);border-color:rgba(41,151,255,.25)}
+.sec--dark .layer-num{color:var(--pri-dk)}
+.sec--dark .layer-name{color:rgba(255,255,255,.45)}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;letter-spacing:.04em;vertical-align:middle}
+.badge-blue{background:rgba(0,102,204,.12);color:var(--pri)}
+.badge-warn{background:rgba(255,149,0,.15);color:#b45309}
+.badge-ok{background:rgba(52,199,89,.15);color:#166534}
+.sec--dark .badge-blue{background:rgba(41,151,255,.2);color:var(--pri-dk)}
+.callout{border-left:3px solid var(--pri);background:rgba(0,102,204,.06);padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0;max-width:720px}
+.callout--warn{border-left-color:#f59e0b;background:rgba(245,158,11,.08)}
+.callout--danger{border-left-color:#ef4444;background:rgba(239,68,68,.08)}
+.sec--dark .callout{background:rgba(41,151,255,.1);border-left-color:var(--pri-dk)}
+.sec--dark .callout--warn{background:rgba(245,158,11,.1);border-left-color:#f59e0b}
+.check-list{list-style:none;padding:0;max-width:720px}
+.check-list li{padding:8px 0;border-bottom:1px solid var(--hair);display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.check-list li:last-child{border-bottom:none}
+.sec--dark .check-list li{border-bottom-color:rgba(255,255,255,.07)}
+.chk-num{flex-shrink:0;width:24px;height:24px;background:var(--pri);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;margin-top:1px}
+.sym-row{display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--hair);max-width:720px}
+.sym-row:last-child{border-bottom:none}
+.sym{font-size:20px;width:32px;text-align:center;flex-shrink:0}
+.sym-desc{font-size:15px}
+mark{background:#fff176;color:inherit;border-radius:2px;padding:0 1px}
+footer.site-footer{background:var(--tile2);color:rgba(255,255,255,.55);padding:48px 64px;font-size:12px;line-height:1.6}
+footer.site-footer a{color:rgba(255,255,255,.55)}
+@media(max-width:1068px){.sec{padding:56px 40px}footer.site-footer{padding:40px 40px}}
+@media(max-width:833px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.sb-backdrop.open{display:block}.main{margin-left:0}.g-nav__burger{display:flex}.sec-title{font-size:28px}}
+@media(max-width:640px){.sec{padding:40px 20px}.sec-title{font-size:24px}.sec-lead{font-size:17px}.g-nav__search-wrap{display:none}footer.site-footer{padding:32px 20px}}
 </style>
 </head>
 <body>
-
-<!-- Global Nav -->
 <nav class="g-nav">
-  <button class="g-nav__burger" id="burgerBtn" aria-label="Toggle sidebar">
-    <span></span><span></span><span></span>
-  </button>
-  <span class="g-nav__logo">Apple Design System</span>
+  <button class="g-nav__burger" id="burgerBtn"><span></span><span></span><span></span></button>
+  <span class="g-nav__logo">Spine Skeleton Shader</span>
+  <span class="g-nav__sub">使用說明書</span>
   <div class="g-nav__search-wrap">
-    <svg class="g-nav__search-icon" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.5">
-      <circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/>
-    </svg>
-    <input class="g-nav__search" type="search" id="searchInput" placeholder="Search docs…" aria-label="Search documentation" />
+    <svg class="g-nav__sico" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.6"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
+    <input class="g-nav__search" type="search" id="searchInput" placeholder="搜尋屬性或關鍵字… (/)" autocomplete="off"/>
   </div>
 </nav>
 
-<div class="sidebar-backdrop" id="backdrop"></div>
+<div class="sb-backdrop" id="backdrop"></div>
 
 <div class="layout">
-<!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
 
-  <div class="sidebar-group" id="grp-overview">
-    <div class="sidebar-group-title" data-group="grp-overview">
-      Overview
-      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
-    </div>
-    <ul class="sidebar-links">
-      <li><a href="#overview">Introduction</a></li>
-      <li><a href="#overview-characteristics">Key Characteristics</a></li>
-    </ul>
-  </div>
+<div class="sb-grp" id="grp-overview">
+  <div class="sb-grp-title" data-grp="grp-overview">導覽 / Overview<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
+  <ul class="sb-links">
+    <li><a href="#s1">§1 系統組成</a></li>
+    <li><a href="#s2">§2 GUI 分區地圖</a></li>
+    <li><a href="#s3">§3 視覺符號</a></li>
+    <li><a href="#s4">§4 右鍵·說明按鈕</a></li>
+  </ul>
+</div>
 
-  <div class="sidebar-group" id="grp-colors">
-    <div class="sidebar-group-title" data-group="grp-colors">
-      Colors
-      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
-    </div>
-    <ul class="sidebar-links">
-      <li><a href="#colors-brand">Brand &amp; Accent</a></li>
-      <li><a href="#colors-surface">Surface</a></li>
-      <li><a href="#colors-text">Text</a></li>
-      <li><a href="#colors-borders">Hairlines &amp; Borders</a></li>
-    </ul>
-  </div>
+<div class="sb-grp" id="grp-help">
+  <div class="sb-grp-title" data-grp="grp-help">Help Windows<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
+  <ul class="sb-links">
+    <li><a href="#s5">§5 七個 EditorWindow</a></li>
+    <li><a href="#s51">§5.1 介面操作</a></li>
+  </ul>
+</div>
 
-  <div class="sidebar-group" id="grp-typography">
-    <div class="sidebar-group-title" data-group="grp-typography">
-      Typography
-      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
-    </div>
-    <ul class="sidebar-links">
-      <li><a href="#type-family">Font Family</a></li>
-      <li><a href="#type-hierarchy">Hierarchy</a></li>
-      <li><a href="#type-principles">Principles</a></li>
-    </ul>
-  </div>
+<div class="sb-grp" id="grp-shader">
+  <div class="sb-grp-title" data-grp="grp-shader">Shader 分區<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
+  <ul class="sb-links">
+    <li><a href="#s6">§6 MAIN</a></li>
+    <li><a href="#s7">§7 NOISE</a></li>
+    <li><a href="#s8">§8 LIGHTING</a></li>
+    <li><a href="#s9">§9 EMISSION</a></li>
+    <li><a href="#s10">§10 EFFECT</a></li>
+    <li><a href="#s11">§11 LINE</a></li>
+  </ul>
+</div>
 
-  <div class="sidebar-group" id="grp-layout">
-    <div class="sidebar-group-title" data-group="grp-layout">
-      Layout
-      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
-    </div>
-    <ul class="sidebar-links">
-      <li><a href="#layout-spacing">Spacing System</a></li>
-      <li><a href="#layout-grid">Grid &amp; Container</a></li>
-      <li><a href="#layout-whitespace">Whitespace Philosophy</a></li>
-    </ul>
-  </div>
+<div class="sb-grp" id="grp-runtime">
+  <div class="sb-grp-title" data-grp="grp-runtime">Runtime 元件<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
+  <ul class="sb-links">
+    <li><a href="#s12">§12 SpineShadowLight</a></li>
+    <li><a href="#s13">§13 SpineHitSweepEffect</a></li>
+    <li><a href="#s14">§14 SpineLightManager</a></li>
+    <li><a href="#s15">§15 SpineLightReceiver</a></li>
+    <li><a href="#s16">§16 其他自動元件</a></li>
+  </ul>
+</div>
 
-  <div class="sidebar-group" id="grp-elevation">
-    <div class="sidebar-group-title" data-group="grp-elevation">
-      Elevation &amp; Depth
-      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
-    </div>
-    <ul class="sidebar-links">
-      <li><a href="#elevation">Elevation Scale</a></li>
-      <li><a href="#elevation-philosophy">Shadow Philosophy</a></li>
-    </ul>
-  </div>
+<div class="sb-grp" id="grp-preset">
+  <div class="sb-grp-title" data-grp="grp-preset">Preset 系統<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
+  <ul class="sb-links">
+    <li><a href="#s17">§17 概念</a></li>
+    <li><a href="#s18">§18 ProfileEditor</a></li>
+    <li><a href="#s19">§19 SaveMask · §20 Curve</a></li>
+    <li><a href="#s21">§21 命名規則</a></li>
+    <li><a href="#s22">§22 Helper API</a></li>
+    <li><a href="#s23">§23 ApplyTempProfile</a></li>
+    <li><a href="#s24">§24 底層 MPB · Tester</a></li>
+  </ul>
+</div>
 
-  <div class="sidebar-group" id="grp-shapes">
-    <div class="sidebar-group-title" data-group="grp-shapes">
-      Shapes
-      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
-    </div>
-    <ul class="sidebar-links">
-      <li><a href="#shapes-radius">Border Radius Scale</a></li>
-      <li><a href="#shapes-photography">Photography Geometry</a></li>
-    </ul>
-  </div>
+<div class="sb-grp" id="grp-build">
+  <div class="sb-grp-title" data-grp="grp-build">打包流程<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
+  <ul class="sb-links">
+    <li><a href="#s25">§25 PlatformManager</a></li>
+    <li><a href="#s26">§26 雙重鎖驗證</a></li>
+    <li><a href="#s27">§27 Build API</a></li>
+    <li><a href="#s28">§28 Layer 規約</a></li>
+  </ul>
+</div>
 
-  <div class="sidebar-group" id="grp-components">
-    <div class="sidebar-group-title" data-group="grp-components">
-      Components
-      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
-    </div>
-    <ul class="sidebar-links">
-      <li><a href="#comp-nav">Top Navigation</a></li>
-      <li><a href="#comp-buttons">Buttons</a></li>
-      <li><a href="#comp-cards">Cards &amp; Containers</a></li>
-      <li><a href="#comp-inputs">Inputs &amp; Forms</a></li>
-      <li><a href="#comp-footer">Footer</a></li>
-    </ul>
-  </div>
-
-  <div class="sidebar-group" id="grp-dosdonts">
-    <div class="sidebar-group-title" data-group="grp-dosdonts">
-      Do's and Don'ts
-      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
-    </div>
-    <ul class="sidebar-links">
-      <li><a href="#dos-donts">Rules</a></li>
-    </ul>
-  </div>
-
-  <div class="sidebar-group" id="grp-responsive">
-    <div class="sidebar-group-title" data-group="grp-responsive">
-      Responsive
-      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
-    </div>
-    <ul class="sidebar-links">
-      <li><a href="#responsive-breakpoints">Breakpoints</a></li>
-      <li><a href="#responsive-touch">Touch Targets</a></li>
-      <li><a href="#responsive-collapse">Collapsing Strategy</a></li>
-    </ul>
-  </div>
+<div class="sb-grp" id="grp-debug">
+  <div class="sb-grp-title" data-grp="grp-debug">排查·入門<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
+  <ul class="sb-links">
+    <li><a href="#s29">§29 排查器</a></li>
+    <li><a href="#s30">§30 Q&amp;A</a></li>
+    <li><a href="#s31">§31 入門教學</a></li>
+    <li><a href="#s32">§32 附錄</a></li>
+  </ul>
+</div>
 
 </aside>
 
-<!-- Main -->
 <main class="main">
 
-<!-- Overview -->
-<section class="doc-section" id="overview">
-  <div class="section-eyebrow">Introduction</div>
-  <h1 class="section-title">Apple Design System</h1>
-  <p class="section-lead">A photography-first interface that turns marketing into a museum gallery. Edge-to-edge product tiles alternate light and dark canvases, framed by SF Pro Display headlines and a single Action Blue interactive color.</p>
-  <p>Apple's web presence is a masterclass in <strong>reverent product photography framed by near-invisible UI</strong>. Every page is a stack of edge-to-edge product tiles — alternating light and dark canvases, each centered on a hero headline, a one-line tagline, two tiny blue pill CTAs, and an impossibly crisp product render. Nothing competes with the product.</p>
-  <p>Density is unusually low even by contemporary SaaS standards. Each tile occupies roughly one viewport, and there is no decorative chrome — no borders, no gradients, no decorative frames, no shadows on headlines. Elevation appears only when a product image rests on a surface (a single soft <code>rgba(0,0,0,0.22) 3px 5px 30px</code> drop for visual weight). The result feels more like a museum gallery: the wall disappears and the artifact takes over.</p>
-  <p>Store and shop surfaces retain the same chassis but switch modes. The product configurator introduces a tight grid of white utility cards at 18px radius with a thin border, paired with a persistent thin sub-nav strip. Across all five analyzed surfaces (homepage, environment, store, iPhone buy page, accessories index) the typographic system, spacing rhythm, and the single blue accent are consistent — one design language expressed at different volumes.</p>
-</section>
-
-<section class="doc-section" id="overview-characteristics">
-  <div class="section-eyebrow">Overview</div>
-  <h2 class="section-title">Key Characteristics</h2>
-  <ul>
-    <li><strong>Photography-first presentation</strong> — UI recedes so the product can speak.</li>
-    <li><strong>Alternating full-bleed tile sections</strong> — white/parchment ↔ near-black, with the color change itself acting as the section divider.</li>
-    <li><strong>Single blue accent</strong> — <code>#0066cc</code> carries every interactive element. No second brand color exists.</li>
-    <li><strong>Two button grammars</strong> — tiny blue pill CTAs (<code>border-radius: 9999px</code>) and compact utility rects (<code>border-radius: 8px</code>).</li>
-    <li><strong>SF Pro Display + SF Pro Text</strong> — negative letter-spacing at display sizes for the signature "Apple tight" headline feel.</li>
-    <li><strong>One drop-shadow in the entire system</strong> — applied only when a product image needs to breathe.</li>
-    <li><strong>Tight two-row nav</strong> — 44px global nav + 52px product-specific frosted sub-nav.</li>
-    <li><strong>Section rhythm</strong> — light hero → dark product tile → light utility tile → dark tile → parchment footer.</li>
-  </ul>
-</section>
-
-<!-- Colors -->
-<section class="doc-section doc-section--dark" id="colors-brand">
-  <div class="section-eyebrow">Colors — Brand &amp; Accent</div>
-  <h2 class="section-title">Brand &amp; Accent</h2>
-  <p class="section-lead">A single interactive color. Every link, every pill CTA, every focus ring roots in one blue.</p>
-  <div class="swatch-grid">
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#0066cc"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Action Blue</div>
-        <div class="swatch-hex"><code>--primary: #0066cc</code></div>
-        <div class="swatch-desc">The single brand-level interactive color. All text links, all blue pill CTAs ("Learn more", "Buy"), and the focus ring root.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#0071e3"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Focus Blue</div>
-        <div class="swatch-hex"><code>--primary-focus: #0071e3</code></div>
-        <div class="swatch-desc">Reserved for the keyboard focus ring on buttons (<code>outline: 2px solid</code>). Marginally brighter sibling of Action Blue.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#2997ff"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Sky Link Blue</div>
-        <div class="swatch-hex"><code>--primary-on-dark: #2997ff</code></div>
-        <div class="swatch-desc">A brighter blue for dark-tile in-copy links. Action Blue would disappear against the near-black surface.</div>
-      </div>
-    </div>
-  </div>
-  <p style="color:var(--body-muted)"><strong style="color:#fff">No decorative gradients.</strong> Atmospheric depth on product photography is inherent to the imagery, not a CSS gradient overlay. Apple is the rare luxury-brand site with zero gradient-based design tokens.</p>
-</section>
-
-<section class="doc-section" id="colors-surface">
-  <div class="section-eyebrow">Colors — Surface</div>
-  <h2 class="section-title">Surface Colors</h2>
-  <p class="section-lead">Eight surface tokens that define every canvas — from pure white to near-black, structured to create rhythm through alternation.</p>
-  <div class="swatch-grid">
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#ffffff; border-bottom:1px solid #e0e0e0;"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Pure White</div>
-        <div class="swatch-hex"><code>--canvas: #ffffff</code></div>
-        <div class="swatch-desc">Dominant canvas. Content tiles, utility cards, store tiles, configurator grids.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#f5f5f7; border-bottom:1px solid #e0e0e0;"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Parchment</div>
-        <div class="swatch-hex"><code>--parchment: #f5f5f7</code></div>
-        <div class="swatch-desc">Signature Apple off-white. Alternating light tiles, footer, store utility sections.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#fafafc; border-bottom:1px solid #e0e0e0;"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Pearl</div>
-        <div class="swatch-hex"><code>--pearl: #fafafc</code></div>
-        <div class="swatch-desc">Near-white fill for secondary "ghost" buttons. Still reads as a button against parchment.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#272729"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Near-Black Tile 1</div>
-        <div class="swatch-hex"><code>--tile-1: #272729</code></div>
-        <div class="swatch-desc">Primary dark-tile surface on the homepage product grid.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#2a2a2c"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Near-Black Tile 2</div>
-        <div class="swatch-hex"><code>--tile-2: #2a2a2c</code></div>
-        <div class="swatch-desc">Micro-step lighter — used where a dark tile sits directly adjacent to Tile 1 for faint separation.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#252527"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Near-Black Tile 3</div>
-        <div class="swatch-hex"><code>--tile-3: #252527</code></div>
-        <div class="swatch-desc">Micro-step darker — bottom of the stack, embedded video/player frames.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#000000"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Pure Black</div>
-        <div class="swatch-hex"><code>--black: #000000</code></div>
-        <div class="swatch-desc">Reserved for true void — video player backgrounds, photographic overlays, the global nav bar background.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#d2d2d7"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Chip Gray</div>
-        <div class="swatch-hex"><code>--chip-gray: #d2d2d7</code></div>
-        <div class="swatch-desc">Translucent gray chip floating over photography. Applied at ~64% alpha in production.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="doc-section doc-section--dark" id="colors-text">
-  <div class="section-eyebrow">Colors — Text</div>
-  <h2 class="section-title">Text Colors</h2>
-  <p class="section-lead">One near-black for light surfaces. One white for dark surfaces. Muted variants for hierarchy only.</p>
-  <div class="swatch-grid">
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#1d1d1f"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Near-Black Ink</div>
-        <div class="swatch-hex"><code>--ink: #1d1d1f</code></div>
-        <div class="swatch-desc">Voice of every headline and body paragraph on light surfaces. Chosen over pure black to keep the page feeling photographic.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#ffffff; border-bottom:1px solid #333;"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">On-Dark White</div>
-        <div class="swatch-hex"><code>#ffffff</code></div>
-        <div class="swatch-desc">All text on dark tiles and on the global nav bar.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#cccccc"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Body Muted</div>
-        <div class="swatch-hex"><code>#cccccc</code></div>
-        <div class="swatch-desc">Secondary copy on dark tiles where pure white would be too loud.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#333333"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Ink Muted 80</div>
-        <div class="swatch-hex"><code>--ink-80: #333333</code></div>
-        <div class="swatch-desc">Body text on the white Pearl Button surface — slightly softer than pure black.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#7a7a7a"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Ink Muted 48</div>
-        <div class="swatch-hex"><code>--ink-48: #7a7a7a</code></div>
-        <div class="swatch-desc">Disabled button text and legal fine-print.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="doc-section" id="colors-borders">
-  <div class="section-eyebrow">Colors — Hairlines &amp; Borders</div>
-  <h2 class="section-title">Hairlines &amp; Borders</h2>
-  <div class="swatch-grid">
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#f0f0f0; border-bottom:1px solid #e0e0e0;"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Divider Soft</div>
-        <div class="swatch-hex"><code>--divider: #f0f0f0</code></div>
-        <div class="swatch-desc">The "border" tone on secondary buttons — functions as a ring shadow rather than a hard line. Often applied as <code>rgba(0,0,0,0.04)</code>.</div>
-      </div>
-    </div>
-    <div class="swatch-card">
-      <div class="swatch-color" style="background:#e0e0e0; border-bottom:1px solid #ccc;"></div>
-      <div class="swatch-info">
-        <div class="swatch-name">Hairline</div>
-        <div class="swatch-hex"><code>--hairline: #e0e0e0</code></div>
-        <div class="swatch-desc">The 1px hairline border on store utility cards and configurator chips.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Typography -->
-<section class="doc-section doc-section--dark" id="type-family">
-  <div class="section-eyebrow">Typography — Font Family</div>
-  <h2 class="section-title">Font Family</h2>
-  <p class="section-lead">Two faces. One optimized for display, one for body. Their boundary is unbreakable.</p>
-  <h4 style="color:#fff">Display: SF Pro Display</h4>
-  <p style="color:var(--body-muted)"><code>SF Pro Display, system-ui, -apple-system, sans-serif</code> — Apple's proprietary display face, optimized for sizes ≥ 19px. Defines the voice of every headline.</p>
-  <h4 style="color:#fff">Body / UI: SF Pro Text</h4>
-  <p style="color:var(--body-muted)"><code>SF Pro Text, system-ui, -apple-system, sans-serif</code> — The text-optimized variant used for body copy, captions, buttons, and links below 20px.</p>
-  <h4 style="color:#fff">OpenType Features</h4>
-  <p style="color:var(--body-muted)"><code>font-variant-numeric: numerator</code> is enabled on numeric links. Display sizes rely on tight tracking rather than contextual ligatures.</p>
-  <h4 style="color:#fff">Off-system Substitute</h4>
-  <p style="color:var(--body-muted)">Use <code>system-ui, -apple-system, BlinkMacSystemFont</code> as the first stack entry — on macOS/iOS/Safari this resolves to the real SF Pro. For non-Apple platforms, <strong style="color:#fff">Inter</strong> (Google Fonts, variable) is the closest open-source equivalent. Nudge <code>letter-spacing</code> down by <code>-0.01em</code> at display sizes; tighten <code>line-height</code> by 0.03 for body (Inter's taller x-height needs less leading).</p>
-</section>
-
-<section class="doc-section" id="type-hierarchy">
-  <div class="section-eyebrow">Typography — Hierarchy</div>
-  <h2 class="section-title">Type Scale</h2>
-  <p class="section-lead">16 tokens covering hero display down to micro-legal. The ladder is 300 / 400 / 600 / 700 — weight 500 is deliberately absent.</p>
-
-  <table class="type-table">
+<!-- §1 -->
+<section class="sec sec--dark" id="s1">
+  <div class="eyebrow">§1 · 系統組成</div>
+  <h2 class="sec-title">Overview — 系統組成</h2>
+  <p class="sec-lead">本系統由四層結構組成。使用者僅需操作 Inspector 與 EditorWindow，其餘各層為自動運作。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>層級</th><th>名稱</th><th>職責</th></tr></thead>
     <tbody>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-family:'SF Pro Display',system-ui,-apple-system,sans-serif;font-size:clamp(28px,4vw,56px);font-weight:600;line-height:1.07;letter-spacing:-0.28px;">Hero Display</span></td>
-        <td>
-          <div class="type-meta">hero-display<br>56px / 600 / lh 1.07 / ls -0.28px<br>SF Pro Display</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Hero headline; the signature "Apple tight" tracking</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-family:'SF Pro Display',system-ui,-apple-system,sans-serif;font-size:clamp(24px,3.5vw,40px);font-weight:600;line-height:1.1;">Display LG</span></td>
-        <td>
-          <div class="type-meta">display-lg<br>40px / 600 / lh 1.10 / ls 0<br>SF Pro Display</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Tile headlines atop every product tile</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-family:'SF Pro Text',system-ui,-apple-system,sans-serif;font-size:clamp(22px,3vw,34px);font-weight:600;line-height:1.47;letter-spacing:-0.374px;">Display MD</span></td>
-        <td>
-          <div class="type-meta">display-md<br>34px / 600 / lh 1.47 / ls -0.374px<br>SF Pro Text</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Section heads (SF Pro Text at display proportions)</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-family:'SF Pro Display',system-ui,-apple-system,sans-serif;font-size:28px;font-weight:400;line-height:1.14;letter-spacing:0.196px;">Lead Copy</span></td>
-        <td>
-          <div class="type-meta">lead<br>28px / 400 / lh 1.14 / ls 0.196px<br>SF Pro Display</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Product tile subcopy</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-family:'SF Pro Text',system-ui,-apple-system,sans-serif;font-size:24px;font-weight:300;line-height:1.5;">Lead Airy</span></td>
-        <td>
-          <div class="type-meta">lead-airy<br>24px / 300 / lh 1.5 / ls 0<br>SF Pro Text</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Environment-page lead paragraphs (the rare weight 300)</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-family:'SF Pro Display',system-ui,-apple-system,sans-serif;font-size:21px;font-weight:600;line-height:1.19;letter-spacing:0.231px;">Tagline</span></td>
-        <td>
-          <div class="type-meta">tagline<br>21px / 600 / lh 1.19 / ls 0.231px<br>SF Pro Display</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Sub-tile tagline; sub-nav category name</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-size:17px;font-weight:600;line-height:1.24;letter-spacing:-0.374px;">Body Strong</span></td>
-        <td>
-          <div class="type-meta">body-strong<br>17px / 600 / lh 1.24 / ls -0.374px<br>SF Pro Text</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Inline strong emphasis</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-size:17px;font-weight:400;line-height:1.47;letter-spacing:-0.374px;">Body Text</span></td>
-        <td>
-          <div class="type-meta">body<br>17px / 400 / lh 1.47 / ls -0.374px<br>SF Pro Text</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Default paragraph — not 16px, 17px</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-size:17px;font-weight:400;line-height:2.41;">Dense Link</span></td>
-        <td>
-          <div class="type-meta">dense-link<br>17px / 400 / lh 2.41 / ls 0<br>SF Pro Text</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Footer / store utility link lists (relaxed leading)</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-size:14px;font-weight:400;line-height:1.43;letter-spacing:-0.224px;">Caption</span></td>
-        <td>
-          <div class="type-meta">caption<br>14px / 400 / lh 1.43 / ls -0.224px<br>SF Pro Text</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Secondary captions, button text</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-size:14px;font-weight:600;line-height:1.29;letter-spacing:-0.224px;">Caption Strong</span></td>
-        <td>
-          <div class="type-meta">caption-strong<br>14px / 600 / lh 1.29 / ls -0.224px<br>SF Pro Text</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Emphasized captions</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-size:18px;font-weight:300;line-height:1.0;">Store Hero CTA</span></td>
-        <td>
-          <div class="type-meta">button-large<br>18px / 300 / lh 1.0 / ls 0<br>SF Pro Text</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Store hero CTAs (the rare weight 300)</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-size:14px;font-weight:400;line-height:1.29;letter-spacing:-0.224px;">Utility Button</span></td>
-        <td>
-          <div class="type-meta">button-utility<br>14px / 400 / lh 1.29 / ls -0.224px<br>SF Pro Text</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Utility/nav button labels</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-size:12px;font-weight:400;line-height:1.0;letter-spacing:-0.12px;">Fine Print / Nav</span></td>
-        <td>
-          <div class="type-meta">fine-print / nav-link<br>12px / 400 / lh 1.0 / ls -0.12px<br>SF Pro Text</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Fine-print, footer body, global nav menu items</div>
-        </td>
-      </tr>
-      <tr class="type-row">
-        <td><span class="type-specimen" style="font-size:10px;font-weight:400;line-height:1.3;letter-spacing:-0.08px;">Micro Legal</span></td>
-        <td>
-          <div class="type-meta">micro-legal<br>10px / 400 / lh 1.3 / ls -0.08px<br>SF Pro Text</div>
-          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Micro legal disclaimers</div>
-        </td>
-      </tr>
+      <tr><td>層 1 · Shader 本體</td><td><code>Spine-Skeleton.shader</code></td><td>主 Pass + Outline Pass。15 個 <code>shader_feature</code> 可被打包剝離</td></tr>
+      <tr><td>層 2 · Inspector</td><td><code>SpineCustomShaderGUI</code></td><td>取代 Unity 預設 Material Inspector 的自製介面</td></tr>
+      <tr><td>層 3 · Runtime</td><td>Manager · Receiver · Lights</td><td>場景光收集、SH 取樣、MPB 推送、自動掛載</td></tr>
+      <tr><td>層 4 · Preset</td><td>Profile · Animator · Helper</td><td>ScriptableObject 預設檔、曲線動畫、程式 API</td></tr>
+      <tr><td>層 5 · EditorWindow</td><td>7 套說明 / 管理視窗</td><td>美術指南、程式指南、命名規則、平台管理、3 套元件 Help</td></tr>
+      <tr><td>層 6 · Build</td><td>BuildConfig · BuildPipeline</td><td>平台 ScriptableObject + IPreprocessShaders 變體剝離</td></tr>
+      <tr><td>層 7 · Debug</td><td>LightingIssueTroubleshooter</td><td>八項自動診斷 + 一鍵修正 + 物件 Ping 跳轉</td></tr>
+      <tr><td>層 8 · 文件</td><td>本說明書</td><td>每章皆對應上述某個層級</td></tr>
     </tbody>
   </table>
-</section>
-
-<section class="doc-section doc-section--dark" id="type-principles">
-  <div class="section-eyebrow">Typography — Principles</div>
-  <h2 class="section-title">Typographic Principles</h2>
-  <p class="section-lead">Six rules that define the unmistakable Apple reading experience.</p>
-  <h4 style="color:#fff">Negative letter-spacing at display sizes</h4>
-  <p style="color:var(--body-muted)">Every headline at 17px and up carries a slight tracking tighten (<code>-0.12 → -0.374px</code>). This produces the iconic "Apple tight" headline cadence. Never used at 12px or below.</p>
-  <h4 style="color:#fff">Body copy at 17px, not 16px</h4>
-  <p style="color:var(--body-muted)">Apple breaks the SaaS convention and runs paragraph text at 17px. The extra pixel gives the page an unmistakable "reading, not scanning" pace.</p>
-  <h4 style="color:#fff">Weight 300 is real and rare</h4>
-  <p style="color:var(--body-muted)">Used deliberately on <code>button-large</code> (18px/300) and <code>lead-airy</code> (24px/300). It's a light-atmosphere cue reserved for moments where the content should feel airy — not an accident.</p>
-  <h4 style="color:#fff">Weight 600, not 700, for headlines</h4>
-  <p style="color:var(--body-muted)">Apple's headlines sit at weight 600. Weight 700 is reserved for <code>tagline</code> (21px) when a touch more assertion is needed.</p>
-  <h4 style="color:#fff">Line-height is context-specific</h4>
-  <p style="color:var(--body-muted)">Display sizes use 1.07–1.19 (tight). Body uses 1.47. Utility link stacks in the footer use a relaxed 2.41. The 2.41 is not a bug — it's how dense footer link columns breathe.</p>
-  <h4 style="color:#fff">Weight 500 is deliberately absent</h4>
-  <p style="color:var(--body-muted)">The ladder is 300 / 400 / 600 / 700. Mid-weight readings always use 600 — never 500.</p>
-</section>
-
-<!-- Layout -->
-<section class="doc-section" id="layout-spacing">
-  <div class="section-eyebrow">Layout — Spacing System</div>
-  <h2 class="section-title">Spacing System</h2>
-  <p class="section-lead">Base unit: 8px. Structural layout snaps to multiples. Sub-base values (4, 5, 6, 7) are used only for tight typographic adjustments.</p>
-  <div class="spacing-grid">
-    <div class="spacing-row">
-      <span class="spacing-label">xxs — 4px</span>
-      <div class="spacing-bar" style="width:4px"></div>
-      <span class="spacing-value">Tight typographic adjustments</span>
-    </div>
-    <div class="spacing-row">
-      <span class="spacing-label">xs — 8px</span>
-      <div class="spacing-bar" style="width:8px"></div>
-      <span class="spacing-value">Base unit</span>
-    </div>
-    <div class="spacing-row">
-      <span class="spacing-label">sm — 12px</span>
-      <div class="spacing-bar" style="width:12px"></div>
-      <span class="spacing-value">Compact component gaps</span>
-    </div>
-    <div class="spacing-row">
-      <span class="spacing-label">md — 17px</span>
-      <div class="spacing-bar" style="width:17px"></div>
-      <span class="spacing-value">Default body rhythm unit</span>
-    </div>
-    <div class="spacing-row">
-      <span class="spacing-label">lg — 24px</span>
-      <div class="spacing-bar" style="width:24px"></div>
-      <span class="spacing-value">Card padding, grid gutters</span>
-    </div>
-    <div class="spacing-row">
-      <span class="spacing-label">xl — 32px</span>
-      <div class="spacing-bar" style="width:32px"></div>
-      <span class="spacing-value">Section sub-spacing</span>
-    </div>
-    <div class="spacing-row">
-      <span class="spacing-label">xxl — 48px</span>
-      <div class="spacing-bar" style="width:48px"></div>
-      <span class="spacing-value">Generous component separators</span>
-    </div>
-    <div class="spacing-row">
-      <span class="spacing-label">section — 80px</span>
-      <div class="spacing-bar" style="width:80px"></div>
-      <span class="spacing-value">Product tile vertical padding</span>
-    </div>
   </div>
-  <p>Button padding: 8–11px vertical, 15–22px horizontal. Section vertical padding: 80px inside a product tile; tiles stack edge-to-edge with 0 gap.</p>
+  <p style="color:rgba(255,255,255,.55);font-size:14px;">命名空間：<code>VFXTool.SpineSkeletonShaderTool</code></p>
 </section>
 
-<section class="doc-section doc-section--dark" id="layout-grid">
-  <div class="section-eyebrow">Layout — Grid &amp; Container</div>
-  <h2 class="section-title">Grid &amp; Container</h2>
-  <p class="section-lead">Max content widths differ by surface type. Product tiles are always full-bleed; utility grids cap at 1440px.</p>
-  <ul style="color:var(--body-muted)">
-    <li><strong style="color:#fff">~980px</strong> — text-heavy sections (environment page)</li>
-    <li><strong style="color:#fff">~1440px</strong> — product grids (store, accessories)</li>
-    <li><strong style="color:#fff">Full-bleed</strong> — product tiles (homepage)</li>
-  </ul>
-  <h4 style="color:#fff; margin-top:32px;">Column Patterns</h4>
-  <p style="color:var(--body-muted)">3–5 column utility card grid on store/accessories. 2-column side-by-side tiles on homepage occasional sections. Single-column centered stack on product tile heroes.</p>
-  <h4 style="color:#fff;">Gutters</h4>
-  <p style="color:var(--body-muted)">20–24px between cards in a utility grid.</p>
-</section>
-
-<section class="doc-section" id="layout-whitespace">
-  <div class="section-eyebrow">Layout — Whitespace Philosophy</div>
-  <h2 class="section-title">Whitespace Philosophy</h2>
-  <p class="section-lead">Apple's whitespace is the product's pedestal.</p>
-  <p>Every tile begins with at least 64px of air above its headline and 48–64px below. Product renders are never crowded; the nearest content to a product image is at least 40px away.</p>
-  <p>The footer is the only area that breaks this — there, Apple goes deliberately dense to make the full information architecture visible at a glance. The contrast between that density and the tile sections above is intentional: the footer signals "information zone," the tiles signal "experience zone."</p>
-</section>
-
-<!-- Elevation -->
-<section class="doc-section doc-section--dark" id="elevation">
-  <div class="section-eyebrow">Elevation &amp; Depth</div>
-  <h2 class="section-title">Elevation Scale</h2>
-  <p class="section-lead">Four levels, three of which use no traditional drop shadow.</p>
-  <div class="elevation-grid">
-    <div>
-      <div class="elev-card" style="border:1px solid #e0e0e0;">
-        <div class="elev-label">Flat</div>
-        <div class="elev-sub">No shadow, no border</div>
-      </div>
-      <p style="font-size:12px;color:var(--body-muted);margin-top:8px;max-width:140px;">Full-bleed tiles, global nav, footer</p>
-    </div>
-    <div>
-      <div class="elev-card" style="border:1px solid rgba(0,0,0,0.08);">
-        <div class="elev-label">Hairline</div>
-        <div class="elev-sub">1px rgba(0,0,0,0.08)</div>
-      </div>
-      <p style="font-size:12px;color:var(--body-muted);margin-top:8px;max-width:140px;">Utility cards, sub-nav separator</p>
-    </div>
-    <div>
-      <div class="elev-card" style="background:rgba(245,245,247,0.8);backdrop-filter:blur(12px);">
-        <div class="elev-label">Blur</div>
-        <div class="elev-sub">backdrop-filter: blur</div>
-      </div>
-      <p style="font-size:12px;color:var(--body-muted);margin-top:8px;max-width:140px;">Sub-nav, iPhone buy floating bar</p>
-    </div>
-    <div>
-      <div class="elev-card" style="box-shadow:rgba(0,0,0,0.22) 3px 5px 30px 0;">
-        <div class="elev-label">Product</div>
-        <div class="elev-sub">Only for imagery</div>
-      </div>
-      <p style="font-size:12px;color:var(--body-muted);margin-top:8px;max-width:140px;">Product renders resting on surface</p>
-    </div>
-  </div>
-</section>
-
-<section class="doc-section" id="elevation-philosophy">
-  <div class="section-eyebrow">Elevation — Shadow Philosophy</div>
-  <h2 class="section-title">Shadow Philosophy</h2>
-  <p class="section-lead">Apple uses exactly one drop-shadow in the entire design system.</p>
-  <p>The single shadow — <code>rgba(0,0,0,0.22) 3px 5px 30px 0</code> — is applied to photographic product imagery only. Never to cards, never to buttons, never to text.</p>
-  <p>Elevation in the UI comes from (a) <strong>surface-color change</strong> (light tile ↔ dark tile) and (b) <strong>backdrop-blur</strong> on sticky bars. The single shadow is about giving the product weight, not about UI hierarchy.</p>
-  <p>Atmospheric imagery on the environment page (photographic vista) supplies mood — no CSS gradient involved. Edge-to-edge tile alternation creates rhythm without borders or shadows.</p>
-</section>
-
-<!-- Shapes -->
-<section class="doc-section doc-section--dark" id="shapes-radius">
-  <div class="section-eyebrow">Shapes</div>
-  <h2 class="section-title">Border Radius Scale</h2>
-  <p class="section-lead">Seven tokens — from zero to pill. Don't mix radii grammars.</p>
-  <div class="radius-grid">
-    <div class="radius-card" style="border-radius:0px;">
-      <span class="radius-label">none</span>
-      <span class="radius-value">0px</span>
-    </div>
-    <div class="radius-card" style="border-radius:5px;">
-      <span class="radius-label">xs</span>
-      <span class="radius-value">5px</span>
-    </div>
-    <div class="radius-card" style="border-radius:8px;">
-      <span class="radius-label">sm</span>
-      <span class="radius-value">8px</span>
-    </div>
-    <div class="radius-card" style="border-radius:11px;">
-      <span class="radius-label">md</span>
-      <span class="radius-value">11px</span>
-    </div>
-    <div class="radius-card" style="border-radius:18px;">
-      <span class="radius-label">lg</span>
-      <span class="radius-value">18px</span>
-    </div>
-    <div class="radius-card" style="border-radius:9999px;">
-      <span class="radius-label">pill</span>
-      <span class="radius-value">9999px</span>
-    </div>
-    <div class="radius-card" style="border-radius:50%;width:80px;height:80px;">
-      <span class="radius-label">full</span>
-      <span class="radius-value">50%</span>
-    </div>
-  </div>
+<!-- §2 -->
+<section class="sec" id="s2">
+  <div class="eyebrow">§2 · GUI 分區地圖</div>
+  <h2 class="sec-title">Architecture — GUI 分區總覽</h2>
+  <p class="sec-lead">Inspector 由六個可摺疊分區構成。點擊任一分區色帶可摺疊／展開；右鍵色帶可複製整區設定／貼上／重置。</p>
+  <p>每個子模組標題（如 Native Lighting Settings）右側皆有 <strong>P 圖示</strong>，展開後即為該子模組的 Preset 面板。詳細參數見 §6–§11。</p>
   <div class="table-wrap">
-    <table>
-      <thead><tr><th>Token</th><th>Value</th><th>Use</th></tr></thead>
-      <tbody>
-        <tr><td><code>none</code></td><td>0px</td><td>Full-bleed product tiles (no corner rounding — the color change is the divider)</td></tr>
-        <tr><td><code>xs</code></td><td>5px</td><td>Inline links when styled as subtle chips (rare)</td></tr>
-        <tr><td><code>sm</code></td><td>8px</td><td>Dark utility buttons, inline card imagery</td></tr>
-        <tr><td><code>md</code></td><td>11px</td><td>White Pearl Button capsules</td></tr>
-        <tr><td><code>lg</code></td><td>18px</td><td>Store utility cards, accessories grid cards</td></tr>
-        <tr><td><code>pill</code></td><td>9999px</td><td>Primary blue CTAs, sub-nav buy button, configurator chips, search input</td></tr>
-        <tr><td><code>full</code></td><td>9999px / 50%</td><td>Circular control chips floating over photography</td></tr>
-      </tbody>
-    </table>
+  <table>
+    <thead><tr><th>分區</th><th>子模組</th><th>功能摘要</th></tr></thead>
+    <tbody>
+      <tr><td><strong>§6 MAIN</strong></td><td>Main &amp; Shadow Settings · Post-Processing Control</td><td>主紋理、Tiling/Offset、主色、Cutoff、Straight Alpha、Bloom 抑制門檻同步</td></tr>
+      <tr><td><strong>§7 NOISE</strong></td><td>Global Noise Settings</td><td>UV 動態雜訊 — 提供 BackLight / Inline / Outline 共用的隨機遮罩</td></tr>
+      <tr><td><strong>§8 LIGHTING</strong></td><td>Native · ShadowLight Base · NormalMap · Probe</td><td>Unity Realtime 燈、自製 ShadowLight、法線貼圖、Light Probe SH</td></tr>
+      <tr><td><strong>§9 EMISSION</strong></td><td>Emission Settings</td><td>獨立 Emission 貼圖 + HDR 顏色 + Multiply with MainTex 選項</td></tr>
+      <tr><td><strong>§10 EFFECT</strong></td><td>Overlay · Hit Sweep · BackLight</td><td>整體染色、受擊光帶、背光高光 — 三組可獨立啟用</td></tr>
+      <tr><td><strong>§11 LINE</strong></td><td>Inline · Outline</td><td>內描邊（Rim 風格）、外描邊（Sobel 8 鄰域）— 共用 Light Source 結構</td></tr>
+    </tbody>
+  </table>
   </div>
+  <div class="callout">共 12 個 <code>shader_feature</code> 模組，由 <code>SpineCustomShaderGUI.OnGUI()</code> 管理。</div>
 </section>
 
-<section class="doc-section" id="shapes-photography">
-  <div class="section-eyebrow">Shapes — Photography Geometry</div>
-  <h2 class="section-title">Photography Geometry</h2>
+<!-- §3 -->
+<section class="sec sec--dark" id="s3">
+  <div class="eyebrow">§3 · 視覺符號</div>
+  <h2 class="sec-title">Inspector — 視覺符號一覽</h2>
+  <p class="sec-lead">本節列出 Inspector 中會反覆出現的五項視覺符號與其行為。理解這些符號後，可以從外觀立刻判斷每個欄位的狀態與可操作項目。</p>
+  <div class="sym-row"><span class="sym">▬</span><div class="sym-desc"><strong>3px 上色帶</strong> — 分區頂部。點擊摺疊整區；右鍵彈出 Copy / Paste / Reset 選單</div></div>
+  <div class="sym-row"><span class="sym">▏</span><div class="sym-desc"><strong>3px 左色條</strong> — 子模組標題（如 Native Lighting Settings）</div></div>
+  <div class="sym-row"><span class="sym">✦</span><div class="sym-desc"><strong>Preset 驅動標記</strong> — 該屬性當前正受某 Preset 驅動，數值被覆寫</div></div>
+  <div class="sym-row"><span class="sym">∿</span><div class="sym-desc"><strong>AnimationCurve 切換</strong> — 將屬性切到 AnimationCurve 動畫驅動（按一次再展開曲線編輯區）</div></div>
+  <div class="sym-row"><span class="sym">P</span><div class="sym-desc"><strong>Preset 面板開關</strong> — 開關該子模組的 Preset 面板（Profile 欄位 + Load / Save / Clear）</div></div>
+  <div class="sym-row"><span class="sym">▤</span><div class="sym-desc"><strong>頂部使用指南按鈕</strong> — 開啟 EditorWindow 顯示完整文件。右鍵任一參數可從快選單跳至該屬性的指南頁</div></div>
+</section>
+
+<!-- §4 -->
+<section class="sec" id="s4">
+  <div class="eyebrow">§4 · 右鍵 · 頂部按鈕</div>
+  <h2 class="sec-title">兩個入口 — 找到任一屬性的說明</h2>
+  <p class="sec-lead">所有自製 Inspector 皆內建統一的查詢介面。當你不確定某個欄位的用途、依賴條件或排錯方式時，使用以下兩個入口。</p>
+  <h3>① 右鍵任一屬性</h3>
+  <p>對 Inspector 上任何一個屬性欄位按下滑鼠右鍵，會跳出 <code>GenericMenu</code>，選單中含「📖 查看使用說明」項目。點擊後系統會：</p>
   <ul>
-    <li><strong>Hero imagery</strong> — full-bleed, 21:9 or taller on the homepage; 16:9 on environment and shop pages.</li>
-    <li><strong>Product renders</strong> — PNG/WebP with transparency; rest on a surface tile and pick up the system product-shadow.</li>
-    <li><strong>Accessory grid</strong> — square 1:1 crops at <code>rounded.lg</code> (18px) radius, light neutral backgrounds, product centered with 20–40px internal padding.</li>
-    <li><strong>No rounded imagery in hero tiles</strong> — images are full-bleed rectangular. Rounding appears only on inline card imagery.</li>
-    <li><strong>Lazy-loading</strong> via responsive <code>srcset</code> and <code>sizes</code> across all breakpoints; CDN-optimized WebP.</li>
+    <li>開啟對應的 EditorWindow（美術指南 / 元件 Help）</li>
+    <li>自動展開包含該屬性的章節</li>
+    <li>自動捲動到該屬性卡片並以 <strong>Ping 黃色閃爍 2 秒</strong></li>
   </ul>
-</section>
-
-<!-- Components -->
-<section class="doc-section doc-section--dark" id="comp-nav">
-  <div class="section-eyebrow">Components — Navigation</div>
-  <h2 class="section-title">Top Navigation</h2>
-  <p class="section-lead">Persistent ultra-thin black nav bar. Never competes with the product.</p>
-  <h4 style="color:#fff">global-nav</h4>
-  <p style="color:var(--body-muted)">Persistent, pinned to the top. Background <code>#000000</code>, height 44px, text <code>#ffffff</code> in <code>nav-link</code> (12px / 400 / -0.12px tracking). Links spaced ~20px apart, running edge-to-edge. Right-aligned cluster: Search, Bag icons — always visible. Collapses to hamburger at ≤833px.</p>
-  <div class="nav-demo">
-    <span class="logo">⌘</span>
-    <span>Store</span><span>Mac</span><span>iPhone</span><span>iPad</span><span>Watch</span><span>Vision</span>
-    <span style="margin-left:auto">🔍</span><span>🛍</span>
-  </div>
-  <h4 style="color:#fff; margin-top:32px;">sub-nav-frosted</h4>
-  <p style="color:var(--body-muted)">Surface-specific nav below the global nav. Background <code>#f5f5f7</code> at 80% opacity with backdrop-filter blur. Height 52px. Left: product category name in <code>tagline</code> (21px / 600). Right: inline nav links in <code>button-utility</code> (14px), ending in a persistent <code>button-primary</code> ("Buy").</p>
-  <div style="background:rgba(245,245,247,0.9);backdrop-filter:blur(20px);height:52px;display:flex;align-items:center;padding:0 20px;gap:20px;border-radius:8px;margin-top:12px;">
-    <span style="font-size:21px;font-weight:600;letter-spacing:0.231px;color:var(--ink)">iPhone</span>
-    <span style="margin-left:auto;font-size:14px;color:var(--ink-48)">Overview</span>
-    <span style="font-size:14px;color:var(--ink-48)">Switch from Android</span>
-    <span style="font-size:14px;color:var(--ink-48)">Accessories</span>
-    <a class="btn btn-primary" style="font-size:14px;padding:8px 16px;margin-left:8px;">Buy</a>
-  </div>
-</section>
-
-<section class="doc-section" id="comp-buttons">
-  <div class="section-eyebrow">Components — Buttons</div>
-  <h2 class="section-title">Buttons</h2>
-  <p class="section-lead">Seven button variants. The signature grammar: pill for action, rect for utility.</p>
-
-  <h4>button-primary</h4>
-  <p>Background Action Blue <code>#0066cc</code>, text white, <code>font-size: 17px / 400</code>, <code>border-radius: 9999px</code>, padding <code>11px 22px</code>. Active state: <code>transform: scale(0.95)</code>. Focus: <code>outline: 2px solid #0071e3</code>.</p>
-  <div class="component-grid">
-    <a class="btn btn-primary" href="#">Learn more</a>
-    <a class="btn btn-primary" href="#">Buy</a>
-  </div>
-
-  <h4>button-secondary-pill</h4>
-  <p>Background transparent, text Action Blue, 1px solid Action Blue border. Same pill shape — reads as a "ghost pill." Used as the secondary CTA when two blue pills appear together.</p>
-  <div class="component-grid">
-    <a class="btn btn-secondary-pill" href="#">Learn more</a>
-    <a class="btn btn-primary" href="#">Buy</a>
-  </div>
-
-  <h4>button-dark-utility</h4>
-  <p>Background <code>#1d1d1f</code>, text white, <code>font-size: 14px</code>, <code>border-radius: 8px</code>, padding <code>8px 15px</code>. Global nav actions (Sign In, Bag).</p>
-  <div class="component-grid">
-    <a class="btn btn-dark-utility" href="#">Sign In</a>
-    <a class="btn btn-dark-utility" href="#">Bag (0)</a>
-  </div>
-
-  <h4>button-pearl-capsule</h4>
-  <p>Background <code>#fafafc</code>, text <code>#333</code>, <code>border: 3px solid #f0f0f0</code>, <code>border-radius: 11px</code>. Product-card secondary button — the soft border functions as a ring shadow.</p>
-  <div class="component-grid">
-    <a class="btn btn-pearl" href="#">Compare models</a>
-    <a class="btn btn-pearl" href="#">View features</a>
-  </div>
-
-  <h4>button-store-hero</h4>
-  <p>Same Action Blue as <code>button-primary</code>, but <code>font-size: 18px / weight 300</code>, padding <code>14px 28px</code>. The rare weight 300 signals a spacious, store-landing atmosphere.</p>
-  <div class="component-grid">
-    <a class="btn btn-store-hero" href="#">Shop iPhone</a>
-  </div>
-
-  <h4>button-icon-circular</h4>
-  <p>44×44px, background <code>rgba(210,210,215,0.64)</code>, <code>border-radius: 50%</code>. Floats over photography for carousel controls, close buttons, in-image controls.</p>
-  <div class="component-grid">
-    <button class="btn btn-icon-circular">←</button>
-    <button class="btn btn-icon-circular">→</button>
-    <button class="btn btn-icon-circular">✕</button>
-  </div>
-
-  <h4>text-link / text-link-on-dark</h4>
-  <p>Inline body links. On light surfaces: <code>#0066cc</code>. On dark surfaces: <code>#2997ff</code> (Sky Link Blue — Action Blue would disappear against the near-black tile).</p>
-  <div class="component-grid">
-    <a href="#" style="color:var(--primary)">text-link (light surface)</a>
-  </div>
-  <div style="background:var(--tile-1);padding:12px 16px;border-radius:8px;margin-top:4px;">
-    <a href="#" style="color:var(--primary-on-dark)">text-link-on-dark (dark surface)</a>
-  </div>
-</section>
-
-<section class="doc-section doc-section--dark" id="comp-cards">
-  <div class="section-eyebrow">Components — Cards &amp; Containers</div>
-  <h2 class="section-title">Cards &amp; Containers</h2>
-  <p class="section-lead">Eight container variants — from full-bleed product tiles to configurator chips.</p>
-
-  <h4 style="color:#fff">product-tile-light / product-tile-parchment</h4>
-  <p style="color:var(--body-muted)">Full-bleed light tile. <code>rounded: none</code>, vertical padding <code>80px</code>. Centered stack: display-lg headline → lead subcopy → two pill CTAs → product render with system shadow.</p>
-  <div class="tile-demo tile-demo--light">
-    <div class="tile-title">iPhone 17 Pro</div>
-    <div class="tile-sub">Titanium. As powerful as it looks.</div>
-    <div class="tile-btns">
-      <a class="btn btn-primary" href="#">Learn more</a>
-      <a class="btn btn-secondary-pill" href="#">Buy</a>
-    </div>
-  </div>
-  <div class="tile-demo tile-demo--parchment" style="margin-top:8px;">
-    <div class="tile-title">MacBook Pro</div>
-    <div class="tile-sub">Mind-blowing. Head-turning.</div>
-    <div class="tile-btns">
-      <a class="btn btn-primary" href="#">Learn more</a>
-      <a class="btn btn-secondary-pill" href="#">Buy</a>
-    </div>
-  </div>
-
-  <h4 style="color:#fff;margin-top:40px;">product-tile-dark / dark-2 / dark-3</h4>
-  <p style="color:var(--body-muted)">Full-bleed dark tile on <code>#272729</code> / <code>#2a2a2c</code> / <code>#252527</code>. Same content stack but with Sky Link Blue (<code>#2997ff</code>) for inline copy.</p>
-  <div class="tile-demo tile-demo--dark">
-    <div class="tile-title">Apple Watch Series 10</div>
-    <div class="tile-sub">Thinnest. Lightest. Most capable.</div>
-    <div class="tile-btns">
-      <a class="btn btn-primary" href="#">Learn more</a>
-      <a class="btn btn-secondary-pill" style="color:var(--primary-on-dark);border-color:var(--primary-on-dark);" href="#">Buy</a>
-    </div>
-  </div>
-
-  <h4 style="color:#fff;margin-top:40px;">store-utility-card</h4>
-  <p style="color:var(--body-muted)">White card, 1px hairline border, <code>border-radius: 18px</code>, padding <code>24px</code>. 1:1 product image at <code>border-radius: 8px</code>, then <code>body-strong</code> name, <code>body</code> price, and a <code>text-link</code>.</p>
-  <div class="utility-grid-demo" style="margin-top:16px;">
-    <div class="utility-card">
-      <div class="uc-img">📱</div>
-      <div class="uc-name">iPhone 17</div>
-      <div class="uc-price">From $799</div>
-      <a class="uc-link" href="#">Buy →</a>
-    </div>
-    <div class="utility-card">
-      <div class="uc-img">💻</div>
-      <div class="uc-name">MacBook Air</div>
-      <div class="uc-price">From $1,099</div>
-      <a class="uc-link" href="#">Buy →</a>
-    </div>
-    <div class="utility-card">
-      <div class="uc-img">🎧</div>
-      <div class="uc-name">AirPods Pro</div>
-      <div class="uc-price">$249</div>
-      <a class="uc-link" href="#">Buy →</a>
-    </div>
-  </div>
-
-  <h4 style="color:#fff;margin-top:40px;">configurator-option-chip</h4>
-  <p style="color:var(--body-muted)">Pill-shaped tappable cell. White canvas, <code>border-radius: 9999px</code>, padding <code>12px 16px</code>. Selected state: border upgrades to <code>2px solid #0071e3</code>.</p>
-  <div class="chip-row" style="margin-top:12px;">
-    <div class="chip selected">Natural Titanium</div>
-    <div class="chip">Desert Titanium</div>
-    <div class="chip">Black Titanium</div>
-    <div class="chip">White Titanium</div>
-  </div>
-
-  <h4 style="color:#fff;margin-top:40px;">floating-sticky-bar</h4>
-  <p style="color:var(--body-muted)">Floats at the bottom of the viewport during scroll. Background parchment at 80% opacity + <code>backdrop-filter: blur</code>, height 64px. Left: running price total in <code>body</code>. Right: <code>button-primary</code> ("Add to Bag").</p>
-  <div style="background:rgba(245,245,247,0.9);backdrop-filter:blur(20px);height:64px;display:flex;align-items:center;padding:0 32px;border-radius:8px;margin-top:12px;border:1px solid rgba(0,0,0,0.06);">
-    <span style="font-size:17px;letter-spacing:-0.374px;color:var(--ink);">iPhone 17 Pro — <strong>$999</strong></span>
-    <a class="btn btn-primary" href="#" style="margin-left:auto;">Add to Bag</a>
-  </div>
-
-  <h4 style="color:#fff;margin-top:40px;">environment-quote-card</h4>
-  <p style="color:var(--body-muted)">Dark photographic-canvas hero. Background <code>#272729</code> fallback (production: photographic vista). Centered white headline in <code>display-lg</code>, small logo above, single CTA below.</p>
-</section>
-
-<section class="doc-section" id="comp-inputs">
-  <div class="section-eyebrow">Components — Inputs &amp; Forms</div>
-  <h2 class="section-title">Inputs &amp; Forms</h2>
-  <p class="section-lead">Only the search input was surfaced on the analyzed pages. Error and validation states were not documented.</p>
-  <h4>search-input</h4>
-  <p>Background white, text <code>#1d1d1f</code>, <code>font-size: 17px</code>, <code>border: 1px solid rgba(0,0,0,0.08)</code>, <code>border-radius: 9999px</code>, padding <code>12px 20px</code>, height 44px. Matches the pill grammar of the CTA system.</p>
-  <div class="search-demo">
-    <svg viewBox="0 0 16 16" fill="none" stroke="#1d1d1f" stroke-width="1.5" width="14" height="14"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
-    <input type="search" placeholder="Search accessories…" />
-  </div>
-</section>
-
-<section class="doc-section doc-section--dark" id="comp-footer">
-  <div class="section-eyebrow">Components — Footer</div>
-  <h2 class="section-title">Footer</h2>
-  <p class="section-lead">Background parchment <code>#f5f5f7</code>. Deliberately dense — the only section that breaks the tile rhythm to show the full information architecture.</p>
-  <ul style="color:var(--body-muted)">
-    <li><strong style="color:#fff">Background</strong> — <code>#f5f5f7</code> (canvas-parchment), text <code>#333333</code> (ink-muted-80)</li>
-    <li><strong style="color:#fff">Link columns</strong> — <code>dense-link</code> (17px / 400 / 2.41 line-height). The 2.41 leading is what makes dense columns scannable.</li>
-    <li><strong style="color:#fff">Column headings</strong> — <code>caption-strong</code> (14px / 600)</li>
-    <li><strong style="color:#fff">Legal row</strong> — <code>fine-print</code> (12px / 400) with <code>#7a7a7a</code> text</li>
-    <li><strong style="color:#fff">Vertical padding</strong> — 64px</li>
+  <h3>② 頂部 ▤ 使用指南按鈕</h3>
+  <p>每個 Inspector 頂部都會繪製一條紅色／藍色／黃色橫條，標題為「▤ XXX 使用指南」。點擊可開啟對應的完整 EditorWindow。</p>
+  <p>每個 EditorWindow 都包含：</p>
+  <ul>
+    <li>頂部搜尋框 — 可搜尋屬性名／關鍵字</li>
+    <li>可摺疊的模組分區（按色條展開）</li>
+    <li>每個屬性附「依賴條件」與「排錯檢查」標籤</li>
   </ul>
+  <div class="callout callout--warn"><strong>設計理念</strong> — 任何在 Inspector 看到的欄位都應該能在 30 秒內找到對應說明。若某個屬性沒有右鍵說明或頂部按鈕無法開啟，請通報維護者。</div>
+  <p style="color:var(--ink48);font-size:14px;">實作：<code>DrawPropWithContextMenu</code> + <code>DrawTopHelpButton</code>（每個 Inspector 共用）</p>
 </section>
 
-<!-- Do's and Don'ts -->
-<section class="doc-section" id="dos-donts">
-  <div class="section-eyebrow">Do's and Don'ts</div>
-  <h2 class="section-title">Rules</h2>
-  <p class="section-lead">Eight rules each — the non-negotiables of the Apple design language.</p>
-  <div class="dos-donts">
-    <div class="do-col">
-      <h3>✓ Do</h3>
-      <ul class="rule-list">
-        <li><span class="rule-icon">✓</span>Use <code>#0066cc</code> for every interactive element — links, pill CTAs, focus signals — and nothing else.</li>
-        <li><span class="rule-icon">✓</span>Set headlines in <code>hero-display</code> or <code>display-lg</code> with negative letter-spacing (<code>-0.28 → -0.374px</code>).</li>
-        <li><span class="rule-icon">✓</span>Run body copy at 17px / 400 / 1.47 — not 16px. The extra pixel defines the brand's reading pace.</li>
-        <li><span class="rule-icon">✓</span>Alternate <code>product-tile-light</code> and <code>product-tile-dark</code> for full-bleed section rhythm. The color change IS the divider.</li>
-        <li><span class="rule-icon">✓</span>Reserve <code>border-radius: 9999px</code> for the primary blue CTA and any other element that should read as an "action."</li>
-        <li><span class="rule-icon">✓</span>Apply the single product-shadow (<code>rgba(0,0,0,0.22) 3px 5px 30px</code>) only to product renders — never on cards, buttons, or text.</li>
-        <li><span class="rule-icon">✓</span>Use <code>transform: scale(0.95)</code> as the active/press state on every button — it's the system-wide micro-interaction.</li>
-        <li><span class="rule-icon">✓</span>Keep the global nav <code>#000000</code> (true black) — it's the only place pure black appears on most pages.</li>
-      </ul>
-    </div>
-    <div class="dont-col">
-      <h3>✗ Don't</h3>
-      <ul class="rule-list">
-        <li><span class="rule-icon">✗</span>Don't introduce a second accent color. Every "click me" signal is Action Blue.</li>
-        <li><span class="rule-icon">✗</span>Don't add shadows to cards, buttons, or text — shadow is reserved for product imagery only.</li>
-        <li><span class="rule-icon">✗</span>Don't use gradients as decorative backgrounds. Atmosphere comes from photography.</li>
-        <li><span class="rule-icon">✗</span>Don't set body copy at weight 500. Apple's ladder is 300 / 400 / 600 / 700 — 500 is deliberately absent.</li>
-        <li><span class="rule-icon">✗</span>Don't round full-bleed tiles. Tiles are rectangular and edge-to-edge; the color change is the divider.</li>
-        <li><span class="rule-icon">✗</span>Don't tighten line-height below 1.47 for body copy. The editorial leading is part of the brand.</li>
-        <li><span class="rule-icon">✗</span>Don't mix radii grammars — use <code>sm</code> for compact utility, <code>lg</code> for utility cards, <code>pill</code> for pills.</li>
-        <li><span class="rule-icon">✗</span>Don't use <code>#2997ff</code> (Sky Link Blue) on light surfaces — it's the dark-tile-only variant.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- Responsive -->
-<section class="doc-section doc-section--dark" id="responsive-breakpoints">
-  <div class="section-eyebrow">Responsive — Breakpoints</div>
-  <h2 class="section-title">Breakpoints</h2>
-  <p class="section-lead">Eight breakpoints. The structural ones that matter for agents: 1440, 1068, 833, 734, 640, 480px.</p>
+<!-- §5 -->
+<section class="sec sec--dark" id="s5">
+  <div class="eyebrow">§5 · 七個 Help Window</div>
+  <h2 class="sec-title">七個 EditorWindow 一覽</h2>
+  <p class="sec-lead">系統內建七個 EditorWindow — 五個是「說明指南」、一個是「平台管理」、一個是「Profile 編輯器」。</p>
   <div class="table-wrap">
-    <table>
-      <thead><tr><th>Name</th><th>Width</th><th>Key Changes</th></tr></thead>
-      <tbody>
-        <tr><td>Small phone</td><td>≤ 419px</td><td>Single-column tiles; sub-nav collapses to category + CTA only; hero typography drops to 28px</td></tr>
-        <tr><td>Phone</td><td>420–640px</td><td>Single-column stack; product renders scale to 80% of tile width; hero h1 drops to 34px</td></tr>
-        <tr><td>Large phone</td><td>641–735px</td><td>Tiles transition to tighter padding (48px vertical vs 80px); fine-print wraps</td></tr>
-        <tr><td>Tablet portrait</td><td>736–833px</td><td>Global nav collapses to hamburger; sub-nav hides category chips, keeps primary CTA</td></tr>
-        <tr><td>Tablet landscape</td><td>834–1023px</td><td>Global nav returns fully expanded; 3-column utility grids become 2-column</td></tr>
-        <tr><td>Small desktop</td><td>1024–1068px</td><td>Product tiles use 2/3 width with margin gutters; hero h1 stays at 40px</td></tr>
-        <tr><td>Desktop</td><td>1069–1440px</td><td>Full layout; 4–5 column store grids; 1440px content max</td></tr>
-        <tr><td>Wide desktop</td><td>≥ 1441px</td><td>Content locks at 1440px, margins absorb extra width</td></tr>
-      </tbody>
-    </table>
+  <table>
+    <thead><tr><th>視窗</th><th>功能</th><th>入口</th><th>對應章節</th></tr></thead>
+    <tbody>
+      <tr><td><code>SpineArtHelpWindow</code></td><td>美術視覺開發指南 — 每個 Shader 屬性的友善名稱、用途、依賴、排錯說明</td><td>Material Inspector 頂部按鈕</td><td>§6–§11</td></tr>
+      <tr><td><code>SpineDebugHelpWindow</code></td><td>常見問題排錯 Q&amp;A：角色為何全黑、效果無效。整合 Troubleshooter 排查面板</td><td>▤ 除錯指南按鈕</td><td>§30</td></tr>
+      <tr><td><code>SpineProfileHelpWindow</code></td><td>程式調用 + MPB 衝突防護指南。含 ApplyProfileRuntime、ApplyTempProfile、SetFloat/Color/Vector 程式碼範例</td><td>▤ 程式 API 指南</td><td>§22–§24</td></tr>
+      <tr><td><code>SpineNamingRuleWindow</code></td><td>Preset 預設檔命名規則 — 每個模組附通用型與角色特化型範例 + 一鍵複製名稱</td><td>▤ 命名規則</td><td>§21</td></tr>
+      <tr><td><code>SpineShadowLightHelpWindow</code></td><td>SpineShadowLight 元件指南 — Light Settings 與 Cookie Settings 全部欄位說明。最多 8 盞同時影響角色</td><td>▤ 場景燈光指南</td><td>§12</td></tr>
+      <tr><td><code>SpineHitSweepHelpWindow</code></td><td>Hit Sweep 動畫設定指南 + PlaySweep(Vector3) 程式 API 範例與一鍵複製</td><td>▤ 掃光指南</td><td>§13</td></tr>
+      <tr><td><code>SpinePlatformManagerWindow</code></td><td>平台變體管理中心 — 滑動切換不同平台的 Shader Feature 啟用組合、即時刷新全專案材質</td><td>Window 選單入口</td><td>§25–§28</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="color:rgba(255,255,255,.55);">所有 Help Window 共用統一的折疊／搜尋／Ping 高亮 UI 設計</p>
+</section>
+
+<!-- §5.1 -->
+<section class="sec" id="s51">
+  <div class="eyebrow">§5.1 · Help Window 介面</div>
+  <h2 class="sec-title">通用 Help Window 介面操作</h2>
+  <p class="sec-lead">搜尋、摺疊、Ping 高亮 — 七套 Window 一致行為。學一次即可。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>介面元素</th><th>行為說明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>頂部搜尋框</strong></td><td>即時過濾屬性名稱、友善名稱、描述、解決方案文本</td></tr>
+      <tr><td><strong>模組色帶</strong></td><td>點擊整條色帶可摺疊／展開該模組。搜尋時自動展開有命中的模組</td></tr>
+      <tr><td><strong>屬性卡片</strong></td><td>標題顯示友善名稱 + ()內顯示 Shader 變數名稱 + 描述 + [依賴條件] + [排錯檢查]</td></tr>
+      <tr><td><strong>Ping 高亮</strong></td><td>由右鍵跳轉時，目標卡片會被黃色矩形閃爍 2 秒以利視覺定位</td></tr>
+      <tr><td><strong>複製按鈕</strong></td><td>程式 API 區的程式碼方塊可一鍵複製到剪貼簿</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="color:var(--ink48);font-size:14px;">實作位置：<code>SpineCustomShaderGUI.cs</code> · <code>SpineShadowLight.cs</code> · <code>SpineHitSweepEffect.cs</code> 末段</p>
+</section>
+
+<!-- §6 -->
+<section class="sec sec--dark" id="s6">
+  <div class="eyebrow">§6 · MAIN — Category 01/06</div>
+  <h2 class="sec-title">MAIN — 主紋理與基礎參數</h2>
+  <p class="sec-lead">本分區為所有材質必要設定，無法停用。包含 Main &amp; Shadow Settings 與 Post-Processing Control 兩個子模組，共 7 個屬性。</p>
+  <div class="callout">自動掛載：Suppress Bloom 開啟 → 自動掛載 <code>SpineBloomThresholdSync</code>。前置條件：無</div>
+
+  <h3>Module 01 · Main &amp; Shadow Settings</h3>
+  <p>系統會自動偵測同名後綴貼圖（<code>_Normal</code> / <code>_BackLight</code> / <code>_Emission</code>）並掛載。將材質拖到 SpriteRenderer 時亦會自動同步 MainTex 與 Straight Alpha 設定。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Main Texture</td><td><code>_MainTex</code></td><td>主紋理。拖材質到 SpriteRenderer 時系統會自動讀取 Sprite 貼圖並開啟 Straight Alpha</td></tr>
+      <tr><td>Shared Tiling &amp; Offset</td><td><code>_MainTex_ST</code></td><td>共用 UV (XY=Tiling, ZW=Offset)。此值會同步影響 MainTex、Emission、BackLight、Normal Map 確保所有疊加層對齊</td></tr>
+      <tr><td>Main Color (RGBA)</td><td><code>_Color</code></td><td>基礎顏色與全域透明度。Alpha 若小於 1 會連同 BackLight / Inline / Outline 一起變透明。Alpha 為 0 時若出現鬼影，多為 Beautify 壓暗或 Straight Alpha 未勾選所致</td></tr>
+      <tr><td>Shadow Alpha Cutoff</td><td><code>_Cutoff · 0–1</code></td><td>Shadow Pass 的 Alpha 裁切閾值；小於此值的像素不投射陰影</td></tr>
+      <tr><td>Straight Alpha Texture</td><td><code>_StraightAlphaInput</code></td><td>切換貼圖透明度計算模式。Spine 預設為 PMA；若邊緣出現黑邊或白邊請切換此項</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">自動偵測 — 若主紋理同目錄有 <code>{name}_Normal</code> / <code>_BackLight</code> / <code>_Emission</code> 後綴，系統在材質選取時自動填入。</div>
+  <div class="callout callout--danger"><strong>注意</strong> — Reset 整顆材質會清除所有 Preset 綁定與自動掛載元件。</div>
+
+  <h3>Module 02 · Post-Processing Control</h3>
+  <p>後製管線（如 WinkingBeautify）的 Bloom 經常將 HDR 描邊與發光過度過曝。本模組讓 Shader 取得目前後製 Bloom 強度，並依 AnimationCurve 反向換算出本材質專屬的抑制門檻。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Suppress Bloom</td><td><code>_EnableBloomSuppression</code></td><td>啟用後系統自動掛載 <code>SpineBloomThresholdSync</code> 元件至角色。Layer 須正確</td></tr>
+      <tr><td>Bloom Threshold</td><td><code>_BloomSuppressThreshold</code></td><td>當前計算出的抑制門檻 — 由 SpineBloomThresholdSync 自動填入，唯讀，不需手動修改</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <h4>SpineBloomThresholdSync 運作原理</h4>
+  <ul>
+    <li><strong>資料來源</strong>：Reflection 抓取 <code>WinkingBeautify.finalBloomIntensity</code></li>
+    <li><strong>預設曲線</strong>：Bloom = 1.0 → Threshold = 0.6000；Bloom = 10.0 → Threshold = 0.5209</li>
+    <li><strong>寫入方式</strong>：MaterialPropertyBlock（不污染材質球）</li>
+    <li><strong>效能策略</strong>：髒標記（<code>lastAppliedBloom</code>）— 數值未變則跳過寫入</li>
+  </ul>
+  <div class="callout callout--warn"><strong>排錯</strong> — 若 Suppress Bloom 勾選後仍過曝，請確認角色 Layer ∈ {8, 9, 12, 13, 18, 20}。Layer 不正確時自動化機制會將 BloomThresholdSync 元件移除。</div>
+</section>
+
+<!-- §7 -->
+<section class="sec" id="s7">
+  <div class="eyebrow">§7 · NOISE — Category 02/06</div>
+  <h2 class="sec-title">NOISE — 全域雜訊取樣</h2>
+  <p class="sec-lead">本模組不直接影響畫面 — 它是供 BackLight、Inline、Outline 等模組選用的「亂度遮罩」來源。三者讀取同一張動態雜訊，因此節奏、速度、方向保持一致。</p>
+  <p>當其他模組啟用 Noise Mask 時，本分區自動連動開啟。Shader Feature：<code>_MODULE_GLOBAL_NOISE</code></p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Enable Global Noise</td><td><code>_EnableGlobalNoise</code></td><td>啟用 Shader 全域噪點運算，可用於消融、火焰外框等動態效果。啟用後需於子模組勾選 Noise Mask</td></tr>
+      <tr><td>Noise Scale (X, Y)</td><td><code>_GlobalNoiseScale</code></td><td>UV 平鋪倍率。值越大顆粒越細密；建議 X 與 Y 同步調整</td></tr>
+      <tr><td>Noise Speed (X, Y)</td><td><code>_GlobalNoiseSpeed</code></td><td>UV 流動速度。若感覺沒在流動，請將此值調大</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout callout--warn"><strong>設計守則</strong> — Noise 為共用資源。若你在多個模組同時啟用 Noise，預期它們會同節奏變化；需要差異感請改用各模組獨立的 Intensity 調幅。</div>
+</section>
+
+<!-- §8 -->
+<section class="sec sec--dark" id="s8">
+  <div class="eyebrow">§8 · LIGHTING — Category 03/06</div>
+  <h2 class="sec-title">LIGHTING — 光照系統</h2>
+  <p class="sec-lead">本章依序介紹四個子模組：Native Lighting（Unity Realtime）、Shadow Light Base（自製 SpineShadowLight）、Normal Map（法線取樣）、Light Probe（環境光 SH 取樣）。</p>
+  <div class="callout">前置條件：角色 Layer ∈ {8, 9, 12, 13, 18, 20}。啟用任一子模組 → 自動掛載 <code>SpineLightReceiver</code>；<code>EnsureInstance</code> 建立 <code>SpineLightManager</code>（場景單例）。</div>
+
+  <h3>Module 01 · Native Lighting Settings</h3>
+  <p>接收 Unity 場景的 Realtime Directional / Point / Spot Light。所有燈光資料由 SpineLightManager 依距離排序取前 8 盞，透過 MaterialPropertyBlock 推送。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Enable Native Lighting</td><td><code>_EnableNativeLighting</code></td><td>啟用接收 Unity Realtime Light；關閉後本模組所有屬性失效。角色全黑時請確認 Master Intensity 不為 0</td></tr>
+      <tr><td>Master Light Intensity</td><td><code>_NativeLightIntensity · 0–5</code></td><td>所有 Realtime 光的總強度倍率 — 用於整體角色亮度調節</td></tr>
+      <tr><td>Directional Intensity</td><td><code>_DirectionalLightIntensity</code></td><td>場景中 Directional Light（太陽光）的獨立倍率</td></tr>
+      <tr><td>Additional Intensity</td><td><code>_AdditionalLightIntensity</code></td><td>場景中 Point / Spot Light 等附加光源的倍率，與 Directional 分開控制</td></tr>
+      <tr><td>Light Affects Additive</td><td><code>_LightAffectsAdditive</code></td><td>是否讓光照影響 Spine Additive Slot；預設關閉避免粒子過曝</td></tr>
+      <tr><td>Probe → Native Lighting</td><td><code>_LightProbeNativeBlend · 0–1</code></td><td>Light Probe 取樣值疊加到 Native Lighting 結果的比重；需先啟用 Light Probe。讓暗部不至於死黑</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Module 02 · Shadow Light Base Settings</h3>
+  <p>接收所有 SpineShadowLight 元件投射的自製光照 — 區域光、聚光、Cookie 投影、Caustics 波光。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Enable Shadow Light Base</td><td><code>_EnableShadowLight</code></td><td>影響 BaseColor 的基底光照層（不含描邊與背光）</td></tr>
+      <tr><td>Base Intensity</td><td><code>_ShadowLightBaseIntensity · 0–5</code></td><td>ShadowLight 在 BaseColor 上的整體強度乘數</td></tr>
+      <tr><td>Affects Normal Map</td><td><code>_SL_AffectsNormalMap</code></td><td>是否參與 Normal Map 計算 — 開啟後光源方向會推算法線著色。需開啟 Normal Map</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Module 03 · Normal Map Settings</h3>
+  <p>讓 2D Sprite 接收方向性光照。自動偵測同目錄的 <code>_Normal</code> 後綴貼圖並掛載。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Enable Normal Map Module</td><td><code>_EnableNormalMap</code></td><td>啟用法線採樣與光照計算</td></tr>
+      <tr><td>Normal Map</td><td><code>_NormalMap</code></td><td>法線貼圖。若主紋理同目錄有 <code>{name}_Normal</code>，會自動填入</td></tr>
+      <tr><td>Invert Normal Height</td><td><code>_InvertNormalMap</code></td><td>反轉法線 Z 軸高度（凹凸方向）</td></tr>
+      <tr><td>Normal Intensity</td><td><code>_NormalIntensity · 0–5</code></td><td>法線強度。0 為平面、1 為原始、5 為極度誇張</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">協同運作 — Normal Map 啟用後會被 Native Lighting、Light Probe、ShadowLight（若 Affects Normal Map = ON）三者同時取用。一張法線貼圖即可撐起整個立體感。</div>
+
+  <h3>Module 04 · Light Probe Settings</h3>
+  <p>取樣場景烘焙好的 Light Probe Group，把 9 個 SH 係數傳入 Shader。若場景開啟 LightMap + LightProbe 時此選項自動開啟。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Enable Light Probe</td><td><code>_EnableLightProbe</code></td><td>總開關。BackLight / Inline / Outline 若選 LightProbe 光源，本選項必須啟用。若按鈕一直跳回關閉，代表場景缺乏 Lightmap / Probe 資料</td></tr>
+      <tr><td>Probe Intensity</td><td><code>_LightProbeIntensity · 0–3</code></td><td>SH 採樣的整體強度倍率</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>§8.5 · Light Source 多選旗標</h3>
+  <p>BackLight、Inline、Outline 三個模組共用一套 Light Source 多選欄位（<code>EnumFlagsField</code>）。每勾選一個光源，下方展開該光源獨立的 Power / Color Blend / Intensity 三組旋鈕。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>旗標</th><th>光源類型</th><th>Shader 變數</th></tr></thead>
+    <tbody>
+      <tr><td>Flag 1 · Realtime</td><td>Unity 場景燈，前 8 盞</td><td><code>_BackLightLightingMode</code> / <code>_InlineLightingMode</code> / <code>_OutlineLightingMode</code></td></tr>
+      <tr><td>Flag 2 · LightProbe</td><td>烘焙環境光 SH</td><td>（整數位元欄位）</td></tr>
+      <tr><td>Flag 4 · ShadowLight</td><td>自製 SpineShadowLight</td><td>—</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <h4>進階區塊三件套</h4>
+  <p>當 Light Source ≠ Disabled 時，BackLight / Inline / Outline 模組會額外展開：</p>
+  <ul>
+    <li><strong>A. Mask By Light Direction</strong>（方向遮罩）— 三光源各有 Power 指數，控制聚焦銳利度</li>
+    <li><strong>B. Tint By Light Color</strong>（光源染色）— 三光源各有 Blend + Intensity 控制深度</li>
+    <li><strong>C. Noise Mask</strong>（噪點侵蝕）— 需啟用 §7 Global Noise</li>
+  </ul>
+  <div class="callout callout--warn">選了 LightProbe 卻沒開全域 Light Probe — Inspector 會自動跳出修正按鈕。</div>
+</section>
+
+<!-- §9 -->
+<section class="sec" id="s9">
+  <div class="eyebrow">§9 · EMISSION — Category 04/06</div>
+  <h2 class="sec-title">EMISSION — 自體發光</h2>
+  <p class="sec-lead">Emission 不接收任何光源 — 用於符文、機甲、武器尖端、Magic 物件等需要持續發光的區域。自動偵測 <code>{name}_Emission</code> 後綴貼圖。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Enable Emission</td><td><code>_EnableEmission</code></td><td>啟用發光通道；關閉後完全跳過該段 Shader 計算</td></tr>
+      <tr><td>Emission Texture</td><td><code>_EmissionTex</code></td><td>指定發光部位遮罩（黑白或彩色）。自動偵測同目錄 <code>{主貼圖名稱}_Emission</code></td></tr>
+      <tr><td>Emission Color (HDR)</td><td><code>_EmissionColor</code></td><td>疊加的發光顏色 — HDR 強度大於 1 會觸發後製 Bloom 過曝</td></tr>
+      <tr><td>Blend Weight</td><td><code>_EmissionBlend · 0–1</code></td><td>發光與底色的混合權重（0 = 不顯示，1 = 完全替換）</td></tr>
+      <tr><td>Intensity</td><td><code>_EmissionIntensity · 0–10</code></td><td>發光整體強度倍率。配合 HDR Color 推 Bloom</td></tr>
+      <tr><td>Multiply With MainTex</td><td><code>_EmissionMulMain</code></td><td>開啟後發光被主紋理乘調 — 讓符文受角色顏色影響；關閉則完全獨立</td></tr>
+    </tbody>
+  </table>
   </div>
 </section>
 
-<section class="doc-section" id="responsive-touch">
-  <div class="section-eyebrow">Responsive — Touch Targets</div>
-  <h2 class="section-title">Touch Targets</h2>
+<!-- §10 -->
+<section class="sec sec--dark" id="s10">
+  <div class="eyebrow">§10 · EFFECT — Category 05/06</div>
+  <h2 class="sec-title">EFFECT — 三個獨立特效模組</h2>
+  <p class="sec-lead">EFFECT 分區包含三個彼此獨立的特效模組：Effect Overlay（瞬間整體染色）、Hit Sweep（受擊光帶掃光）、BackLight（背光高光）。前兩者為時間性特效，BackLight 為常駐光照特效。</p>
+  <div class="callout">自動掛載：Hit Sweep → <code>SpineHitSweepEffect</code> 元件。本分區無 Toggle — Effect Intensity = 0 時自動視為關閉。</div>
+
+  <h3>Module 01 · Effect Overlay — 整體色彩疊加</h3>
+  <p>將指定 HDR 顏色按 Intensity 線性疊到最終畫面色。瞬間性特效 — 用於受擊閃白、變身、無敵、燃燒、冰凍。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Effect Color (HDR)</td><td><code>_EffectColor</code></td><td>受擊閃白用 (5,5,5)；火焰用 (3,1.2,0.4)。若由程式 Runtime 控制，Preset 請取消勾選此項</td></tr>
+      <tr><td>Effect Intensity</td><td><code>_EffectIntensity</code></td><td>0–1 疊加比例。常配合 Curve 做 0→1→0 三幀閃光</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Module 02 · Hit Sweep Settings — 受擊掃光</h3>
+  <p>「打擊閃光」特效。傳入受擊點世界座標後，光帶從受擊點向外掃過整個角色。常用於武器命中、技能擊發、無敵讀條的視覺反饋。Shader 屬性在 Material Inspector 設定外觀；觸發則由 <code>SpineHitSweepEffect</code> 元件腳本控制（詳見 §13）。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Enable Hit Sweep</td><td><code>_EnableHitSweep</code></td><td>啟用打擊光帶；同時系統自動掛載 SpineHitSweepEffect 至角色。角色 Layer 須正確</td></tr>
+      <tr><td>Sweep Color (HDR)</td><td><code>_SweepColor</code></td><td>光帶顏色。預設 HDR 白光 (2,2,2) 觸發 Bloom 過曝產生亮邊</td></tr>
+      <tr><td>Sweep Width</td><td><code>_SweepWidth · 0.01–1</code></td><td>光帶寬度，以角色直徑比例計算。0.15 為標準，0.3 較粗</td></tr>
+      <tr><td>Sweep Softness</td><td><code>_SweepSoftness · 0.001–1</code></td><td>光帶邊緣的羽化柔和度，數值越大邊緣越糊</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">進階控制屬性（位於 SpineHitSweepEffect 元件 Inspector 而非 Material）：<code>duration</code>（掃光總時間，秒）、<code>sweepRange</code>（預設 -4 → 4）、<code>sweepCenterOffset</code>（角色中心校正向量）。詳見 §13。</div>
+
+  <h3>Module 03 · BackLight Settings — 背光高光（基底）</h3>
+  <p>背光／高光通道。BackLight 是 EFFECT 分區中最複雜的模組 — 接受三種光源並產生獨立的 Power / Blend / Intensity 旋鈕集合。自動偵測 <code>{name}_BackLight</code> 後綴貼圖並掛載。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Enable BackLight</td><td><code>_EnableBackLight</code></td><td>總開關。啟用後出現 Light Source 多選欄位與下方進階區塊</td></tr>
+      <tr><td>Light Source</td><td><code>_BackLightLightingMode</code></td><td>EnumFlags — Realtime / LightProbe / ShadowLight 多選；每選一個展開 Power / Blend / Intensity</td></tr>
+      <tr><td>Ignore Behind Fade (Shadow Light)</td><td><code>_BL_SL_IgnoreBehind</code></td><td>當 Shadow Light 位於角色背後時忽略漸隱衰減。常用於「全方向光罩」效果。需 Light Source 包含 ShadowLight</td></tr>
+      <tr><td>BackLight Texture</td><td><code>_SpecularTex</code></td><td>背光紋理 — 通常是手繪的高光遮罩。預設為純白。自動偵測 <code>{name}_BackLight</code></td></tr>
+      <tr><td>Specular Color (HDR)</td><td><code>_SpecularColor</code></td><td>背光顏色 (HDR)。冷色銀邊用 (0.6,0.9,1.5)；火焰邊用 (1.5,0.8,0.3)</td></tr>
+      <tr><td>Blend Intensity</td><td><code>_SpecularBlend</code></td><td>背光疊加比例 0–1</td></tr>
+      <tr><td>Blend Mode</td><td><code>_BackLightMode</code></td><td>Replace（蓋上去）或 Additive（加上去）</td></tr>
+      <tr><td>Multiply With MainTex</td><td><code>_SpecularMulMain</code></td><td>背光是否受主紋理顏色影響。開啟讓邊緣高光更貼著角色</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>進階區塊三件套（BackLight · Inline · Outline 共用結構）</h4>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>區塊</th><th>BackLight 前綴</th><th>Inline 前綴</th><th>Outline 前綴</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>A. Mask By Light Direction</td><td><code>_BL_RT/Probe/Shadow_Power</code></td><td><code>_IL_…</code></td><td><code>_OL_…</code></td><td>開啟後只顯示在受光面。各光源獨立 Power 指數控制聚焦銳利度</td></tr>
+      <tr><td>B. Tint By Light Color</td><td><code>_BL_RT/Probe/Shadow_Blend/Intensity</code></td><td><code>_IL_…</code></td><td><code>_OL_…</code></td><td>開啟後顏色被光源色染色。各光源獨立 Blend 與 Intensity</td></tr>
+      <tr><td>C. Noise Mask</td><td><code>_BL_EnableNoise · _BL_NoiseIntensity</code></td><td><code>_IL_…</code></td><td><code>_OL_…</code></td><td>開啟後受 Global Noise 調幅 — 邊緣像火焰般顫動。需啟用 §7 Global Noise</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- §11 -->
+<section class="sec" id="s11">
+  <div class="eyebrow">§11 · LINE — Category 06/06</div>
+  <h2 class="sec-title">LINE — 兩種描邊</h2>
+  <p class="sec-lead">Inline 從角色 Alpha 邊緣向內取樣漸層（Rim Light 風格）；Outline 在外側以 Sobel 8 鄰域偵測繪製外輪廓。兩者共用同一套 Light Source 多選 + 進階區塊結構（§10.3）。</p>
+  <div class="callout">自動掛載：Inline → <code>SpineAlphaMaskRenderer</code>。Outline 為獨立 Pass，可被打包剝離。</div>
+
+  <h3>Module 01 · Inline Settings（Rim Light）</h3>
+  <p>啟用後系統自動掛載 <code>SpineAlphaMaskRenderer</code>，離線渲染一張 Alpha Mask RT 供 Shader 取樣（§16）。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Enable Inline</td><td><code>_EnableInline</code></td><td>啟用內描邊；自動掛載 AlphaMaskRenderer。Layer 須正確</td></tr>
+      <tr><td>Light Source</td><td><code>_InlineLightingMode</code></td><td>同 BackLight 結構。可全停用做純色內描邊</td></tr>
+      <tr><td>Inline Color (HDR)</td><td><code>_InlineColor</code></td><td>內描邊顏色，HDR</td></tr>
+      <tr><td>Inline Width</td><td><code>_InlineWidth · 0–10</code></td><td>描邊寬度（像素）</td></tr>
+      <tr><td>Fade Steps</td><td><code>_InlineFadeSteps</code></td><td>內描邊階梯數 2–8。值越大邊緣越平滑</td></tr>
+      <tr><td>Inline ZTest</td><td><code>_InlineZTest</code></td><td>LessEqual / Always；後者可穿透前景顯示</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="color:var(--ink48);font-size:14px;">進階區塊（Directional Mask / Tint / Noise）以 <code>_IL_</code> 前綴，結構同 §10.3。Inline 共有 6 + 9 = 15 個屬性（基底 + 進階）。</p>
+
+  <h3>Module 02 · Outline Settings — 基底</h3>
+  <p>外輪廓描邊。獨立 Pass「Outline」以 Sobel 邊緣偵測在 Alpha 邊界外側繪製描邊。支援被 Stencil 標記、被光源染色、被深度測試覆蓋等策略。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Enable Outline</td><td><code>_EnableOutline</code></td><td>啟用外描邊；Pass「Outline」會被啟動，需在 Build Config 中放行</td></tr>
+      <tr><td>Light Source</td><td><code>_OutlineLightingMode</code></td><td>同 BackLight / Inline 結構，三光源多選</td></tr>
+      <tr><td>Ignore Behind Fade (Shadow Light)</td><td><code>_OL_SL_IgnoreBehind</code></td><td>Shadow Light 位於角色背後時忽略漸隱衰減</td></tr>
+      <tr><td>Outline Color (HDR)</td><td><code>_OutlineColor</code></td><td>外描邊顏色。HDR 過曝可推 Bloom 形成光暈邊</td></tr>
+      <tr><td>Outline Width</td><td><code>_OutlineWidth</code></td><td>外描邊寬度，0–8 像素或螢幕空間單位</td></tr>
+      <tr><td>Multiply Edge Color</td><td><code>_MultiplyEdgeColor</code></td><td>將外描邊與主紋理邊緣顏色相乘 — 讓邊緣繼承角色本色</td></tr>
+      <tr><td>Outline Smoothness</td><td><code>_ThresholdEnd · 0–1</code></td><td>邊緣柔和度（Threshold End），控制 Alpha 漸變開始位置</td></tr>
+      <tr><td>Alpha Cutoff</td><td><code>_OutlineAlphaCutoff · 0–1</code></td><td>取樣的 Alpha 裁切閾值</td></tr>
+      <tr><td>Outline ZTest</td><td><code>_OutlineZTest</code></td><td>LessEqual / Always；後者可穿透前景物件顯示</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Outline 取樣演算法進階設定</h3>
+  <p>這些是 Shader Variant 級別的設定，影響 GPU 編譯出的指令數量。<strong>手機平台建議於 §25 BuildConfig 中關閉 Outline</strong>（整顆 Shader 中最重的 Pass）。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性名稱</th><th>Shader 變數</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Screen Space Width</td><td><code>_USE_SCREENSPACE_OUTLINE_WIDTH</code></td><td>啟用後 Outline Width 以螢幕空間像素計算（距離鏡頭遠近也保持等粗）；關閉則為模型空間</td></tr>
+      <tr><td>Fill Inside</td><td><code>_OUTLINE_FILL_INSIDE</code></td><td>啟用後外描邊填入主紋理內部 — 受擊閃白/紅效果。若由程式 Runtime 控制，Preset 請取消勾選此項</td></tr>
+      <tr><td>Sample 8 Neighbours</td><td><code>_USE8NEIGHBOURHOOD_ON</code></td><td>啟用 8 鄰域 Sobel（標準）；關閉則為 4 鄰域，速度較快但有鋸齒</td></tr>
+      <tr><td>Reference Texture Width</td><td><code>_OutlineReferenceTexWidth</code></td><td>Outline Width 的單位參考解析度，預設 1024。若主紋理 2048，須相應調整</td></tr>
+      <tr><td>Opaque Alpha Threshold</td><td><code>_OutlineOpaqueAlpha · 0–1</code></td><td>主紋理 Alpha 大於此值視為完全不透明 — 避免半透明區域產生雜訊邊緣</td></tr>
+      <tr><td>Outline Mip Level</td><td><code>_OutlineMipLevel</code></td><td>取樣 Mip Level (0–3)。Mip 越高描邊越柔但會抖動；常用 0</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="color:var(--ink48);font-size:14px;">進階區塊（Directional Mask / Tint / Noise）以 <code>_OL_</code> 前綴，結構同 §10.3。Stencil 設定（<code>_StencilRef</code> / <code>_StencilComp</code>）用於 UI/角色互動，一般不需修改。</p>
+</section>
+
+<!-- §12 -->
+<section class="sec sec--dark" id="s12">
+  <div class="eyebrow">§12 · Runtime 01</div>
+  <h2 class="sec-title">SpineShadowLight 元件</h2>
+  <p class="sec-lead">與 Unity Light 平行的自製光源系統。在 Hierarchy 右鍵「GameObject / Light / Spine Shadow Light」建立。Inspector 由兩個可摺疊區塊組成。</p>
+  <p>Scene View 提供 Range / Spot Angle / Area Size 的拖曳 Handle。<code>OnDrawGizmos</code> 在 Scene View 即時預覽光形 — 不需 Play。</p>
+
+  <h3>💡 Light Settings</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>欄位</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>type</code></td><td>Point / Spot / Area — 全向、聚光、體積區域光</td></tr>
+      <tr><td><code>blendMode</code></td><td>Multiply（陰影層）/ Add（純發光）/ Screen（柔和提亮）/ Overlay（高飽和對比）</td></tr>
+      <tr><td><code>color (HDR)</code></td><td>本體顏色。HDR 大於 1 觸發 Bloom；預設純黑表示「投射陰影」</td></tr>
+      <tr><td><code>intensity</code></td><td>Master 倍率 0–10</td></tr>
+      <tr><td><code>spineIntensity</code></td><td>針對 Spine / Sprite 的強度倍率</td></tr>
+      <tr><td><code>terrainIntensity</code></td><td>針對 Terrain 渲染的強度倍率</td></tr>
+      <tr><td><code>range</code></td><td>影響距離 — <strong>若燈光無效請優先檢查此項</strong></td></tr>
+      <tr><td><code>spotAngle</code></td><td>聚光張角 1–179°（僅 Spot 生效）</td></tr>
+      <tr><td><code>areaSize</code></td><td>區域光長寬 Vector2（僅 Area 生效；Z 軸由 range）</td></tr>
+      <tr><td><code>cullingMask</code></td><td>LayerMask — 預設 {8, 9, 12, 13, 18, 20}。若不包含角色 Layer 則無效</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>🍪 Cookie Settings</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>欄位</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>cookieMode</code></td><td>Normal（單層靜態投影）/ Caustics（雙層錯位水波焦散）</td></tr>
+      <tr><td><code>cookieTexture</code></td><td>投影紋理。Caustics 模式會嘗試自動載入預設 <code>T_Caustics_0100</code></td></tr>
+      <tr><td><code>colorChannel</code></td><td>RGBA / R / G / B / Alpha — 單通道萃取作為強度遮罩</td></tr>
+      <tr><td><code>cookieScale (X, Y)</code></td><td>投影縮放 — 值越小投出的圖案越大</td></tr>
+      <tr><td><code>autoScroll</code></td><td>啟用後 Offset 轉為 UV/秒 流動速度；Edit Mode 也運作</td></tr>
+      <tr><td><code>cookieOffset</code></td><td>未開 Auto Scroll 時為靜態 UV；開啟後為每秒流動速度 Vector2</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout callout--warn"><strong>限制</strong> — 場景中同一角色最多同時受 8 盞 Shadow Light 影響。超過時 SpineLightManager 依距離排序，取最近 8 盞。</div>
+</section>
+
+<!-- §13 -->
+<section class="sec" id="s13">
+  <div class="eyebrow">§13 · Runtime 02</div>
+  <h2 class="sec-title">SpineHitSweepEffect 元件</h2>
+  <p class="sec-lead">Material 上的 Enable Hit Sweep 勾選後，本元件會自動掛載到角色 GameObject。Inspector 含兩個區塊：Animation Settings（節奏控制）與 Debug &amp; Test Tools（編輯器測試介面）。</p>
+
+  <h3>Animation Settings</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>欄位</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>duration</code></td><td>PlaySweep 呼叫後光帶掃完全身的時間（秒）</td></tr>
+      <tr><td><code>sweepRange</code></td><td>Shader 中光帶起點 X 到終點 Y 的座標範圍，預設 -4 → 4。角色巨大時請加大為 -8 → 8</td></tr>
+      <tr><td><code>sweepCenterOffset</code></td><td>抵銷 Spine 原點通常在腳底的問題。讓系統知道角色「胸口」位置</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Debug &amp; Test Tools</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>工具</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>📍 取自身座標</td><td>將 <code>debugHitPosition</code> 設為角色 <code>transform.position</code></td></tr>
+      <tr><td>在 Scene 編輯點位</td><td>於 Scene View 拖曳紅色 Handle 設定打擊點。同時顯示紅色虛線指向角色中心</td></tr>
+      <tr><td>▶ Test Sweep Effect</td><td>立即觸發 <code>PlaySweep(debugHitPosition)</code> 測試動畫</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>程式呼叫範例</h3>
+<pre><code>// 1. 取得角色身上的特效腳本
+SpineHitSweepEffect hitEffect = GetComponent&lt;SpineHitSweepEffect&gt;();
+if (hitEffect != null)
+{
+    // 2. 傳入受擊點的世界座標
+    //    協程驅動 _SweepProgress 由 0 至 1
+    hitEffect.PlaySweep(hitWorldPosition);
+}</code></pre>
+  <div class="callout">運作原理 — 元件透過 MaterialPropertyBlock 寫入 <code>_SweepProgress</code>、<code>_SweepHitPosOS</code>（本地座標）、<code>_SweepRange</code>、<code>_SweepCenterOffset</code>，不打斷 SRP Batching。協程結束後恢復 0，下次呼叫從頭開始。</div>
+  <p style="color:var(--ink48);font-size:14px;"><code>SpineHitSweepHelpWindow</code> 含一鍵複製範例代碼按鈕。<code>ExecuteInEditMode</code> 可在 Editor 中預覽。</p>
+</section>
+
+<!-- §14 -->
+<section class="sec sec--dark" id="s14">
+  <div class="eyebrow">§14 · Runtime 03</div>
+  <h2 class="sec-title">SpineLightManager — 場景單例</h2>
+  <p class="sec-lead">光照資料的中央交換站。SpineLightManager 為每個 Scene 一個單例。任一光照模組首次啟用時自動建立 GameObject — 無需手動新增。每幀以 LateUpdate 進行光源收集、排序、SH 取樣、MPB 注入。</p>
+
+  <h3>資料 Inputs</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>欄位</th><th>類型</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>collectLightMask</code></td><td>LayerMask</td><td>哪些 Layer 上的 Light 會被收集</td></tr>
+      <tr><td><code>targetLights</code></td><td><code>List&lt;Light&gt;</code></td><td>Unity Realtime Light 列表</td></tr>
+      <tr><td><code>targetShadowLights</code></td><td><code>List&lt;SpineShadowLight&gt;</code></td><td>自製光源列表</td></tr>
+      <tr><td><code>targetCharacters</code></td><td><code>List&lt;Renderer&gt;</code></td><td>已註冊接收的角色</td></tr>
+      <tr><td><code>probeSampleNormal</code></td><td>Vector3</td><td>SH 取樣方向（預設 up）</td></tr>
+      <tr><td><code>EnsureInstance()</code></td><td>靜態</td><td>自動建立 GameObject；SpineLightReceiver 在 OnEnable 呼叫</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>每幀流程（LateUpdate）</h3>
+  <ol>
+    <li><strong>收集 &amp; 排序</strong> — 以「光源 ↔ 角色」距離平方計算，取最近 8 盞放入 <code>_SpineLightPos / Color / Spot</code> 陣列</li>
+    <li><strong>SH 取樣</strong> — <code>LightProbes.GetInterpolatedProbe</code> → 9 個係數轉成 <code>_SpineSHAr ~ _SpineSHC</code></li>
+    <li><strong>Cookie 綁定</strong> — 為每盞 ShadowLight 設定 <code>_SpineShadowCookie0–7</code> + UV 參數</li>
+    <li><strong>MaterialPropertyBlock</strong> — 逐 Renderer 套用 <code>SetPropertyBlock</code> — 不污染共享材質球</li>
+  </ol>
+  <div class="callout">SpineLightReceiver 在 OnEnable 註冊、OnDisable 主動清除殘留 MPB</div>
+</section>
+
+<!-- §15 -->
+<section class="sec" id="s15">
+  <div class="eyebrow">§15 · Runtime 04</div>
+  <h2 class="sec-title">SpineLightReceiver — 角色端接收元件</h2>
+  <p class="sec-lead">LightReceiver 是 LightManager 在角色端的對等元件。OnEnable 時呼叫 Manager.RegisterCharacter 完成註冊。Inspector 提供「🔍 Active Lights」唯讀面板，即時顯示當下打在這個角色身上的所有光源。</p>
+
+  <h3>自動掛載條件</h3>
+  <p>當以下任一勾選時系統會自動為角色掛載 LightReceiver：</p>
   <ul>
-    <li><strong>Minimum 44×44px</strong> across all interactive elements.</li>
-    <li><code>button-primary</code> lands at ~44×100px — the full pill radius makes the visible hit area more generous than the label suggests.</li>
-    <li><code>button-icon-circular</code> is exactly 44×44px.</li>
-    <li>Global nav utility links are smaller (~32×80px) — they deliberately sit at a tighter target because they're precision desktop actions; the mobile hamburger replaces them at ≤833px.</li>
+    <li>Enable Normal Map</li>
+    <li>Enable BackLight（光照模式 ≠ Disabled）</li>
+    <li>Enable Inline（光照模式 ≠ Disabled）</li>
+    <li>Enable Outline（光照模式 ≠ Disabled）</li>
+    <li>Enable Light Probe</li>
+    <li>Enable Shadow Light Base</li>
   </ul>
+
+  <h3>🔍 Active Lights — Runtime Debug 面板</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>面板色條</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>金黃色條</td><td>列出當下被本角色取用的 Unity Realtime Light 物件，可點擊跳轉</td></tr>
+      <tr><td>天藍色條</td><td>列出當下被本角色取用的 SpineShadowLight 物件</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>清單於 Edit Mode 與 Play Mode 都會每幀刷新。每個條目顯示為唯讀的 ObjectField，可直接點擊 Ping 場景中的對應物件。</p>
+  <div class="callout callout--warn">清單為空但角色看起來受光不正常 — 多為角色 Layer 不在收集名單，或燈源 cullingMask 未包含角色 Layer。請啟用 §29 排查器。</div>
+  <div class="callout">OnDisable 行為 — 元件被停用或角色被銷毀時主動清除所有殘留的 MaterialPropertyBlock 資料，避免「光照不消失」、「上一場景的光延續到新場景」等 bug。</div>
 </section>
 
-<section class="doc-section doc-section--dark" id="responsive-collapse">
-  <div class="section-eyebrow">Responsive — Collapsing Strategy</div>
-  <h2 class="section-title">Collapsing Strategy</h2>
-  <p class="section-lead">Each UI zone has a defined collapse pattern. Nothing disappears abruptly — it reconfigures.</p>
-  <h4 style="color:#fff">Global nav</h4>
-  <p style="color:var(--body-muted)">Full horizontal link row on desktop → collapses to Apple logo + hamburger + bag icon at 834px and below.</p>
-  <h4 style="color:#fff">Sub-nav</h4>
-  <p style="color:var(--body-muted)">Category name + inline links + primary CTA → category name + primary CTA only at mobile; inline links move into a hamburger tray.</p>
-  <h4 style="color:#fff">Product tiles</h4>
-  <p style="color:var(--body-muted)">Stack from 2-column to 1-column at 834px; vertical padding tightens from 80px → 48px at small-phone.</p>
-  <h4 style="color:#fff">Utility grids</h4>
-  <p style="color:var(--body-muted)">5-col → 4-col (1440px) → 3-col (1068px) → 2-col (834px) → 1-col (640px).</p>
-  <h4 style="color:#fff">Hero typography</h4>
-  <p style="color:var(--body-muted);margin-bottom:0"><code>hero-display</code> (56px) → <code>display-lg</code> (40px) at 1068px → 34px at 640px → 28px at 419px.</p>
+<!-- §16 -->
+<section class="sec sec--dark" id="s16">
+  <div class="eyebrow">§16 · Runtime 05</div>
+  <h2 class="sec-title">其他三個自動管理的元件</h2>
+  <p class="sec-lead">SpineAlphaMaskRenderer · SpineBloomThresholdSync · SpineEffectBootstrapper — 這三個元件不會在角色 Inspector 上被直接操作，由 SpineCustomShaderGUI 在屬性變動時自動掛載／移除。</p>
+  <div class="callout callout--warn">共同前提 — 自動掛載僅對 Layer ∈ {8, 9, 12, 13, 18, 20} 的物件作用。Validate 機制會在每次選取時掃描；若 Layer 不正確會把元件移除並在 Inspector 頂部跳出醒目警告。</div>
+
+  <h3>SpineAlphaMaskRenderer</h3>
+  <p><strong>觸發：Enable Inline 勾選</strong></p>
+  <p>使用 CommandBuffer 在主相機 BeforeForwardOpaque 時繪製一張 RenderTexture（Alpha Mask）供 Inline Shader 取樣。</p>
+  <ul>
+    <li><code>resolutionScale</code>：RT 解析度倍率，預設 0.75</li>
+    <li>綁定相機：Camera.main，場景切換時自動重新綁定</li>
+  </ul>
+
+  <h3>SpineBloomThresholdSync</h3>
+  <p><strong>觸發：Suppress Bloom 勾選</strong></p>
+  <p>透過 Reflection 抓取後製 Beautify 的 <code>finalBloomIntensity</code>，依 AnimationCurve 推算 <code>_BloomSuppressThreshold</code> 寫入 MPB。</p>
+  <ul>
+    <li>髒標記：<code>lastAppliedBloom</code> 未變則跳過寫入</li>
+    <li>預設曲線：1.0 → 0.60；10.0 → 0.52</li>
+  </ul>
+
+  <h3>SpineEffectBootstrapper</h3>
+  <p><strong>手動使用（程式 API）</strong></p>
+  <p>執行階段一次性套用一份 Profile，並自動補齊所有依賴元件（Receiver / AlphaMask / HitSweep / BloomSync）。適合角色切換特效時引入完整效果包。</p>
+  <ul>
+    <li><code>ApplyProfile()</code>：套用 + 補齊依賴</li>
+    <li><code>ClearAllEffects()</code>：一次清除所有 Spine 特效</li>
+  </ul>
+  <p style="color:rgba(255,255,255,.55);font-size:14px;">另外兩個輔助元件：<code>SpineProfileTester</code>（人工測試）、<code>SpineProfileHelper</code>（靜態 API）— 見 §22–§24</p>
 </section>
 
-<!-- Footer -->
+<!-- §17 -->
+<section class="sec" id="s17">
+  <div class="eyebrow">§17 · Preset 01</div>
+  <h2 class="sec-title">Preset 系統概念</h2>
+  <p class="sec-lead">把模組設定存成資產 — 跨材質球共用。每個子模組皆可獨立儲存為一個 ScriptableObject（<code>SpineModuleProfile.asset</code>）。</p>
+  <p>掛載後 Inspector 中該模組的屬性會顯示 <strong>✦ 符號</strong>，並由 <code>SpineProfileAnimator</code> 透過 MaterialPropertyBlock 即時驅動 — 不寫入材質球本體，多個角色可共用。</p>
+
+  <h3>操作步驟（Inspector 端）</h3>
+  <ol>
+    <li>點 <strong>P 按鈕</strong>展開 Preset 面板（每個子模組標題右側皆有 P 圖示）</li>
+    <li>設定 <strong>Save Mask</strong>：勾選想保存的屬性 — 未勾選的不會寫入 Preset</li>
+    <li>按 <strong>Save</strong> 儲存為 <code>.asset</code> 檔</li>
+    <li>掛到角色的 <code>SpineProfileAnimator</code>，Inspector 顯示 ✦ 即生效</li>
+  </ol>
+
+  <h3>關鍵設計原則</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>原則</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>儲存類型</td><td>Float / Color (HDR) / Vector4 / Texture</td></tr>
+      <tr><td>寫入機制</td><td>可選擇靜態值，或開啟 ∿ 切到 AnimationCurve 驅動</td></tr>
+      <tr><td>忽略名單</td><td><code>ProfileIgnoredProperties</code> — Enable Toggle 與 LightingMode 不入 Preset，避免動畫切換模組</td></tr>
+      <tr><td>自動防呆路由</td><td>將 Inline 的 Preset 拖到 Outline 區？系統會偵測 moduleName 並自動導向正確分區</td></tr>
+      <tr><td>綁定持久化</td><td>Preset GUID 寫入 <code>Material.SetOverrideTag</code> — 重新打開 Inspector 也會記得</td></tr>
+      <tr><td>場景同步</td><td><code>SpineModuleProfileEditor.SyncAllRenderersUsingThisProfile</code> — 詳見 §18</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="color:var(--ink48);font-size:14px;"><code>SpineModuleProfile.cs</code> · ScriptableObject — 可被 Prefab 引用、被 Addressable 打包。<code>SpineProfileAnimator</code> 每幀更新 MaterialPropertyBlock，不污染材質。</p>
+</section>
+
+<!-- §18 -->
+<section class="sec sec--dark" id="s18">
+  <div class="eyebrow">§18 · Preset 02</div>
+  <h2 class="sec-title">SpineModuleProfileEditor — 全場景自動同步</h2>
+  <p class="sec-lead">在 Project 視窗中直接點選一個 <code>.asset</code> 時，由 SpineModuleProfileEditor 接管 Inspector。修改 Profile 的同時，會自動掃描全場景所有套用此 Profile 的角色，刷新自動掛載狀態。</p>
+
+  <h3>編輯器特性</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>功能</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>頂部色帶</td><td>依 <code>moduleName</code> 自動著色 — 一眼看出這份 Profile 是哪個分區</td></tr>
+      <tr><td>屬性切換</td><td>「顯示 Shader 變數名稱」Toggle，可在友善名稱與 <code>_PropertyName</code> 間切換</td></tr>
+      <tr><td>∿ 曲線編輯</td><td>每個屬性右側可切換靜態值 / AnimationCurve 模式（含預設關鍵幀）</td></tr>
+      <tr><td>Color/Vector</td><td>展開後分別顯示 R/G/B/A 或 X/Y/Z/W 四條獨立曲線</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>屬性類型自動判斷：開頭為 <code>_Enable</code> / <code>_Use</code> / <code>_Fill</code> / <code>_Invert</code> 或含 <code>Affects</code> 顯示為 Toggle；含 <code>LightingMode</code> 顯示為 EnumFlagsField；含 <code>ZTest</code> 顯示為 EnumPopup。</p>
+
+  <h3>SyncAllRenderersUsingThisProfile — 修改後自動同步</h3>
+  <p>當你修改 Profile 的任一屬性，編輯器會執行以下四個步驟：</p>
+  <ol>
+    <li><strong>掃描全場景 Renderer</strong> — <code>FindObjectsByType&lt;Renderer&gt;()</code></li>
+    <li><strong>篩 Layer 與 Profile</strong> — Layer ∈ {8,9,12,13,18,20}，且 <code>SpineProfileAnimator.profiles</code> 含本 Profile</li>
+    <li><strong>Profile &gt; Material 雙重驗證</strong> — 先查 Profile 中是否定義該功能；無則查 Material — 決定是否需自動掛載</li>
+    <li><strong>SyncAutoComponent</strong> — 補齊 AlphaMaskRenderer、HitSweepEffect、LightReceiver、BloomThresholdSync；若需光照則 <code>EnsureSpineLightManager()</code></li>
+  </ol>
+  <div class="callout">修改 Profile 不需手動同步場景 — 系統自動完成所有依賴元件補齊。</div>
+</section>
+
+<!-- §19 + §20 -->
+<section class="sec" id="s19">
+  <div class="eyebrow">§19 · Save Mask · §20 · AnimationCurve</div>
+  <h2 class="sec-title">Save Mask 與 AnimationCurve 驅動</h2>
+  <p class="sec-lead">精確控制哪些屬性由 Preset 管理、哪些留給程式自由控制；並支援逐屬性的曲線動畫引擎。</p>
+
+  <h3>§19 · Save Mask — 參數遮罩</h3>
+  <p>優先權：<strong>MaterialPropertyBlock（最高）&gt; Material Instance &gt; Shared Material</strong></p>
+  <p>若某個參數需由程式在 Update 中「每幀高頻控制」（如閃爍、變色），請在 Save Properties 中<strong>取消勾選</strong>該參數。如此 Profile 不會綁定該參數，程式可安全用 <code>SpineProfileHelper.SetFloat</code> 直接修改 MPB，不會被 Animator 覆寫。</p>
+  <div class="callout callout--danger"><strong>常見錯誤</strong> — 把 Effect Color 或 Fill Inside 等需要程式控制的屬性寫入 Preset，導致受擊閃白功能無效。</div>
+
+  <h3>§20 · AnimationCurve 驅動</h3>
+  <p>每個 ✦ 屬性右側都有 <strong>∿ 按鈕</strong>。點開後該值改由 AnimationCurve 取代靜態值；時間軸從 GameObject 生命週期開始，可由 <code>Animator.Restart()</code> 重置。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>屬性類型</th><th>曲線數量</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>Float</td><td>一條 curveX</td><td>控制 0–1 數值</td></tr>
+      <tr><td>Color</td><td>四條曲線</td><td>R/G/B/A 各自驅動</td></tr>
+      <tr><td>Vector4</td><td>四條曲線</td><td>X/Y/Z/W 各自驅動</td></tr>
+      <tr><td>Texture</td><td>不支援</td><td>僅靜態值</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">被忽略的屬性 — Profile 不儲存 Enable 類 Toggle 與 LightingMode（避免動畫意外切換整個模組）。詳見 <code>ProfileIgnoredProperties</code> 清單。</div>
+  <p style="color:var(--ink48);font-size:14px;"><code>SpineProfileAnimator</code> 每幀讀取 Profile + 評估曲線 + 寫入 MPB</p>
+</section>
+
+<!-- §21 -->
+<section class="sec sec--dark" id="s21">
+  <div class="eyebrow">§21 · Preset 04</div>
+  <h2 class="sec-title">SpineNamingRuleWindow — 預設檔命名規則</h2>
+  <p class="sec-lead">兩種命名格式 — 角色特化與通用型。所有 Preset 預設檔都應遵循下列其中一種命名格式。</p>
+
+  <h3>格式 A · 角色特化功能</h3>
+  <p>格式：<code>{角色英文代稱}_{模塊名稱}_{序號}</code></p>
+  <p>為單一角色設計、不會跨角色共用的特效。序號從 001 起跳。</p>
+  <ul>
+    <li><code>Player_Outline_001</code></li>
+    <li><code>Boss_BackLight_001</code></li>
+    <li><code>NPC_Emission_002</code></li>
+  </ul>
+
+  <h3>格式 B · 通用型功能</h3>
+  <p>格式：<code>General_{模塊名稱}_{用途}_{序號}</code></p>
+  <p>可被多角色重用的狀態效果。用途為實際效果簡稱，預設為 Default — 請改為實際效果簡稱（Toxic、Frozen、Burn 等）。</p>
+  <ul>
+    <li><code>General_Overlay_Toxic_001</code></li>
+    <li><code>General_Outline_Frozen_001</code></li>
+    <li><code>General_BackLight_Default_001</code></li>
+  </ul>
+
+  <h3>支援的模組名稱</h3>
+  <p><code>Main/Shadow</code> · <code>PostProcessing</code> · <code>GlobalNoise</code> · <code>NativeLighting</code> · <code>ShadowLight</code> · <code>NormalMap</code> · <code>LightProbe</code> · <code>Emission</code> · <code>EffectOverlay</code> · <code>HitSweep</code> · <code>BackLight</code> · <code>Inline</code> · <code>Outline</code></p>
+  <div class="callout">SpineNamingRuleWindow 內含複製按鈕。命名規則統一 — 方便 Addressable 打包與資產搜尋。</div>
+</section>
+
+<!-- §22 -->
+<section class="sec" id="s22">
+  <div class="eyebrow">§22 · Preset 05</div>
+  <h2 class="sec-title">SpineProfileHelper API</h2>
+  <p class="sec-lead">強烈建議使用 SpineProfileHelper 靜態類別控制 Profile，而非自行操作 SpineProfileAnimator 元件。Helper 內建生命週期防錯、重複掛載偵測與效能自動回收。</p>
+
+  <h3>三個高階 API（推薦）</h3>
+<pre><code>// 1. 動態加載 / 替換 Profile
+//    自動掛載 Animator、防重複、強制刷新
+SpineProfileHelper.ApplyProfileRuntime(myRenderer, newProfile);
+
+// 2. 移除指定模塊 (Enum 避免拼錯)
+SpineProfileHelper.RemoveProfileRuntime(
+    myRenderer,
+    SpineProfileModule.Outline);
+
+// 3. 一鍵清除角色身上所有 Profile 與緩存
+SpineProfileHelper.ClearAllProfiles(myRenderer);</code></pre>
+
+  <h3>SpineProfileModule Enum</h3>
+  <p>使用 Enum 取代字串避免拼錯：</p>
+  <p>
+    <code>.Main</code> &nbsp; <code>.PostProcessing</code> &nbsp; <code>.GlobalNoise</code> &nbsp; <code>.NativeLighting</code> &nbsp; <code>.ShadowLight</code> &nbsp; <code>.NormalMap</code> &nbsp; <code>.LightProbe</code> &nbsp; <code>.Emission</code> &nbsp; <code>.EffectOverlay</code> &nbsp; <code>.HitSweep</code> &nbsp; <code>.BackLight</code> &nbsp; <code>.Inline</code> &nbsp; <code>.Outline</code>
+  </p>
+
+  <h3>輔助方法</h3>
+  <ul>
+    <li><code>ToModuleName()</code> — 將 Enum 轉為模組字串名稱</li>
+    <li><code>ToTagKey()</code> — 轉為 Material OverrideTag 鍵名</li>
+    <li><code>IsValidProfile()</code> — 編譯時即可發現錯誤，不用等執行才知道 typo</li>
+  </ul>
+  <p style="color:var(--ink48);font-size:14px;">對應 EditorWindow：<code>SpineProfileHelpWindow</code>（▤ 程式 API 指南）</p>
+</section>
+
+<!-- §23 -->
+<section class="sec sec--dark" id="s23">
+  <div class="eyebrow">§23 · Preset 06</div>
+  <h2 class="sec-title">ApplyTempProfile — 狀態切換的最佳解</h2>
+  <p class="sec-lead">當角色進入特殊狀態（中毒、冰凍、變身）時，不建議直接修改 MPB — 因為會被曲線蓋掉。最佳解：呼叫 ApplyTempProfile，系統會複製一份 Profile，將指定參數強制覆寫，並關閉該參數的曲線動畫。</p>
+
+  <h3>程式範例</h3>
+<pre><code>// 1. 準備參數字典
+var overrides = new Dictionary&lt;string, object&gt; {
+    { "_OutlineColor", Color.green },
+    { "_OutlineWidth", 5.0f }
+};
+
+// 2. 套用副本，回傳實體存起來
+SpineModuleProfile activeTempProfile
+    = SpineProfileHelper.ApplyTempProfile(
+        myRenderer, baseProfile, overrides);
+
+// 3. 狀態結束時，移除效果並銷毀副本
+SpineProfileHelper.RemoveProfileRuntime(
+    myRenderer, activeTempProfile.moduleName);
+Destroy(activeTempProfile);</code></pre>
+
+  <div class="callout callout--danger"><strong>記憶體洩漏警告</strong> — ApplyTempProfile 回傳的 TempProfile 實體必須手動 Destroy。否則每次狀態切換都會在記憶體中產生新的 ScriptableObject 殘留。</div>
+
+  <h3>底層原理</h3>
+  <p>Temp Profile 為原 Profile 的<strong>深拷貝</strong>，在 overrides 中指定的屬性會被覆寫且 <code>useCurve = false</code>（停用曲線）。<strong>原 Profile 不會被修改。</strong></p>
+
+  <h3>典型使用場景</h3>
+  <ul>
+    <li>受擊瞬間將 Outline 變紅</li>
+    <li>變身時將整個角色 Emission 染色</li>
+    <li>無敵狀態下將描邊閃光放大</li>
+  </ul>
+  <p style="color:rgba(255,255,255,.55);font-size:14px;"><code>SpineProfileHelpWindow</code> → 「進階：Temp Profile 實體竄改」章節</p>
+</section>
+
+<!-- §24 -->
+<section class="sec" id="s24">
+  <div class="eyebrow">§24 · Preset 07 · §24.1 · Preset 08</div>
+  <h2 class="sec-title">底層 MPB 安全 API · SpineProfileTester</h2>
+  <p class="sec-lead">當某個參數在 Save Mask 中未被勾選時，使用 Helper 封裝的靜態 API 安全寫入 MPB，與系統底層 MPB 狀態無縫融合，不打架，並保持極致合批效能。</p>
+
+  <h3>§24 · 正確與錯誤寫法對照</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th></th><th>寫法</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-ok">✓ 正確</span></td><td><code>SpineProfileHelper.SetFloat(myRenderer, "_OutlineWidth", 0.1f);</code></td><td>無材質實例化、不污染 sharedMaterial、不打斷 SRP Batching</td></tr>
+      <tr><td><span class="badge badge-ok">✓ 正確</span></td><td><code>SpineProfileHelper.SetColor(myRenderer, "_EffectColor", Color.red);</code></td><td>同上</td></tr>
+      <tr><td><span class="badge badge-ok">✓ 正確</span></td><td><code>SpineProfileHelper.SetVector(myRenderer, "_GlobalNoiseSpeed", new Vector4(1,1,0,0));</code></td><td>同上</td></tr>
+      <tr><td><span class="badge badge-warn">✗ 錯誤</span></td><td><code>myRenderer.material.SetFloat("_OutlineWidth", 0.1f);</code></td><td>會產生材質實例，可能被 Animator 覆寫，打斷 SRP Batching</td></tr>
+      <tr><td><span class="badge badge-warn">✗ 錯誤</span></td><td><code>myRenderer.sharedMaterial.SetFloat("_OutlineWidth", 0.1f);</code></td><td>修改所有共享此材質的角色！</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout callout--warn"><strong>前提</strong> — 必須確保該參數在 ShaderGUI 儲存 Preset 時沒被勾選。否則 Animator 會把你寫入的值覆蓋掉。</div>
+
+  <h3>§24.1 · SpineProfileTester — 互動式測試工具</h3>
+  <p>在 Hierarchy 內加入此測試元件後進入 Play Mode，可用滑鼠快速驗證 Profile 系統的完整流程。</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>滑鼠操作</th><th>觸發行為</th><th>驗證目的</th></tr></thead>
+    <tbody>
+      <tr><td>滑鼠左鍵</td><td>在指定 Renderer 上動態套用 / 移除指定的 Profile 資產</td><td>驗證 <code>ApplyProfileRuntime</code> 與 <code>RemoveProfileRuntime</code></td></tr>
+      <tr><td>滑鼠右鍵</td><td>直接修改指定 <code>_PropertyName</code> 的 MPB 數值（不經 Profile）</td><td>驗證 Save Mask 未勾選屬性的程式控制是否正常</td></tr>
+      <tr><td>滑鼠中鍵</td><td>呼叫 ApplyTempProfile 產生竄改副本</td><td>驗證 §23 的臨時覆寫流程</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout"><strong>建議流程</strong> — 新建 Profile 後 → 拖入測試器 → Play → 左鍵套用 → 右鍵竄改未勾選屬性 → 中鍵測試臨時 Profile → 三項都正常即可正式接入專案戰鬥邏輯。</div>
+</section>
+
+<!-- §25 -->
+<section class="sec sec--dark" id="s25">
+  <div class="eyebrow">§25 · Build 01</div>
+  <h2 class="sec-title">SpinePlatformManagerWindow — 平台變體管理中心</h2>
+  <p class="sec-lead">Window 選單開啟「Spine 平台變體管理」視窗。以滑動卡片方式列出 Editor Default 與所有平台 Config（iOS / Android / Windows / Switch / PS5 / Xbox / WebGL…）。</p>
+
+  <h3>操作機制</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>操作</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>滑動切換</td><td>左右拖曳卡片選擇平台。卡片中心放大，遠端淡出</td></tr>
+      <tr><td>即時開關</td><td>點擊功能列即時切換該模組的啟用狀態 — 設有滑動防誤觸機制</td></tr>
+      <tr><td>套用按鈕</td><td>底部「套用 {平台名}」按鈕 — 一鍵刷新全專案 Spine 材質球的 Shader Keyword</td></tr>
+      <tr><td>頂部狀態</td><td>顯示「當前套用：{平台名}」與動態色彩漸變橫條</td></tr>
+      <tr><td>＋ 新建</td><td>右上 ＋ 按鈕建立新的 <code>ShaderConfig_{Platform}.asset</code></td></tr>
+      <tr><td>🗑 移除</td><td>非 Editor 卡片可按移除鍵刪除該平台 Config 資產</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>每個平台卡片內含三組區塊</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>區塊</th><th>包含模組</th></tr></thead>
+    <tbody>
+      <tr><td><strong>LIGHTING MODULES</strong></td><td>Native Lighting · Shadow Light Base · Light Probe · Normal Map</td></tr>
+      <tr><td><strong>VFX MODULES</strong></td><td>BackLight · Emission · Inline (Rim) · Outline · Hit Sweep · Effect Overlay</td></tr>
+      <tr><td><strong>GLOBAL SETTINGS</strong></td><td>Global Noise；Outline 啟用時展開 ├ 8 Neighbourhood · ├ Screen Space Width · └ Fill Inside</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">❓ 指南按鈕 — 視窗右上角的指南按鈕會打開重疊式說明面板，內含程式 API 範例（<code>SpineShaderBuildPipeline.SyncKeywordsForTarget</code>）與一鍵複製、一鍵跳轉設定檔目錄的按鈕。</div>
+</section>
+
+<!-- §26 -->
+<section class="sec" id="s26">
+  <div class="eyebrow">§26 · Build 02</div>
+  <h2 class="sec-title">SpineShaderBuildConfig — 雙重鎖驗證</h2>
+  <p class="sec-lead">系統提供兩種運作模式 — 編輯器中所有 Keyword 強制全開以供美術預覽（Editor Default）；切換到平台 Config 時則以「雙重鎖」決定材質球的 Keyword 啟用狀態。</p>
+
+  <h3>A · Editor Default 模式</h3>
+  <p>執行 <code>SpineShaderBuildPipeline.SyncAllEnabled()</code> 後，會強制掃描全專案的 Spine 材質球，將所有 15 個 Module Keyword 一律 EnableKeyword。<code>SessionState</code> 記為 <code>EditorMode = true</code>。</p>
+  <div class="callout">適合美術做設計時 — 不論勾不勾，都能看到效果。不影響正式打包效能。</div>
+
+  <h3>B · Platform Config 模式（雙重鎖）</h3>
+  <p>執行 <code>SyncForPlatformConfig()</code> 後改用雙重驗證：</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>驗證條件</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>isAllowedByConfig</code></td><td>該 Keyword 在平台 Config 中是否被勾選</td></tr>
+      <tr><td><code>isToggledByUser</code></td><td>材質球中對應 <code>_Enable*</code> 屬性是否為 ON</td></tr>
+      <tr><td><strong>最終結果</strong></td><td>只有「兩者都成立」時才 EnableKeyword</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>第三道過濾 — OnProcessShader（打包時）</h3>
+  <p><code>IPreprocessShaders</code> 介面在編譯每個 Variant 時，會檢查兩件事：</p>
+  <ol>
+    <li>平台 Config 是否放行此 Keyword</li>
+    <li>全專案是否有任一材質球實際用到此 Keyword</li>
+  </ol>
+  <p>任一不符即將該 Variant 從 <code>IList&lt;ShaderCompilerData&gt;</code> 中移除。Outline / Inline 等重 Pass 在不需要時完全不會編譯。</p>
+  <p style="color:var(--ink48);font-size:14px;">Config 路徑：<code>Assets/Scripts/VFXTool/BuildConfigs/SpineSkeletonShaderTool/</code></p>
+</section>
+
+<!-- §27 -->
+<section class="sec sec--dark" id="s27">
+  <div class="eyebrow">§27 · Build 03</div>
+  <h2 class="sec-title">SpineShaderBuildPipeline — 程式 API</h2>
+  <p class="sec-lead">為打包自動化腳本使用。若你的專案有自動化打包流程（CI / 一鍵打包按鈕），可透過 SpineShaderBuildPipeline 的靜態方法在 OnPreprocessBuild 階段刷新材質球設定。</p>
+
+  <h3>完整 API 清單</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>方法</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>SyncAllEnabled()</code></td><td>恢復 Editor Default 全效預覽模式，強制開啟所有 15 個 Keyword</td></tr>
+      <tr><td><code>SyncForPlatformConfig(cfg)</code></td><td>依指定 Config 套用平台雙重鎖</td></tr>
+      <tr><td><code>SyncKeywordsForTarget(name)</code></td><td>傳入平台名稱（字串）刷新全專案材質球 — CI 用</td></tr>
+      <tr><td><code>IsEditorDefaultMode()</code></td><td>查詢當前是否為 Editor Default 模式</td></tr>
+      <tr><td><code>OnPreprocessBuild</code></td><td>自動於打包前掃描，按 BuildTarget 套用對應 Config</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>CI 使用範例</h3>
+<pre><code>public class SpineBuildAutomation {
+    public void PrepareForTarget() {
+        // 例如切到 Android
+        SpineShaderBuildPipeline
+            .SyncKeywordsForTarget("Android");
+    }
+}</code></pre>
+  <div class="callout callout--warn"><strong>關於 MissingReferenceException</strong> — 若 Config 資產被外部刪除或遺失，PlatformManager 視窗會偵測並顯示「⚠️ 發生異常 (MissingReferenceException)」面板，提供「重新整理」按鈕讓你恢復視圖。</div>
+  <p style="color:rgba(255,255,255,.55);font-size:14px;"><code>OnPreprocessBuild</code> + <code>OnProcessShader</code> 為 <code>IPreprocessShaders</code> 介面實作</p>
+</section>
+
+<!-- §28 -->
+<section class="sec" id="s28">
+  <div class="eyebrow">§28 · Convention</div>
+  <h2 class="sec-title">Layer 規約 — 所有自動化的基礎</h2>
+  <p class="sec-lead">角色必須在六個 Layer 之一。SpineLightManager 的 collectLightMask、SpineShadowLight 的 cullingMask、SpineCustomShaderGUI 的 Validate 機制 — 全部都鎖定在下列六個 Layer。</p>
+
+  <div class="layer-grid">
+    <div class="layer-card"><div class="layer-num">8</div><div class="layer-name">主角區</div></div>
+    <div class="layer-card"><div class="layer-num">9</div><div class="layer-name">道具區</div></div>
+    <div class="layer-card"><div class="layer-num">12</div><div class="layer-name">敵人區</div></div>
+    <div class="layer-card"><div class="layer-num">13</div><div class="layer-name">特效層</div></div>
+    <div class="layer-card"><div class="layer-num">18</div><div class="layer-name">NPC 區</div></div>
+    <div class="layer-card"><div class="layer-num">20</div><div class="layer-name">UI 角色</div></div>
+  </div>
+
+  <div class="callout callout--danger"><strong>違規後果</strong> — Inspector 頂部會跳出醒目警告「⚠ 此角色 Layer 不在自動化白名單」與一鍵修正按鈕。光照與描邊都會失效。Layer 不正確時，自動化機制會在每次選取角色時將 SpineAlphaMaskRenderer / SpineHitSweepEffect / SpineLightReceiver / SpineBloomThresholdSync 全部移除。</div>
+  <p style="color:var(--ink48);font-size:14px;">SpineLightManager.collectLightMask 與 SpineShadowLight.cullingMask 預設均鎖定此六層</p>
+</section>
+
+<!-- §29 -->
+<section class="sec sec--dark" id="s29">
+  <div class="eyebrow">§29 · Debug 01</div>
+  <h2 class="sec-title">SpineLightingIssueTroubleshooter — 八項自動排查</h2>
+  <p class="sec-lead">選取場景中的角色 GameObject，於 SpineDebugHelpWindow 中按「光照問題排查」按鈕。工具會檢測八項常見問題，並提供「點此修正」與物件 Ping 跳轉。</p>
+
+  <h3>八項自動檢測</h3>
+  <ul class="check-list">
+    <li><span class="chk-num">01</span><div><strong>SpineLightManager 存在</strong> — 若無，提供建立按鈕</div></li>
+    <li><span class="chk-num">02</span><div><strong>Mask 含角色 Layer</strong> — <code>collectLightMask</code> 包含此 Layer</div></li>
+    <li><span class="chk-num">03</span><div><strong>材質球 Shader 正確</strong> — Spine/Skeleton + Native Lighting ON</div></li>
+    <li><span class="chk-num">04</span><div><strong>Layer 在白名單</strong> — Layer ∈ {8 · 9 · 12 · 13 · 18 · 20}</div></li>
+    <li><span class="chk-num">05</span><div><strong>至少一盞 Realtime Directional Light 存在</strong> — 否則無方向光著色</div></li>
+    <li><span class="chk-num">06</span><div><strong>Receiver 已掛載</strong> — 否則 Manager 不推送資料</div></li>
+    <li><span class="chk-num">07</span><div><strong>Keyword 已啟用</strong> — Build Config 未剝離</div></li>
+    <li><span class="chk-num">08</span><div><strong>cullingMask 與角色 Layer 交集</strong> — 否則 ShadowLight 無方向光著色</div></li>
+  </ul>
+
+  <div class="callout">輸出格式 — 每條失敗結果都附帶「調整方式」、<strong>紅色高亮關鍵字</strong>（如「沒有」「找不到」「不在」），以及可點擊的 Ping 連結直接跳到問題物件。沒問題的項目以<strong>綠色高亮</strong>（「有」「是」「已」「正確」「完成」）。</div>
+  <p style="color:rgba(255,255,255,.55);font-size:14px;">SpineDebugHelpWindow → 「光照與陰影問題」章節 → 嵌入式排查面板</p>
+</section>
+
+<!-- §30 -->
+<section class="sec" id="s30">
+  <div class="eyebrow">§30 · Debug 02</div>
+  <h2 class="sec-title">SpineDebugHelpWindow — 常見問題 Q&amp;A</h2>
+  <p class="sec-lead">兩個最常出現的問題與標準解法。所有問題卡片均可在頂部搜尋框輸入關鍵字過濾。</p>
+
+  <h3>Q1 · 光照與陰影問題</h3>
+  <p>「<strong>為何角色看起來黑黑的，明明有開燈但沒受光照？</strong>」</p>
+  <p>標準排查順序（DebugHelpWindow 列出）：</p>
+  <ol>
+    <li>SpineLightManager 層級規範 — 該 Layer 是否被加入收集名單</li>
+    <li>確認材質球已勾選 <strong>Enable Native Lighting</strong></li>
+    <li>確認 GameObject Layer ∈ {8, 9, 12, 13, 18, 20}</li>
+    <li>確認場景燈光的 <strong>Culling Mask</strong> 包含上述 Layer</li>
+    <li>按 <strong>▤ 全效預覽按鈕</strong> — 若恢復正常，代表是平台 Config 剝離了該模組</li>
+  </ol>
+
+  <h3>Q2 · 特效與模組缺失</h3>
+  <p>「<strong>為何勾選內外框、背光、掃光都不起作用？</strong>」</p>
+  <p>標準解法：</p>
+  <ol>
+    <li>再次確認 Layer ∈ {8, 9, 12, 13, 18, 20} — 許多特效依賴腳本抓取資料</li>
+    <li>按 <strong>▤ 全效預覽</strong> — 強制開啟此材質的所有 Shader 變體</li>
+    <li>若全效預覽下恢復正常，代表「平台變體管理」剝離了該 Keyword</li>
+  </ol>
+  <div class="callout">本地完整預覽 — 全效預覽僅影響當前編輯器，不影響打包效能。隨時可開關。</div>
+</section>
+
+<!-- §31 -->
+<section class="sec sec--dark" id="s31">
+  <div class="eyebrow">§31 · Workflow</div>
+  <h2 class="sec-title">入門教學 — 從零建立一個受光照的 Spine 角色</h2>
+  <p class="sec-lead">六個步驟。本節為最短上手流程。任一步驟出問題請翻閱 §29 排查器章節。</p>
+
+  <ul class="check-list">
+    <li>
+      <span class="chk-num">01</span>
+      <div>
+        <strong>建立材質球，Shader 選 Spine / Skeleton</strong><br>
+        <span style="color:rgba(255,255,255,.6)">拖到 SpriteRenderer — 主紋理、Straight Alpha、<code>_Normal</code> / <code>_BackLight</code> / <code>_Emission</code> 系列檔自動就位</span>
+      </div>
+    </li>
+    <li>
+      <span class="chk-num">02</span>
+      <div>
+        <strong>角色 GameObject 設到 Layer 8（或 9 / 12 / 13 / 18 / 20）</strong><br>
+        <span style="color:rgba(255,255,255,.6)">否則自動化機制會清除所有掛載元件。Inspector 頂部有一鍵修正按鈕</span>
+      </div>
+    </li>
+    <li>
+      <span class="chk-num">03</span>
+      <div>
+        <strong>開啟需要的模組（例如 LIGHTING / Normal Map / Outline）</strong><br>
+        <span style="color:rgba(255,255,255,.6)">SpineLightReceiver、AlphaMaskRenderer、LightManager 會在勾下 Toggle 時自動掛載</span>
+      </div>
+    </li>
+    <li>
+      <span class="chk-num">04</span>
+      <div>
+        <strong>在場景放一盞 Realtime Directional Light</strong><br>
+        <span style="color:rgba(255,255,255,.6)">確保其 Culling Mask 包含角色 Layer。可加入 SpineShadowLight 做特殊光罩或 Caustics 波光</span>
+      </div>
+    </li>
+    <li>
+      <span class="chk-num">05</span>
+      <div>
+        <strong>需要動畫？將模組存成 Preset 並加入 ∿ 曲線</strong><br>
+        <span style="color:rgba(255,255,255,.6)">SpineProfileAnimator 即時驅動。命名請遵循 §21 規則</span>
+      </div>
+    </li>
+    <li>
+      <span class="chk-num">06</span>
+      <div>
+        <strong>打包前檢查 — 開啟 §25 SpinePlatformManagerWindow，切到目標平台</strong><br>
+        <span style="color:rgba(255,255,255,.6)">確認該平台 Config 中啟用了你需要的所有 Module Keyword，按「套用 {平台名}」刷新材質球</span>
+      </div>
+    </li>
+  </ul>
+
+  <div class="callout callout--warn" style="margin-top:32px;">遇到問題 — 選取角色後按 <strong>▤ 除錯指南</strong> → 光照問題排查</div>
+</section>
+
+<!-- §32 -->
+<section class="sec" id="s32">
+  <div class="eyebrow">§32 · End</div>
+  <h2 class="sec-title">附錄 — 文件結束</h2>
+  <p class="sec-lead">本文件描述的所有功能於 Inspector 中皆可直接操作 — 大多數情境不需閱讀程式碼。若遇到本文件未涵蓋之情況，請依下列順序處理。</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>管道</th><th>入口</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>A · 線上文件</td><td>本說明書</td><td>每章皆對應系統某個層級，依章節索引查閱</td></tr>
+      <tr><td>B · 右鍵任一參數</td><td>「📖 查看使用說明」</td><td>自動跳轉至對應 Help Window 並 Ping 高亮</td></tr>
+      <tr><td>C · 系統檢查</td><td>SpineLightingIssueTroubleshooter</td><td>逐項自動診斷 8 個常見光照問題 + 一鍵修正</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>快速參考</h3>
+  <ul>
+    <li><strong>命名空間</strong>：<code>VFXTool.SpineSkeletonShaderTool</code></li>
+    <li><strong>Shader 路徑</strong>：<code>Spine / Skeleton</code></li>
+    <li><strong>視覺檢查</strong>：▤ 全效預覽 / Reset — 切換平台模擬比對效果，或重置整顆材質</li>
+    <li><strong>文件版本</strong>：Revision 2026.01</li>
+  </ul>
+
+  <div style="margin-top:40px;padding:24px;background:rgba(0,102,204,.08);border-radius:12px;max-width:720px;">
+    <p style="font-size:14px;color:var(--ink48);margin-bottom:0;">
+      Spine Skeleton Shader · <strong>11 個 Runtime 腳本</strong> · <strong>7 個 EditorWindow</strong> · <strong>1 套 Shader</strong> · <strong>1 條打包流水線</strong> · <strong>1 份說明書</strong><br>
+      <code>Spine-Skeleton.shader</code> · <code>SpineCustomShaderGUI.cs</code> · Internal Use Only
+    </p>
+  </div>
+</section>
+
 <footer class="site-footer">
-  <div class="footer-grid">
-    <div class="footer-col">
-      <h5>Tokens</h5>
-      <ul>
-        <li><a href="#colors-brand">Brand &amp; Accent</a></li>
-        <li><a href="#colors-surface">Surface Colors</a></li>
-        <li><a href="#colors-text">Text Colors</a></li>
-        <li><a href="#layout-spacing">Spacing System</a></li>
-        <li><a href="#shapes-radius">Border Radius</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h5>Typography</h5>
-      <ul>
-        <li><a href="#type-family">Font Family</a></li>
-        <li><a href="#type-hierarchy">Type Scale</a></li>
-        <li><a href="#type-principles">Principles</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h5>Components</h5>
-      <ul>
-        <li><a href="#comp-nav">Navigation</a></li>
-        <li><a href="#comp-buttons">Buttons</a></li>
-        <li><a href="#comp-cards">Cards</a></li>
-        <li><a href="#comp-inputs">Inputs</a></li>
-        <li><a href="#comp-footer">Footer</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h5>Guidelines</h5>
-      <ul>
-        <li><a href="#elevation">Elevation</a></li>
-        <li><a href="#dos-donts">Do's &amp; Don'ts</a></li>
-        <li><a href="#responsive-breakpoints">Breakpoints</a></li>
-        <li><a href="#responsive-collapse">Collapsing Strategy</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-legal">
-    <p>Apple Design System — Analysis &amp; Reference. Documented from: homepage, environment, store, iPhone 17 Pro buy page, accessories index.</p>
-    <p style="margin-top:8px;">Known gaps: form validation and error states not surfaced; dark-mode store card counterparts not documented; backdrop-filter blur radius is platform-dependent.</p>
-  </div>
+  <p>Spine Skeleton Shader 使用說明書 · VFXTool · Internal Documentation · Revision 2026.01</p>
+  <p style="margin-top:8px;opacity:.6;">本文件供工作室美術、特效與程式同仁參閱。涵蓋 Shader、Inspector、EditorWindow、Runtime 元件、Preset 預設檔、打包設定，以及所有右鍵選單／頂部說明按鈕背後的指南視窗。</p>
 </footer>
 
 </main>
 </div>
 
 <script>
-// ── Sidebar collapse ──
-document.querySelectorAll('.sidebar-group-title').forEach(title => {
-  title.addEventListener('click', () => {
-    title.closest('.sidebar-group').classList.toggle('collapsed');
-  });
+// Sidebar collapse
+document.querySelectorAll('.sb-grp-title').forEach(t=>{
+  t.addEventListener('click',()=>t.closest('.sb-grp').classList.toggle('collapsed'));
 });
 
-// ── Mobile burger ──
-const burger = document.getElementById('burgerBtn');
-const sidebar = document.getElementById('sidebar');
-const backdrop = document.getElementById('backdrop');
-function openSidebar() { sidebar.classList.add('open'); backdrop.classList.add('open'); }
-function closeSidebar() { sidebar.classList.remove('open'); backdrop.classList.remove('open'); }
-burger.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
-backdrop.addEventListener('click', closeSidebar);
+// Mobile burger
+const burger=document.getElementById('burgerBtn');
+const sidebar=document.getElementById('sidebar');
+const backdrop=document.getElementById('backdrop');
+const openSB=()=>{sidebar.classList.add('open');backdrop.classList.add('open');};
+const closeSB=()=>{sidebar.classList.remove('open');backdrop.classList.remove('open');};
+burger.addEventListener('click',()=>sidebar.classList.contains('open')?closeSB():openSB());
+backdrop.addEventListener('click',closeSB);
 
-// ── Scroll-spy ──
-const sections = document.querySelectorAll('[id]');
-const sideLinks = document.querySelectorAll('.sidebar-links a');
-let activeLink = null;
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const id = entry.target.id;
-      sideLinks.forEach(a => {
-        const isMatch = a.getAttribute('href') === '#' + id;
-        if (isMatch) {
-          if (activeLink) activeLink.classList.remove('active');
+// Scroll-spy
+const sections=document.querySelectorAll('[id]');
+const sideLinks=document.querySelectorAll('.sb-links a');
+let activeLink=null;
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const id=e.target.id;
+      sideLinks.forEach(a=>{
+        if(a.getAttribute('href')==='#'+id){
+          if(activeLink) activeLink.classList.remove('active');
           a.classList.add('active');
-          activeLink = a;
-          // Ensure parent group is expanded
-          const group = a.closest('.sidebar-group');
-          if (group && group.classList.contains('collapsed')) group.classList.remove('collapsed');
+          activeLink=a;
+          const grp=a.closest('.sb-grp');
+          if(grp&&grp.classList.contains('collapsed')) grp.classList.remove('collapsed');
         }
       });
     }
   });
-}, { rootMargin: '-44px 0px -60% 0px', threshold: 0 });
-sections.forEach(s => observer.observe(s));
+},{rootMargin:'-44px 0px -60% 0px',threshold:0});
+sections.forEach(s=>obs.observe(s));
 
-// ── Search ──
-const searchInput = document.getElementById('searchInput');
-searchInput.addEventListener('input', () => {
-  const q = searchInput.value.trim().toLowerCase();
-  clearHighlights();
-  if (!q) {
-    sideLinks.forEach(a => a.closest('li').classList.remove('hidden'));
-    document.querySelectorAll('.sidebar-group').forEach(g => g.classList.remove('collapsed'));
+// Search
+const si=document.getElementById('searchInput');
+si.addEventListener('input',()=>{
+  const q=si.value.trim().toLowerCase();
+  clearHL();
+  if(!q){
+    sideLinks.forEach(a=>a.closest('li').classList.remove('hidden'));
+    document.querySelectorAll('.sb-grp').forEach(g=>g.classList.remove('collapsed'));
     return;
   }
-  let firstMatch = null;
-  sideLinks.forEach(a => {
-    const text = a.textContent.toLowerCase();
-    const match = text.includes(q);
-    a.closest('li').classList.toggle('hidden', !match);
-    if (match && !firstMatch) firstMatch = a;
+  let first=null;
+  sideLinks.forEach(a=>{
+    const m=a.textContent.toLowerCase().includes(q);
+    a.closest('li').classList.toggle('hidden',!m);
+    if(m&&!first) first=a;
   });
-  // Expand groups that have visible links
-  document.querySelectorAll('.sidebar-group').forEach(group => {
-    const hasVisible = [...group.querySelectorAll('.sidebar-links li')].some(li => !li.classList.contains('hidden'));
-    group.classList.toggle('collapsed', !hasVisible);
+  document.querySelectorAll('.sb-grp').forEach(g=>{
+    const hasVis=[...g.querySelectorAll('.sb-links li')].some(li=>!li.classList.contains('hidden'));
+    g.classList.toggle('collapsed',!hasVis);
   });
-  // Highlight in content
-  highlightText(q);
-  if (firstMatch) {
-    const target = document.querySelector(firstMatch.getAttribute('href'));
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  hlText(q);
+  if(first){const t=document.querySelector(first.getAttribute('href'));if(t) t.scrollIntoView({behavior:'smooth',block:'start'});}
 });
 
-function highlightText(q) {
-  const main = document.querySelector('.main');
-  const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, {
-    acceptNode(node) {
-      const p = node.parentElement;
-      if (!p || p.closest('script,style,code') || p.tagName === 'MARK') return NodeFilter.FILTER_REJECT;
-      return node.textContent.toLowerCase().includes(q) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+function hlText(q){
+  const main=document.querySelector('.main');
+  const w=document.createTreeWalker(main,NodeFilter.SHOW_TEXT,{
+    acceptNode(n){
+      const p=n.parentElement;
+      if(!p||p.closest('script,style,pre')||p.tagName==='MARK') return NodeFilter.FILTER_REJECT;
+      return n.textContent.toLowerCase().includes(q)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;
     }
   });
-  const nodes = [];
-  while (walker.nextNode()) nodes.push(walker.currentNode);
-  nodes.forEach(node => {
-    const idx = node.textContent.toLowerCase().indexOf(q);
-    if (idx === -1) return;
-    const before = document.createTextNode(node.textContent.slice(0, idx));
-    const mark = document.createElement('mark');
-    mark.textContent = node.textContent.slice(idx, idx + q.length);
-    const after = document.createTextNode(node.textContent.slice(idx + q.length));
-    const frag = document.createDocumentFragment();
-    frag.append(before, mark, after);
-    node.parentNode.replaceChild(frag, node);
+  const ns=[];while(w.nextNode()) ns.push(w.currentNode);
+  ns.forEach(n=>{
+    const i=n.textContent.toLowerCase().indexOf(q);if(i<0) return;
+    const b=document.createTextNode(n.textContent.slice(0,i));
+    const m=document.createElement('mark');m.textContent=n.textContent.slice(i,i+q.length);
+    const a=document.createTextNode(n.textContent.slice(i+q.length));
+    const f=document.createDocumentFragment();f.append(b,m,a);
+    n.parentNode.replaceChild(f,n);
   });
 }
-
-function clearHighlights() {
-  document.querySelectorAll('mark').forEach(m => {
-    const parent = m.parentNode;
-    parent.replaceChild(document.createTextNode(m.textContent), m);
-    parent.normalize();
+function clearHL(){
+  document.querySelectorAll('mark').forEach(m=>{
+    m.parentNode.replaceChild(document.createTextNode(m.textContent),m);
+    m.parentNode.normalize();
   });
 }
-
-// Keyboard shortcut: / to focus search
-document.addEventListener('keydown', e => {
-  if (e.key === '/' && document.activeElement !== searchInput) {
-    e.preventDefault();
-    searchInput.focus();
-    searchInput.select();
-  }
-  if (e.key === 'Escape') searchInput.blur();
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==si){e.preventDefault();si.focus();si.select();}
+  if(e.key==='Escape') si.blur();
 });
 </script>
 </body>
