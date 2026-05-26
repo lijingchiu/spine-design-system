@@ -99,12 +99,12 @@ tr:last-child td{border-bottom:none}
 .sym-row:last-child{border-bottom:none}
 .sym{font-size:20px;width:32px;text-align:center;flex-shrink:0}
 .sym-desc{font-size:15px}
-mark{background:#fff176;color:inherit;border-radius:2px;padding:0 1px}
 footer.site-footer{background:var(--tile2);color:rgba(255,255,255,.55);padding:48px 64px;font-size:12px;line-height:1.6}
 footer.site-footer a{color:rgba(255,255,255,.55)}
 @media(max-width:1068px){.sec{padding:56px 40px}footer.site-footer{padding:40px 40px}}
 @media(max-width:833px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.sb-backdrop.open{display:block}.main{margin-left:0}.g-nav__burger{display:flex}.sec-title{font-size:28px}}
 @media(max-width:640px){.sec{padding:40px 20px}.sec-title{font-size:24px}.sec-lead{font-size:17px}.g-nav__search-wrap{display:none}footer.site-footer{padding:32px 20px}}
+.sb-sub{list-style:none;padding:0;margin:0}.sb-sub li a{display:block;padding:5px 16px 5px 28px;font-size:12px;color:rgba(255,255,255,.45);border-left:2px solid transparent;text-decoration:none;transition:color .2s}.sb-sub li a:hover{color:rgba(255,255,255,.8)}.sb-sub li a.active{color:#fff;border-left-color:var(--pri)}.srch-nav{background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;padding:0 5px;font-size:15px;line-height:44px;height:44px;flex-shrink:0;transition:color .15s}.srch-nav:hover{color:#fff}.srch-nav:disabled{opacity:.3;cursor:default}.srch-count{font-size:11px;color:rgba(255,255,255,.45);min-width:38px;text-align:center;flex-shrink:0;white-space:nowrap}mark{background:#fff176;color:inherit;border-radius:2px;padding:0 1px}mark.mark-active{background:#ff9800;outline:2px solid #ff9800;border-radius:2px}
 </style>
 </head>
 <body>
@@ -115,6 +115,9 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   <div class="g-nav__search-wrap">
     <svg class="g-nav__sico" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.6"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
     <input class="g-nav__search" type="search" id="searchInput" placeholder="搜尋屬性或關鍵字… (/)" autocomplete="off"/>
+    <span class="srch-count" id="srchCount"></span>
+    <button class="srch-nav" id="prevMatch" title="上一筆 (Shift+Enter)" disabled>↑</button>
+    <button class="srch-nav" id="nextMatch" title="下一筆 (Enter)" disabled>↓</button>
   </div>
 </nav>
 
@@ -126,74 +129,197 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
 <div class="sb-grp" id="grp-overview">
   <div class="sb-grp-title" data-grp="grp-overview">導覽 / Overview<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
   <ul class="sb-links">
-    <li><a href="#s1">§1 系統組成</a></li>
-    <li><a href="#s2">§2 GUI 分區地圖</a></li>
-    <li><a href="#s3">§3 視覺符號</a></li>
-    <li><a href="#s4">§4 右鍵·說明按鈕</a></li>
+    <li><a href="#s1">§1 系統組成</a>
+    </li>
+    <li><a href="#s2">§2 GUI 分區地圖</a>
+    </li>
+    <li><a href="#s3">§3 視覺符號</a>
+    </li>
+    <li><a href="#s4">§4 右鍵·說明按鈕</a>
+    </li>
   </ul>
 </div>
 
 <div class="sb-grp" id="grp-help">
   <div class="sb-grp-title" data-grp="grp-help">Help Windows<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
   <ul class="sb-links">
-    <li><a href="#s5">§5 七個 EditorWindow</a></li>
-    <li><a href="#s51">§5.1 介面操作</a></li>
+    <li><a href="#s5">§5 七個 EditorWindow</a>
+    </li>
+    <li><a href="#s51">§5.1 介面操作</a>
+    </li>
   </ul>
 </div>
 
 <div class="sb-grp" id="grp-shader">
   <div class="sb-grp-title" data-grp="grp-shader">Shader 分區<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
   <ul class="sb-links">
-    <li><a href="#s6">§6 MAIN</a></li>
-    <li><a href="#s7">§7 NOISE</a></li>
-    <li><a href="#s8">§8 LIGHTING</a></li>
-    <li><a href="#s9">§9 EMISSION</a></li>
-    <li><a href="#s10">§10 EFFECT</a></li>
-    <li><a href="#s11">§11 LINE</a></li>
+    <li><a href="#s6">§6 MAIN</a>
+      <ul class="sb-sub">
+        <li><a href="#s6-main">Main &amp; Shadow</a></li>
+        <li><a href="#s6-post">Post-Processing</a></li>
+      </ul>
+    </li>
+    <li><a href="#s7">§7 NOISE</a>
+    </li>
+    <li><a href="#s8">§8 LIGHTING</a>
+      <ul class="sb-sub">
+        <li><a href="#s8-native">Native Lighting</a></li>
+        <li><a href="#s8-shadow">Shadow Light Base</a></li>
+        <li><a href="#s8-normal">Normal Map</a></li>
+        <li><a href="#s8-probe">Light Probe</a></li>
+        <li><a href="#s8-flags">Light Source 旗標</a></li>
+      </ul>
+    </li>
+    <li><a href="#s9">§9 EMISSION</a>
+    </li>
+    <li><a href="#s10">§10 EFFECT</a>
+      <ul class="sb-sub">
+        <li><a href="#s10-overlay">Effect Overlay</a></li>
+        <li><a href="#s10-hitsweep">Hit Sweep</a></li>
+        <li><a href="#s10-backlight">BackLight</a></li>
+      </ul>
+    </li>
+    <li><a href="#s11">§11 LINE</a>
+      <ul class="sb-sub">
+        <li><a href="#s11-inline">Inline (Rim Light)</a></li>
+        <li><a href="#s11-outline">Outline 基底</a></li>
+        <li><a href="#s11-algo">Outline 演算法</a></li>
+      </ul>
+    </li>
   </ul>
 </div>
 
 <div class="sb-grp" id="grp-runtime">
   <div class="sb-grp-title" data-grp="grp-runtime">Runtime 元件<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
   <ul class="sb-links">
-    <li><a href="#s12">§12 SpineShadowLight</a></li>
-    <li><a href="#s13">§13 SpineHitSweepEffect</a></li>
-    <li><a href="#s14">§14 SpineLightManager</a></li>
-    <li><a href="#s15">§15 SpineLightReceiver</a></li>
-    <li><a href="#s16">§16 其他自動元件</a></li>
+    <li><a href="#s12">§12 SpineShadowLight</a>
+      <ul class="sb-sub">
+        <li><a href="#s12-light">Light Settings</a></li>
+        <li><a href="#s12-cookie">Cookie Settings</a></li>
+      </ul>
+    </li>
+    <li><a href="#s13">§13 SpineHitSweepEffect</a>
+      <ul class="sb-sub">
+        <li><a href="#s13-anim">Animation Settings</a></li>
+        <li><a href="#s13-debug">Debug &amp; Test Tools</a></li>
+        <li><a href="#s13-api">程式呼叫範例</a></li>
+      </ul>
+    </li>
+    <li><a href="#s14">§14 SpineLightManager</a>
+      <ul class="sb-sub">
+        <li><a href="#s14-inputs">資料 Inputs</a></li>
+        <li><a href="#s14-loop">每幀流程</a></li>
+      </ul>
+    </li>
+    <li><a href="#s15">§15 SpineLightReceiver</a>
+      <ul class="sb-sub">
+        <li><a href="#s15-auto">自動掛載條件</a></li>
+        <li><a href="#s15-debug">Active Lights Debug</a></li>
+      </ul>
+    </li>
+    <li><a href="#s16">§16 其他自動元件</a>
+      <ul class="sb-sub">
+        <li><a href="#s16-alpha">SpineAlphaMaskRenderer</a></li>
+        <li><a href="#s16-bloom">SpineBloomThresholdSync</a></li>
+        <li><a href="#s16-boot">SpineEffectBootstrapper</a></li>
+      </ul>
+    </li>
   </ul>
 </div>
 
 <div class="sb-grp" id="grp-preset">
   <div class="sb-grp-title" data-grp="grp-preset">Preset 系統<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
   <ul class="sb-links">
-    <li><a href="#s17">§17 概念</a></li>
-    <li><a href="#s18">§18 ProfileEditor</a></li>
-    <li><a href="#s19">§19 SaveMask · §20 Curve</a></li>
-    <li><a href="#s21">§21 命名規則</a></li>
-    <li><a href="#s22">§22 Helper API</a></li>
-    <li><a href="#s23">§23 ApplyTempProfile</a></li>
-    <li><a href="#s24">§24 底層 MPB · Tester</a></li>
+    <li><a href="#s17">§17 概念</a>
+      <ul class="sb-sub">
+        <li><a href="#s17-steps">操作步驟</a></li>
+        <li><a href="#s17-design">設計原則</a></li>
+      </ul>
+    </li>
+    <li><a href="#s18">§18 ProfileEditor</a>
+      <ul class="sb-sub">
+        <li><a href="#s18-features">編輯器特性</a></li>
+        <li><a href="#s18-sync">全場景同步</a></li>
+      </ul>
+    </li>
+    <li><a href="#s19">§19 Save Mask · §20 Curve</a>
+      <ul class="sb-sub">
+        <li><a href="#s19-mask">Save Mask</a></li>
+        <li><a href="#s20-curve">AnimationCurve</a></li>
+      </ul>
+    </li>
+    <li><a href="#s21">§21 命名規則</a>
+      <ul class="sb-sub">
+        <li><a href="#s21-a">格式 A 角色特化</a></li>
+        <li><a href="#s21-b">格式 B 通用型</a></li>
+      </ul>
+    </li>
+    <li><a href="#s22">§22 Helper API</a>
+      <ul class="sb-sub">
+        <li><a href="#s22-api">三個高階 API</a></li>
+        <li><a href="#s22-enum">Module Enum</a></li>
+      </ul>
+    </li>
+    <li><a href="#s23">§23 ApplyTempProfile</a>
+      <ul class="sb-sub">
+        <li><a href="#s23-code">程式範例</a></li>
+        <li><a href="#s23-impl">底層原理</a></li>
+      </ul>
+    </li>
+    <li><a href="#s24">§24 底層 MPB · Tester</a>
+      <ul class="sb-sub">
+        <li><a href="#s24-compare">正確寫法對照</a></li>
+        <li><a href="#s24-tester">ProfileTester</a></li>
+      </ul>
+    </li>
   </ul>
 </div>
 
 <div class="sb-grp" id="grp-build">
   <div class="sb-grp-title" data-grp="grp-build">打包流程<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
   <ul class="sb-links">
-    <li><a href="#s25">§25 PlatformManager</a></li>
-    <li><a href="#s26">§26 雙重鎖驗證</a></li>
-    <li><a href="#s27">§27 Build API</a></li>
-    <li><a href="#s28">§28 Layer 規約</a></li>
+    <li><a href="#s25">§25 PlatformManager</a>
+      <ul class="sb-sub">
+        <li><a href="#s25-ops">操作機制</a></li>
+        <li><a href="#s25-blocks">平台卡片區塊</a></li>
+      </ul>
+    </li>
+    <li><a href="#s26">§26 雙重鎖驗證</a>
+      <ul class="sb-sub">
+        <li><a href="#s26-editor">Editor Default</a></li>
+        <li><a href="#s26-platform">Platform Config</a></li>
+        <li><a href="#s26-strip">OnProcessShader</a></li>
+      </ul>
+    </li>
+    <li><a href="#s27">§27 Build API</a>
+      <ul class="sb-sub">
+        <li><a href="#s27-api">完整 API 清單</a></li>
+        <li><a href="#s27-ci">CI 使用範例</a></li>
+      </ul>
+    </li>
+    <li><a href="#s28">§28 Layer 規約</a>
+    </li>
   </ul>
 </div>
 
 <div class="sb-grp" id="grp-debug">
   <div class="sb-grp-title" data-grp="grp-debug">排查·入門<svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg></div>
   <ul class="sb-links">
-    <li><a href="#s29">§29 排查器</a></li>
-    <li><a href="#s30">§30 Q&amp;A</a></li>
-    <li><a href="#s31">§31 入門教學</a></li>
-    <li><a href="#s32">§32 附錄</a></li>
+    <li><a href="#s29">§29 排查器</a>
+      <ul class="sb-sub">
+        <li><a href="#s29-checks">八項自動檢測</a></li>
+      </ul>
+    </li>
+    <li><a href="#s30">§30 Q&amp;A</a>
+      <ul class="sb-sub">
+        <li><a href="#s30-q1">Q1 光照問題</a></li>
+        <li><a href="#s30-q2">Q2 特效缺失</a></li>
+      </ul>
+    </li>
+    <li><a href="#s31">§31 入門教學</a>
+    </li>
+    <li><a href="#s32">§32 附錄</a>
+    </li>
   </ul>
 </div>
 
@@ -332,7 +458,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   <p class="sec-lead">本分區為所有材質必要設定，無法停用。包含 Main &amp; Shadow Settings 與 Post-Processing Control 兩個子模組，共 7 個屬性。</p>
   <div class="callout">自動掛載：Suppress Bloom 開啟 → 自動掛載 <code>SpineBloomThresholdSync</code>。前置條件：無</div>
 
-  <h3>Module 01 · Main &amp; Shadow Settings</h3>
+  <h3 id="s6-main">Module 01 · Main &amp; Shadow Settings</h3>
   <p>系統會自動偵測同名後綴貼圖（<code>_Normal</code> / <code>_BackLight</code> / <code>_Emission</code>）並掛載。將材質拖到 SpriteRenderer 時亦會自動同步 MainTex 與 Straight Alpha 設定。</p>
   <div class="table-wrap">
   <table>
@@ -349,7 +475,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   <div class="callout">自動偵測 — 若主紋理同目錄有 <code>{name}_Normal</code> / <code>_BackLight</code> / <code>_Emission</code> 後綴，系統在材質選取時自動填入。</div>
   <div class="callout callout--danger"><strong>注意</strong> — Reset 整顆材質會清除所有 Preset 綁定與自動掛載元件。</div>
 
-  <h3>Module 02 · Post-Processing Control</h3>
+  <h3 id="s6-post">Module 02 · Post-Processing Control</h3>
   <p>後製管線（如 WinkingBeautify）的 Bloom 經常將 HDR 描邊與發光過度過曝。本模組讓 Shader 取得目前後製 Bloom 強度，並依 AnimationCurve 反向換算出本材質專屬的抑制門檻。</p>
   <div class="table-wrap">
   <table>
@@ -396,7 +522,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   <p class="sec-lead">本章依序介紹四個子模組：Native Lighting（Unity Realtime）、Shadow Light Base（自製 SpineShadowLight）、Normal Map（法線取樣）、Light Probe（環境光 SH 取樣）。</p>
   <div class="callout">前置條件：角色 Layer ∈ {8, 9, 12, 13, 18, 20}。啟用任一子模組 → 自動掛載 <code>SpineLightReceiver</code>；<code>EnsureInstance</code> 建立 <code>SpineLightManager</code>（場景單例）。</div>
 
-  <h3>Module 01 · Native Lighting Settings</h3>
+  <h3 id="s8-native">Module 01 · Native Lighting Settings</h3>
   <p>接收 Unity 場景的 Realtime Directional / Point / Spot Light。所有燈光資料由 SpineLightManager 依距離排序取前 8 盞，透過 MaterialPropertyBlock 推送。</p>
   <div class="table-wrap">
   <table>
@@ -412,7 +538,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   </table>
   </div>
 
-  <h3>Module 02 · Shadow Light Base Settings</h3>
+  <h3 id="s8-shadow">Module 02 · Shadow Light Base Settings</h3>
   <p>接收所有 SpineShadowLight 元件投射的自製光照 — 區域光、聚光、Cookie 投影、Caustics 波光。</p>
   <div class="table-wrap">
   <table>
@@ -425,7 +551,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   </table>
   </div>
 
-  <h3>Module 03 · Normal Map Settings</h3>
+  <h3 id="s8-normal">Module 03 · Normal Map Settings</h3>
   <p>讓 2D Sprite 接收方向性光照。自動偵測同目錄的 <code>_Normal</code> 後綴貼圖並掛載。</p>
   <div class="table-wrap">
   <table>
@@ -440,7 +566,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   </div>
   <div class="callout">協同運作 — Normal Map 啟用後會被 Native Lighting、Light Probe、ShadowLight（若 Affects Normal Map = ON）三者同時取用。一張法線貼圖即可撐起整個立體感。</div>
 
-  <h3>Module 04 · Light Probe Settings</h3>
+  <h3 id="s8-probe">Module 04 · Light Probe Settings</h3>
   <p>取樣場景烘焙好的 Light Probe Group，把 9 個 SH 係數傳入 Shader。若場景開啟 LightMap + LightProbe 時此選項自動開啟。</p>
   <div class="table-wrap">
   <table>
@@ -452,7 +578,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   </table>
   </div>
 
-  <h3>§8.5 · Light Source 多選旗標</h3>
+  <h3 id="s8-flags">§8.5 · Light Source 多選旗標</h3>
   <p>BackLight、Inline、Outline 三個模組共用一套 Light Source 多選欄位（<code>EnumFlagsField</code>）。每勾選一個光源，下方展開該光源獨立的 Power / Color Blend / Intensity 三組旋鈕。</p>
   <div class="table-wrap">
   <table>
@@ -501,7 +627,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   <p class="sec-lead">EFFECT 分區包含三個彼此獨立的特效模組：Effect Overlay（瞬間整體染色）、Hit Sweep（受擊光帶掃光）、BackLight（背光高光）。前兩者為時間性特效，BackLight 為常駐光照特效。</p>
   <div class="callout">自動掛載：Hit Sweep → <code>SpineHitSweepEffect</code> 元件。本分區無 Toggle — Effect Intensity = 0 時自動視為關閉。</div>
 
-  <h3>Module 01 · Effect Overlay — 整體色彩疊加</h3>
+  <h3 id="s10-overlay">Module 01 · Effect Overlay — 整體色彩疊加</h3>
   <p>將指定 HDR 顏色按 Intensity 線性疊到最終畫面色。瞬間性特效 — 用於受擊閃白、變身、無敵、燃燒、冰凍。</p>
   <div class="table-wrap">
   <table>
@@ -513,7 +639,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   </table>
   </div>
 
-  <h3>Module 02 · Hit Sweep Settings — 受擊掃光</h3>
+  <h3 id="s10-hitsweep">Module 02 · Hit Sweep Settings — 受擊掃光</h3>
   <p>「打擊閃光」特效。傳入受擊點世界座標後，光帶從受擊點向外掃過整個角色。常用於武器命中、技能擊發、無敵讀條的視覺反饋。Shader 屬性在 Material Inspector 設定外觀；觸發則由 <code>SpineHitSweepEffect</code> 元件腳本控制（詳見 §13）。</p>
   <div class="table-wrap">
   <table>
@@ -528,7 +654,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   </div>
   <div class="callout">進階控制屬性（位於 SpineHitSweepEffect 元件 Inspector 而非 Material）：<code>duration</code>（掃光總時間，秒）、<code>sweepRange</code>（預設 -4 → 4）、<code>sweepCenterOffset</code>（角色中心校正向量）。詳見 §13。</div>
 
-  <h3>Module 03 · BackLight Settings — 背光高光（基底）</h3>
+  <h3 id="s10-backlight">Module 03 · BackLight Settings — 背光高光（基底）</h3>
   <p>背光／高光通道。BackLight 是 EFFECT 分區中最複雜的模組 — 接受三種光源並產生獨立的 Power / Blend / Intensity 旋鈕集合。自動偵測 <code>{name}_BackLight</code> 後綴貼圖並掛載。</p>
   <div class="table-wrap">
   <table>
@@ -566,7 +692,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   <p class="sec-lead">Inline 從角色 Alpha 邊緣向內取樣漸層（Rim Light 風格）；Outline 在外側以 Sobel 8 鄰域偵測繪製外輪廓。兩者共用同一套 Light Source 多選 + 進階區塊結構（§10.3）。</p>
   <div class="callout">自動掛載：Inline → <code>SpineAlphaMaskRenderer</code>。Outline 為獨立 Pass，可被打包剝離。</div>
 
-  <h3>Module 01 · Inline Settings（Rim Light）</h3>
+  <h3 id="s11-inline">Module 01 · Inline Settings（Rim Light）</h3>
   <p>啟用後系統自動掛載 <code>SpineAlphaMaskRenderer</code>，離線渲染一張 Alpha Mask RT 供 Shader 取樣（§16）。</p>
   <div class="table-wrap">
   <table>
@@ -583,7 +709,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   </div>
   <p style="color:var(--ink48);font-size:14px;">進階區塊（Directional Mask / Tint / Noise）以 <code>_IL_</code> 前綴，結構同 §10.3。Inline 共有 6 + 9 = 15 個屬性（基底 + 進階）。</p>
 
-  <h3>Module 02 · Outline Settings — 基底</h3>
+  <h3 id="s11-outline">Module 02 · Outline Settings — 基底</h3>
   <p>外輪廓描邊。獨立 Pass「Outline」以 Sobel 邊緣偵測在 Alpha 邊界外側繪製描邊。支援被 Stencil 標記、被光源染色、被深度測試覆蓋等策略。</p>
   <div class="table-wrap">
   <table>
@@ -602,7 +728,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   </table>
   </div>
 
-  <h3>Outline 取樣演算法進階設定</h3>
+  <h3 id="s11-algo">Outline 取樣演算法進階設定</h3>
   <p>這些是 Shader Variant 級別的設定，影響 GPU 編譯出的指令數量。<strong>手機平台建議於 §25 BuildConfig 中關閉 Outline</strong>（整顆 Shader 中最重的 Pass）。</p>
   <div class="table-wrap">
   <table>
@@ -627,7 +753,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   <p class="sec-lead">與 Unity Light 平行的自製光源系統。在 Hierarchy 右鍵「GameObject / Light / Spine Shadow Light」建立。Inspector 由兩個可摺疊區塊組成。</p>
   <p>Scene View 提供 Range / Spot Angle / Area Size 的拖曳 Handle。<code>OnDrawGizmos</code> 在 Scene View 即時預覽光形 — 不需 Play。</p>
 
-  <h3>💡 Light Settings</h3>
+  <h3 id="s12-light">💡 Light Settings</h3>
   <div class="table-wrap">
   <table>
     <thead><tr><th>欄位</th><th>說明</th></tr></thead>
@@ -646,7 +772,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   </table>
   </div>
 
-  <h3>🍪 Cookie Settings</h3>
+  <h3 id="s12-cookie">🍪 Cookie Settings</h3>
   <div class="table-wrap">
   <table>
     <thead><tr><th>欄位</th><th>說明</th></tr></thead>
@@ -669,7 +795,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   <h2 class="sec-title">SpineHitSweepEffect 元件</h2>
   <p class="sec-lead">Material 上的 Enable Hit Sweep 勾選後，本元件會自動掛載到角色 GameObject。Inspector 含兩個區塊：Animation Settings（節奏控制）與 Debug &amp; Test Tools（編輯器測試介面）。</p>
 
-  <h3>Animation Settings</h3>
+  <h3 id="s13-anim">Animation Settings</h3>
   <div class="table-wrap">
   <table>
     <thead><tr><th>欄位</th><th>說明</th></tr></thead>
@@ -681,7 +807,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   </table>
   </div>
 
-  <h3>Debug &amp; Test Tools</h3>
+  <h3 id="s13-debug">Debug &amp; Test Tools</h3>
   <div class="table-wrap">
   <table>
     <thead><tr><th>工具</th><th>說明</th></tr></thead>
@@ -693,7 +819,7 @@ footer.site-footer a{color:rgba(255,255,255,.55)}
   </table>
   </div>
 
-  <h3>程式呼叫範例</h3>
+  <h3 id="s13-api">程式呼叫範例</h3>
 <pre><code>// 1. 取得角色身上的特效腳本
 SpineHitSweepEffect hitEffect = GetComponent&lt;SpineHitSweepEffect&gt;();
 if (hitEffect != null)
@@ -712,7 +838,7 @@ if (hitEffect != null)
   <h2 class="sec-title">SpineLightManager — 場景單例</h2>
   <p class="sec-lead">光照資料的中央交換站。SpineLightManager 為每個 Scene 一個單例。任一光照模組首次啟用時自動建立 GameObject — 無需手動新增。每幀以 LateUpdate 進行光源收集、排序、SH 取樣、MPB 注入。</p>
 
-  <h3>資料 Inputs</h3>
+  <h3 id="s14-inputs">資料 Inputs</h3>
   <div class="table-wrap">
   <table>
     <thead><tr><th>欄位</th><th>類型</th><th>說明</th></tr></thead>
@@ -727,7 +853,7 @@ if (hitEffect != null)
   </table>
   </div>
 
-  <h3>每幀流程（LateUpdate）</h3>
+  <h3 id="s14-loop">每幀流程（LateUpdate）</h3>
   <ol>
     <li><strong>收集 &amp; 排序</strong> — 以「光源 ↔ 角色」距離平方計算，取最近 8 盞放入 <code>_SpineLightPos / Color / Spot</code> 陣列</li>
     <li><strong>SH 取樣</strong> — <code>LightProbes.GetInterpolatedProbe</code> → 9 個係數轉成 <code>_SpineSHAr ~ _SpineSHC</code></li>
@@ -743,7 +869,7 @@ if (hitEffect != null)
   <h2 class="sec-title">SpineLightReceiver — 角色端接收元件</h2>
   <p class="sec-lead">LightReceiver 是 LightManager 在角色端的對等元件。OnEnable 時呼叫 Manager.RegisterCharacter 完成註冊。Inspector 提供「🔍 Active Lights」唯讀面板，即時顯示當下打在這個角色身上的所有光源。</p>
 
-  <h3>自動掛載條件</h3>
+  <h3 id="s15-auto">自動掛載條件</h3>
   <p>當以下任一勾選時系統會自動為角色掛載 LightReceiver：</p>
   <ul>
     <li>Enable Normal Map</li>
@@ -754,7 +880,7 @@ if (hitEffect != null)
     <li>Enable Shadow Light Base</li>
   </ul>
 
-  <h3>🔍 Active Lights — Runtime Debug 面板</h3>
+  <h3 id="s15-debug">🔍 Active Lights — Runtime Debug 面板</h3>
   <div class="table-wrap">
   <table>
     <thead><tr><th>面板色條</th><th>說明</th></tr></thead>
@@ -776,7 +902,7 @@ if (hitEffect != null)
   <p class="sec-lead">SpineAlphaMaskRenderer · SpineBloomThresholdSync · SpineEffectBootstrapper — 這三個元件不會在角色 Inspector 上被直接操作，由 SpineCustomShaderGUI 在屬性變動時自動掛載／移除。</p>
   <div class="callout callout--warn">共同前提 — 自動掛載僅對 Layer ∈ {8, 9, 12, 13, 18, 20} 的物件作用。Validate 機制會在每次選取時掃描；若 Layer 不正確會把元件移除並在 Inspector 頂部跳出醒目警告。</div>
 
-  <h3>SpineAlphaMaskRenderer</h3>
+  <h3 id="s16-alpha">SpineAlphaMaskRenderer</h3>
   <p><strong>觸發：Enable Inline 勾選</strong></p>
   <p>使用 CommandBuffer 在主相機 BeforeForwardOpaque 時繪製一張 RenderTexture（Alpha Mask）供 Inline Shader 取樣。</p>
   <ul>
@@ -784,7 +910,7 @@ if (hitEffect != null)
     <li>綁定相機：Camera.main，場景切換時自動重新綁定</li>
   </ul>
 
-  <h3>SpineBloomThresholdSync</h3>
+  <h3 id="s16-bloom">SpineBloomThresholdSync</h3>
   <p><strong>觸發：Suppress Bloom 勾選</strong></p>
   <p>透過 Reflection 抓取後製 Beautify 的 <code>finalBloomIntensity</code>，依 AnimationCurve 推算 <code>_BloomSuppressThreshold</code> 寫入 MPB。</p>
   <ul>
@@ -792,7 +918,7 @@ if (hitEffect != null)
     <li>預設曲線：1.0 → 0.60；10.0 → 0.52</li>
   </ul>
 
-  <h3>SpineEffectBootstrapper</h3>
+  <h3 id="s16-boot">SpineEffectBootstrapper</h3>
   <p><strong>手動使用（程式 API）</strong></p>
   <p>執行階段一次性套用一份 Profile，並自動補齊所有依賴元件（Receiver / AlphaMask / HitSweep / BloomSync）。適合角色切換特效時引入完整效果包。</p>
   <ul>
@@ -809,7 +935,7 @@ if (hitEffect != null)
   <p class="sec-lead">把模組設定存成資產 — 跨材質球共用。每個子模組皆可獨立儲存為一個 ScriptableObject（<code>SpineModuleProfile.asset</code>）。</p>
   <p>掛載後 Inspector 中該模組的屬性會顯示 <strong>✦ 符號</strong>，並由 <code>SpineProfileAnimator</code> 透過 MaterialPropertyBlock 即時驅動 — 不寫入材質球本體，多個角色可共用。</p>
 
-  <h3>操作步驟（Inspector 端）</h3>
+  <h3 id="s17-steps">操作步驟（Inspector 端）</h3>
   <ol>
     <li>點 <strong>P 按鈕</strong>展開 Preset 面板（每個子模組標題右側皆有 P 圖示）</li>
     <li>設定 <strong>Save Mask</strong>：勾選想保存的屬性 — 未勾選的不會寫入 Preset</li>
@@ -817,7 +943,7 @@ if (hitEffect != null)
     <li>掛到角色的 <code>SpineProfileAnimator</code>，Inspector 顯示 ✦ 即生效</li>
   </ol>
 
-  <h3>關鍵設計原則</h3>
+  <h3 id="s17-design">關鍵設計原則</h3>
   <div class="table-wrap">
   <table>
     <thead><tr><th>原則</th><th>說明</th></tr></thead>
@@ -840,7 +966,7 @@ if (hitEffect != null)
   <h2 class="sec-title">SpineModuleProfileEditor — 全場景自動同步</h2>
   <p class="sec-lead">在 Project 視窗中直接點選一個 <code>.asset</code> 時，由 SpineModuleProfileEditor 接管 Inspector。修改 Profile 的同時，會自動掃描全場景所有套用此 Profile 的角色，刷新自動掛載狀態。</p>
 
-  <h3>編輯器特性</h3>
+  <h3 id="s18-features">編輯器特性</h3>
   <div class="table-wrap">
   <table>
     <thead><tr><th>功能</th><th>說明</th></tr></thead>
@@ -854,7 +980,7 @@ if (hitEffect != null)
   </div>
   <p>屬性類型自動判斷：開頭為 <code>_Enable</code> / <code>_Use</code> / <code>_Fill</code> / <code>_Invert</code> 或含 <code>Affects</code> 顯示為 Toggle；含 <code>LightingMode</code> 顯示為 EnumFlagsField；含 <code>ZTest</code> 顯示為 EnumPopup。</p>
 
-  <h3>SyncAllRenderersUsingThisProfile — 修改後自動同步</h3>
+  <h3 id="s18-sync">SyncAllRenderersUsingThisProfile — 修改後自動同步</h3>
   <p>當你修改 Profile 的任一屬性，編輯器會執行以下四個步驟：</p>
   <ol>
     <li><strong>掃描全場景 Renderer</strong> — <code>FindObjectsByType&lt;Renderer&gt;()</code></li>
@@ -871,12 +997,12 @@ if (hitEffect != null)
   <h2 class="sec-title">Save Mask 與 AnimationCurve 驅動</h2>
   <p class="sec-lead">精確控制哪些屬性由 Preset 管理、哪些留給程式自由控制；並支援逐屬性的曲線動畫引擎。</p>
 
-  <h3>§19 · Save Mask — 參數遮罩</h3>
+  <h3 id="s19-mask">§19 · Save Mask — 參數遮罩</h3>
   <p>優先權：<strong>MaterialPropertyBlock（最高）&gt; Material Instance &gt; Shared Material</strong></p>
   <p>若某個參數需由程式在 Update 中「每幀高頻控制」（如閃爍、變色），請在 Save Properties 中<strong>取消勾選</strong>該參數。如此 Profile 不會綁定該參數，程式可安全用 <code>SpineProfileHelper.SetFloat</code> 直接修改 MPB，不會被 Animator 覆寫。</p>
   <div class="callout callout--danger"><strong>常見錯誤</strong> — 把 Effect Color 或 Fill Inside 等需要程式控制的屬性寫入 Preset，導致受擊閃白功能無效。</div>
 
-  <h3>§20 · AnimationCurve 驅動</h3>
+  <h3 id="s20-curve">§20 · AnimationCurve 驅動</h3>
   <p>每個 ✦ 屬性右側都有 <strong>∿ 按鈕</strong>。點開後該值改由 AnimationCurve 取代靜態值；時間軸從 GameObject 生命週期開始，可由 <code>Animator.Restart()</code> 重置。</p>
   <div class="table-wrap">
   <table>
@@ -899,7 +1025,7 @@ if (hitEffect != null)
   <h2 class="sec-title">SpineNamingRuleWindow — 預設檔命名規則</h2>
   <p class="sec-lead">兩種命名格式 — 角色特化與通用型。所有 Preset 預設檔都應遵循下列其中一種命名格式。</p>
 
-  <h3>格式 A · 角色特化功能</h3>
+  <h3 id="s21-a">格式 A · 角色特化功能</h3>
   <p>格式：<code>{角色英文代稱}_{模塊名稱}_{序號}</code></p>
   <p>為單一角色設計、不會跨角色共用的特效。序號從 001 起跳。</p>
   <ul>
@@ -908,7 +1034,7 @@ if (hitEffect != null)
     <li><code>NPC_Emission_002</code></li>
   </ul>
 
-  <h3>格式 B · 通用型功能</h3>
+  <h3 id="s21-b">格式 B · 通用型功能</h3>
   <p>格式：<code>General_{模塊名稱}_{用途}_{序號}</code></p>
   <p>可被多角色重用的狀態效果。用途為實際效果簡稱，預設為 Default — 請改為實際效果簡稱（Toxic、Frozen、Burn 等）。</p>
   <ul>
@@ -917,7 +1043,7 @@ if (hitEffect != null)
     <li><code>General_BackLight_Default_001</code></li>
   </ul>
 
-  <h3>支援的模組名稱</h3>
+  <h3 id="s21-modules">支援的模組名稱</h3>
   <p><code>Main/Shadow</code> · <code>PostProcessing</code> · <code>GlobalNoise</code> · <code>NativeLighting</code> · <code>ShadowLight</code> · <code>NormalMap</code> · <code>LightProbe</code> · <code>Emission</code> · <code>EffectOverlay</code> · <code>HitSweep</code> · <code>BackLight</code> · <code>Inline</code> · <code>Outline</code></p>
   <div class="callout">SpineNamingRuleWindow 內含複製按鈕。命名規則統一 — 方便 Addressable 打包與資產搜尋。</div>
 </section>
@@ -928,7 +1054,7 @@ if (hitEffect != null)
   <h2 class="sec-title">SpineProfileHelper API</h2>
   <p class="sec-lead">強烈建議使用 SpineProfileHelper 靜態類別控制 Profile，而非自行操作 SpineProfileAnimator 元件。Helper 內建生命週期防錯、重複掛載偵測與效能自動回收。</p>
 
-  <h3>三個高階 API（推薦）</h3>
+  <h3 id="s22-api">三個高階 API（推薦）</h3>
 <pre><code>// 1. 動態加載 / 替換 Profile
 //    自動掛載 Animator、防重複、強制刷新
 SpineProfileHelper.ApplyProfileRuntime(myRenderer, newProfile);
@@ -941,13 +1067,13 @@ SpineProfileHelper.RemoveProfileRuntime(
 // 3. 一鍵清除角色身上所有 Profile 與緩存
 SpineProfileHelper.ClearAllProfiles(myRenderer);</code></pre>
 
-  <h3>SpineProfileModule Enum</h3>
+  <h3 id="s22-enum">SpineProfileModule Enum</h3>
   <p>使用 Enum 取代字串避免拼錯：</p>
   <p>
     <code>.Main</code> &nbsp; <code>.PostProcessing</code> &nbsp; <code>.GlobalNoise</code> &nbsp; <code>.NativeLighting</code> &nbsp; <code>.ShadowLight</code> &nbsp; <code>.NormalMap</code> &nbsp; <code>.LightProbe</code> &nbsp; <code>.Emission</code> &nbsp; <code>.EffectOverlay</code> &nbsp; <code>.HitSweep</code> &nbsp; <code>.BackLight</code> &nbsp; <code>.Inline</code> &nbsp; <code>.Outline</code>
   </p>
 
-  <h3>輔助方法</h3>
+  <h3 id="s22-helpers">輔助方法</h3>
   <ul>
     <li><code>ToModuleName()</code> — 將 Enum 轉為模組字串名稱</li>
     <li><code>ToTagKey()</code> — 轉為 Material OverrideTag 鍵名</li>
@@ -962,7 +1088,7 @@ SpineProfileHelper.ClearAllProfiles(myRenderer);</code></pre>
   <h2 class="sec-title">ApplyTempProfile — 狀態切換的最佳解</h2>
   <p class="sec-lead">當角色進入特殊狀態（中毒、冰凍、變身）時，不建議直接修改 MPB — 因為會被曲線蓋掉。最佳解：呼叫 ApplyTempProfile，系統會複製一份 Profile，將指定參數強制覆寫，並關閉該參數的曲線動畫。</p>
 
-  <h3>程式範例</h3>
+  <h3 id="s23-code">程式範例</h3>
 <pre><code>// 1. 準備參數字典
 var overrides = new Dictionary&lt;string, object&gt; {
     { "_OutlineColor", Color.green },
@@ -981,10 +1107,10 @@ Destroy(activeTempProfile);</code></pre>
 
   <div class="callout callout--danger"><strong>記憶體洩漏警告</strong> — ApplyTempProfile 回傳的 TempProfile 實體必須手動 Destroy。否則每次狀態切換都會在記憶體中產生新的 ScriptableObject 殘留。</div>
 
-  <h3>底層原理</h3>
+  <h3 id="s23-impl">底層原理</h3>
   <p>Temp Profile 為原 Profile 的<strong>深拷貝</strong>，在 overrides 中指定的屬性會被覆寫且 <code>useCurve = false</code>（停用曲線）。<strong>原 Profile 不會被修改。</strong></p>
 
-  <h3>典型使用場景</h3>
+  <h3 id="s23-cases">典型使用場景</h3>
   <ul>
     <li>受擊瞬間將 Outline 變紅</li>
     <li>變身時將整個角色 Emission 染色</li>
@@ -999,7 +1125,7 @@ Destroy(activeTempProfile);</code></pre>
   <h2 class="sec-title">底層 MPB 安全 API · SpineProfileTester</h2>
   <p class="sec-lead">當某個參數在 Save Mask 中未被勾選時，使用 Helper 封裝的靜態 API 安全寫入 MPB，與系統底層 MPB 狀態無縫融合，不打架，並保持極致合批效能。</p>
 
-  <h3>§24 · 正確與錯誤寫法對照</h3>
+  <h3 id="s24-compare">§24 · 正確與錯誤寫法對照</h3>
   <div class="table-wrap">
   <table>
     <thead><tr><th></th><th>寫法</th><th>說明</th></tr></thead>
@@ -1014,7 +1140,7 @@ Destroy(activeTempProfile);</code></pre>
   </div>
   <div class="callout callout--warn"><strong>前提</strong> — 必須確保該參數在 ShaderGUI 儲存 Preset 時沒被勾選。否則 Animator 會把你寫入的值覆蓋掉。</div>
 
-  <h3>§24.1 · SpineProfileTester — 互動式測試工具</h3>
+  <h3 id="s24-tester">§24.1 · SpineProfileTester — 互動式測試工具</h3>
   <p>在 Hierarchy 內加入此測試元件後進入 Play Mode，可用滑鼠快速驗證 Profile 系統的完整流程。</p>
   <div class="table-wrap">
   <table>
@@ -1035,7 +1161,7 @@ Destroy(activeTempProfile);</code></pre>
   <h2 class="sec-title">SpinePlatformManagerWindow — 平台變體管理中心</h2>
   <p class="sec-lead">Window 選單開啟「Spine 平台變體管理」視窗。以滑動卡片方式列出 Editor Default 與所有平台 Config（iOS / Android / Windows / Switch / PS5 / Xbox / WebGL…）。</p>
 
-  <h3>操作機制</h3>
+  <h3 id="s25-ops">操作機制</h3>
   <div class="table-wrap">
   <table>
     <thead><tr><th>操作</th><th>說明</th></tr></thead>
@@ -1050,7 +1176,7 @@ Destroy(activeTempProfile);</code></pre>
   </table>
   </div>
 
-  <h3>每個平台卡片內含三組區塊</h3>
+  <h3 id="s25-blocks">每個平台卡片內含三組區塊</h3>
   <div class="table-wrap">
   <table>
     <thead><tr><th>區塊</th><th>包含模組</th></tr></thead>
@@ -1070,11 +1196,11 @@ Destroy(activeTempProfile);</code></pre>
   <h2 class="sec-title">SpineShaderBuildConfig — 雙重鎖驗證</h2>
   <p class="sec-lead">系統提供兩種運作模式 — 編輯器中所有 Keyword 強制全開以供美術預覽（Editor Default）；切換到平台 Config 時則以「雙重鎖」決定材質球的 Keyword 啟用狀態。</p>
 
-  <h3>A · Editor Default 模式</h3>
+  <h3 id="s26-editor">A · Editor Default 模式</h3>
   <p>執行 <code>SpineShaderBuildPipeline.SyncAllEnabled()</code> 後，會強制掃描全專案的 Spine 材質球，將所有 15 個 Module Keyword 一律 EnableKeyword。<code>SessionState</code> 記為 <code>EditorMode = true</code>。</p>
   <div class="callout">適合美術做設計時 — 不論勾不勾，都能看到效果。不影響正式打包效能。</div>
 
-  <h3>B · Platform Config 模式（雙重鎖）</h3>
+  <h3 id="s26-platform">B · Platform Config 模式（雙重鎖）</h3>
   <p>執行 <code>SyncForPlatformConfig()</code> 後改用雙重驗證：</p>
   <div class="table-wrap">
   <table>
@@ -1087,7 +1213,7 @@ Destroy(activeTempProfile);</code></pre>
   </table>
   </div>
 
-  <h3>第三道過濾 — OnProcessShader（打包時）</h3>
+  <h3 id="s26-strip">第三道過濾 — OnProcessShader（打包時）</h3>
   <p><code>IPreprocessShaders</code> 介面在編譯每個 Variant 時，會檢查兩件事：</p>
   <ol>
     <li>平台 Config 是否放行此 Keyword</li>
@@ -1103,7 +1229,7 @@ Destroy(activeTempProfile);</code></pre>
   <h2 class="sec-title">SpineShaderBuildPipeline — 程式 API</h2>
   <p class="sec-lead">為打包自動化腳本使用。若你的專案有自動化打包流程（CI / 一鍵打包按鈕），可透過 SpineShaderBuildPipeline 的靜態方法在 OnPreprocessBuild 階段刷新材質球設定。</p>
 
-  <h3>完整 API 清單</h3>
+  <h3 id="s27-api">完整 API 清單</h3>
   <div class="table-wrap">
   <table>
     <thead><tr><th>方法</th><th>說明</th></tr></thead>
@@ -1117,7 +1243,7 @@ Destroy(activeTempProfile);</code></pre>
   </table>
   </div>
 
-  <h3>CI 使用範例</h3>
+  <h3 id="s27-ci">CI 使用範例</h3>
 <pre><code>public class SpineBuildAutomation {
     public void PrepareForTarget() {
         // 例如切到 Android
@@ -1154,7 +1280,7 @@ Destroy(activeTempProfile);</code></pre>
   <h2 class="sec-title">SpineLightingIssueTroubleshooter — 八項自動排查</h2>
   <p class="sec-lead">選取場景中的角色 GameObject，於 SpineDebugHelpWindow 中按「光照問題排查」按鈕。工具會檢測八項常見問題，並提供「點此修正」與物件 Ping 跳轉。</p>
 
-  <h3>八項自動檢測</h3>
+  <h3 id="s29-checks">八項自動檢測</h3>
   <ul class="check-list">
     <li><span class="chk-num">01</span><div><strong>SpineLightManager 存在</strong> — 若無，提供建立按鈕</div></li>
     <li><span class="chk-num">02</span><div><strong>Mask 含角色 Layer</strong> — <code>collectLightMask</code> 包含此 Layer</div></li>
@@ -1176,7 +1302,7 @@ Destroy(activeTempProfile);</code></pre>
   <h2 class="sec-title">SpineDebugHelpWindow — 常見問題 Q&amp;A</h2>
   <p class="sec-lead">兩個最常出現的問題與標準解法。所有問題卡片均可在頂部搜尋框輸入關鍵字過濾。</p>
 
-  <h3>Q1 · 光照與陰影問題</h3>
+  <h3 id="s30-q1">Q1 · 光照與陰影問題</h3>
   <p>「<strong>為何角色看起來黑黑的，明明有開燈但沒受光照？</strong>」</p>
   <p>標準排查順序（DebugHelpWindow 列出）：</p>
   <ol>
@@ -1187,7 +1313,7 @@ Destroy(activeTempProfile);</code></pre>
     <li>按 <strong>▤ 全效預覽按鈕</strong> — 若恢復正常，代表是平台 Config 剝離了該模組</li>
   </ol>
 
-  <h3>Q2 · 特效與模組缺失</h3>
+  <h3 id="s30-q2">Q2 · 特效與模組缺失</h3>
   <p>「<strong>為何勾選內外框、背光、掃光都不起作用？</strong>」</p>
   <p>標準解法：</p>
   <ol>
@@ -1310,7 +1436,7 @@ backdrop.addEventListener('click',closeSB);
 
 // Scroll-spy
 const sections=document.querySelectorAll('[id]');
-const sideLinks=document.querySelectorAll('.sb-links a');
+const sideLinks=document.querySelectorAll('.sb-links a, .sb-sub a');
 let activeLink=null;
 const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{
@@ -1332,27 +1458,69 @@ sections.forEach(s=>obs.observe(s));
 
 // Search
 const si=document.getElementById('searchInput');
-si.addEventListener('input',()=>{
+const prevBtn=document.getElementById('prevMatch');
+const nextBtn=document.getElementById('nextMatch');
+const srchCount=document.getElementById('srchCount');
+let matches=[],matchIdx=-1;
+
+function updateNavBtns(){
+  const has=matches.length>0;
+  prevBtn.disabled=!has;
+  nextBtn.disabled=!has;
+  srchCount.textContent=has?(matchIdx+1)+'/'+matches.length:'';
+}
+
+function goToMatch(i){
+  if(!matches.length) return;
+  if(matchIdx>=0&&matchIdx<matches.length) matches[matchIdx].classList.remove('mark-active');
+  matchIdx=((i%matches.length)+matches.length)%matches.length;
+  matches[matchIdx].classList.add('mark-active');
+  matches[matchIdx].scrollIntoView({behavior:'smooth',block:'center'});
+  updateNavBtns();
+}
+
+function runSearch(){
   const q=si.value.trim().toLowerCase();
   clearHL();
+  matches=[];matchIdx=-1;
   if(!q){
     sideLinks.forEach(a=>a.closest('li').classList.remove('hidden'));
     document.querySelectorAll('.sb-grp').forEach(g=>g.classList.remove('collapsed'));
+    updateNavBtns();
     return;
   }
   let first=null;
   sideLinks.forEach(a=>{
     const m=a.textContent.toLowerCase().includes(q);
-    a.closest('li').classList.toggle('hidden',!m);
-    if(m&&!first) first=a;
+    const li=a.closest('li');
+    li.classList.toggle('hidden',!m);
+    if(m){
+      // sub-link match → also un-hide parent sb-links > li
+      const sub=li.closest('.sb-sub');
+      if(sub) sub.closest('li').classList.remove('hidden');
+      if(!first) first=a;
+    }
   });
   document.querySelectorAll('.sb-grp').forEach(g=>{
-    const hasVis=[...g.querySelectorAll('.sb-links li')].some(li=>!li.classList.contains('hidden'));
+    const hasVis=[...g.querySelectorAll('.sb-links > li')].some(li=>!li.classList.contains('hidden'));
     g.classList.toggle('collapsed',!hasVis);
   });
   hlText(q);
-  if(first){const t=document.querySelector(first.getAttribute('href'));if(t) t.scrollIntoView({behavior:'smooth',block:'start'});}
-});
+  matches=[...document.querySelectorAll('mark')];
+  if(matches.length){
+    goToMatch(0);
+  } else if(first){
+    const t=document.querySelector(first.getAttribute('href'));
+    if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
+    updateNavBtns();
+  } else {
+    updateNavBtns();
+  }
+}
+
+['input','search'].forEach(ev=>si.addEventListener(ev,runSearch));
+prevBtn&&prevBtn.addEventListener('click',()=>goToMatch(matchIdx-1));
+nextBtn&&nextBtn.addEventListener('click',()=>goToMatch(matchIdx+1));
 
 function hlText(q){
   const main=document.querySelector('.main');
@@ -1365,12 +1533,19 @@ function hlText(q){
   });
   const ns=[];while(w.nextNode()) ns.push(w.currentNode);
   ns.forEach(n=>{
-    const i=n.textContent.toLowerCase().indexOf(q);if(i<0) return;
-    const b=document.createTextNode(n.textContent.slice(0,i));
-    const m=document.createElement('mark');m.textContent=n.textContent.slice(i,i+q.length);
-    const a=document.createTextNode(n.textContent.slice(i+q.length));
-    const f=document.createDocumentFragment();f.append(b,m,a);
-    n.parentNode.replaceChild(f,n);
+    const txt=n.textContent;
+    const lo=txt.toLowerCase();
+    const frag=document.createDocumentFragment();
+    let pos=0,idx;
+    while((idx=lo.indexOf(q,pos))>=0){
+      frag.append(document.createTextNode(txt.slice(pos,idx)));
+      const m=document.createElement('mark');
+      m.textContent=txt.slice(idx,idx+q.length);
+      frag.append(m);
+      pos=idx+q.length;
+    }
+    frag.append(document.createTextNode(txt.slice(pos)));
+    n.parentNode.replaceChild(frag,n);
   });
 }
 function clearHL(){
@@ -1381,7 +1556,11 @@ function clearHL(){
 }
 document.addEventListener('keydown',e=>{
   if(e.key==='/'&&document.activeElement!==si){e.preventDefault();si.focus();si.select();}
-  if(e.key==='Escape') si.blur();
+  if(e.key==='Escape'){si.blur();si.value='';runSearch();}
+  if(e.key==='Enter'&&document.activeElement===si){
+    e.preventDefault();
+    if(e.shiftKey) goToMatch(matchIdx-1); else goToMatch(matchIdx+1);
+  }
 });
 </script>
 </body>
