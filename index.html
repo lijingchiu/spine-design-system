@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Apple Design System — Analysis & Reference</title>
+<style>
+:root {
+  --primary: #0066cc;
+  --primary-focus: #0071e3;
+  --primary-on-dark: #2997ff;
+  --ink: #1d1d1f;
+  --ink-80: #333333;
+  --ink-48: #7a7a7a;
+  --canvas: #ffffff;
+  --parchment: #f5f5f7;
+  --pearl: #fafafc;
+  --tile-1: #272729;
+  --tile-2: #2a2a2c;
+  --tile-3: #252527;
+  --black: #000000;
+  --chip-gray: #d2d2d7;
+  --divider: #f0f0f0;
+  --hairline: #e0e0e0;
+  --body-muted: #cccccc;
+  --nav-h: 44px;
+  --rail-w: 260px;
+  --transition: 0.2s ease;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.374px;
+  color: var(--ink);
+  background: var(--parchment);
+}
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Global Nav ── */
+.g-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: var(--nav-h);
+  background: var(--black);
+  display: flex; align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+}
+.g-nav__logo {
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.374px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.g-nav__search-wrap {
+  flex: 1; max-width: 320px; margin-left: auto;
+  position: relative;
+}
+.g-nav__search {
+  width: 100%;
+  height: 32px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 9999px;
+  padding: 0 16px 0 36px;
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+.g-nav__search::placeholder { color: rgba(255,255,255,0.45); }
+.g-nav__search:focus { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
+.g-nav__search-icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  width: 14px; height: 14px; opacity: 0.55; pointer-events: none;
+}
+.g-nav__burger {
+  display: none;
+  background: none; border: none; cursor: pointer;
+  width: 32px; height: 32px;
+  flex-direction: column; justify-content: center; gap: 5px; padding: 4px;
+}
+.g-nav__burger span { display: block; width: 20px; height: 1.5px; background: #fff; border-radius: 2px; }
+
+/* ── Layout ── */
+.layout {
+  display: flex;
+  padding-top: var(--nav-h);
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  position: fixed;
+  top: var(--nav-h); bottom: 0; left: 0;
+  width: var(--rail-w);
+  background: #1c1c1e;
+  overflow-y: auto;
+  z-index: 900;
+  padding: 20px 0 40px;
+  transition: transform var(--transition);
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+.sidebar-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 850;
+  background: rgba(0,0,0,0.5);
+}
+.sidebar-group { margin-bottom: 4px; }
+.sidebar-group-title {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  user-select: none;
+}
+.sidebar-group-title .chevron {
+  width: 10px; height: 10px; opacity: 0.4;
+  transition: transform 0.2s;
+}
+.sidebar-group.collapsed .chevron { transform: rotate(-90deg); }
+.sidebar-group.collapsed .sidebar-links { display: none; }
+.sidebar-links { list-style: none; }
+.sidebar-links a {
+  display: block;
+  padding: 6px 20px 6px 28px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: -0.1px;
+  transition: color var(--transition), background var(--transition);
+}
+.sidebar-links a:hover { color: #fff; text-decoration: none; background: rgba(255,255,255,0.05); }
+.sidebar-links a.active {
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+}
+.sidebar-links li.hidden { display: none; }
+
+/* ── Main content ── */
+.main {
+  margin-left: var(--rail-w);
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Sections ── */
+.doc-section {
+  padding: 80px 64px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--canvas);
+  scroll-margin-top: var(--nav-h);
+}
+.doc-section:nth-child(even) { background: var(--parchment); }
+.doc-section--dark {
+  background: var(--tile-1);
+  color: #fff;
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+.doc-section--black {
+  background: var(--black);
+  color: #fff;
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+.section-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-48);
+  margin-bottom: 12px;
+}
+.doc-section--dark .section-eyebrow,
+.doc-section--black .section-eyebrow { color: rgba(255,255,255,0.4); }
+.section-title {
+  font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0;
+  margin-bottom: 16px;
+}
+.section-lead {
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.196px;
+  color: var(--ink-80);
+  max-width: 640px;
+  margin-bottom: 48px;
+}
+.doc-section--dark .section-lead,
+.doc-section--black .section-lead { color: var(--body-muted); }
+.subsection-title {
+  font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.2px;
+  margin: 48px 0 20px;
+}
+.subsection-title:first-of-type { margin-top: 0; }
+h4 {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.24;
+  letter-spacing: -0.374px;
+  margin: 28px 0 10px;
+}
+p { margin-bottom: 16px; max-width: 720px; }
+p:last-child { margin-bottom: 0; }
+ul, ol { max-width: 720px; padding-left: 20px; margin-bottom: 16px; }
+li { margin-bottom: 6px; }
+strong { font-weight: 600; }
+code {
+  font-family: "SF Mono", ui-monospace, monospace;
+  font-size: 13px;
+  background: rgba(0,0,0,0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0;
+}
+.doc-section--dark code,
+.doc-section--black code { background: rgba(255,255,255,0.1); }
+
+/* ── Tables ── */
+.table-wrap { overflow-x: auto; margin: 24px 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  letter-spacing: -0.224px;
+}
+th {
+  text-align: left;
+  padding: 10px 16px;
+  background: rgba(0,0,0,0.04);
+  font-weight: 600;
+  border-bottom: 1px solid var(--hairline);
+  white-space: nowrap;
+}
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--hairline);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+.doc-section--dark th { background: rgba(255,255,255,0.06); border-bottom-color: rgba(255,255,255,0.1); }
+.doc-section--dark td { border-bottom-color: rgba(255,255,255,0.06); }
+
+/* ── Color swatches ── */
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.swatch-card {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+}
+.swatch-color { height: 72px; }
+.swatch-info {
+  padding: 12px 14px;
+  background: var(--canvas);
+}
+.swatch-name { font-size: 13px; font-weight: 600; letter-spacing: -0.1px; margin-bottom: 2px; }
+.swatch-hex { font-family: "SF Mono", monospace; font-size: 12px; color: var(--ink-48); letter-spacing: 0; }
+.swatch-desc { font-size: 12px; color: var(--ink-48); margin-top: 4px; line-height: 1.4; }
+
+/* ── Type specimens ── */
+.type-table { width: 100%; border-collapse: collapse; margin: 24px 0; }
+.type-row td { padding: 16px; border-bottom: 1px solid var(--hairline); vertical-align: middle; }
+.type-row td:first-child { width: 38%; }
+.type-specimen { display: block; }
+.type-meta { font-size: 12px; color: var(--ink-48); font-family: "SF Mono", monospace; letter-spacing: 0; line-height: 1.6; }
+
+/* ── Spacing ruler ── */
+.spacing-grid { display: flex; flex-direction: column; gap: 16px; margin: 24px 0; }
+.spacing-row { display: flex; align-items: center; gap: 16px; }
+.spacing-label { font-family: "SF Mono", monospace; font-size: 12px; color: var(--ink-48); width: 80px; flex-shrink: 0; letter-spacing: 0; }
+.spacing-bar { background: var(--primary); height: 20px; border-radius: 3px; min-width: 4px; }
+.spacing-value { font-size: 13px; color: var(--ink-48); }
+
+/* ── Radius demos ── */
+.radius-grid { display: flex; flex-wrap: wrap; gap: 16px; margin: 24px 0; }
+.radius-card {
+  width: 100px; height: 80px;
+  background: var(--primary);
+  opacity: 0.85;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px;
+}
+.radius-label { font-size: 12px; color: var(--canvas); font-weight: 600; }
+.radius-value { font-family: "SF Mono", monospace; font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 0; }
+
+/* ── Elevation demos ── */
+.elevation-grid { display: flex; flex-wrap: wrap; gap: 32px; margin: 24px 0; align-items: flex-end; }
+.elev-card {
+  width: 140px; height: 90px;
+  background: var(--canvas);
+  border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px;
+}
+.elev-label { font-size: 12px; font-weight: 600; color: var(--ink); }
+.elev-sub { font-size: 11px; color: var(--ink-48); text-align: center; padding: 0 8px; }
+
+/* ── Button demos ── */
+.component-grid { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0 32px; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none; font-family: inherit;
+  transition: transform 0.15s ease, opacity 0.15s;
+  text-decoration: none;
+}
+.btn:active { transform: scale(0.95); }
+.btn-primary {
+  background: var(--primary); color: #fff;
+  font-size: 17px; font-weight: 400; letter-spacing: -0.374px;
+  border-radius: 9999px; padding: 11px 22px;
+}
+.btn-secondary-pill {
+  background: transparent; color: var(--primary);
+  border: 1px solid var(--primary);
+  font-size: 17px; font-weight: 400; letter-spacing: -0.374px;
+  border-radius: 9999px; padding: 11px 22px;
+}
+.btn-dark-utility {
+  background: var(--ink); color: #fff;
+  font-size: 14px; font-weight: 400; letter-spacing: -0.224px;
+  border-radius: 8px; padding: 8px 15px;
+}
+.btn-pearl {
+  background: var(--pearl); color: var(--ink-80);
+  font-size: 14px; font-weight: 400; letter-spacing: -0.224px;
+  border: 3px solid var(--divider);
+  border-radius: 11px; padding: 8px 14px;
+}
+.btn-store-hero {
+  background: var(--primary); color: #fff;
+  font-size: 18px; font-weight: 300; letter-spacing: 0;
+  border-radius: 9999px; padding: 14px 28px;
+}
+.btn-icon-circular {
+  background: rgba(210,210,215,0.64); color: var(--ink);
+  width: 44px; height: 44px; border-radius: 50%;
+  font-size: 16px;
+}
+
+/* ── Nav demo ── */
+.nav-demo {
+  background: var(--black);
+  height: 44px;
+  display: flex; align-items: center;
+  padding: 0 20px;
+  gap: 20px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+.nav-demo span {
+  font-size: 12px;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: -0.12px;
+  cursor: pointer;
+}
+.nav-demo span:hover { color: #fff; }
+.nav-demo .logo { font-size: 16px; font-weight: 600; margin-right: auto; }
+
+/* ── Product tile demo ── */
+.tile-demo {
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+.tile-demo--light { background: var(--canvas); color: var(--ink); }
+.tile-demo--parchment { background: var(--parchment); color: var(--ink); }
+.tile-demo--dark { background: var(--tile-1); color: #fff; }
+.tile-demo .tile-title {
+  font-family: "SF Pro Display", system-ui, sans-serif;
+  font-size: 32px; font-weight: 600; line-height: 1.1;
+}
+.tile-demo .tile-sub { font-size: 21px; font-weight: 400; opacity: 0.7; }
+.tile-demo .tile-btns { display: flex; gap: 10px; margin-top: 8px; }
+
+/* ── Utility card demo ── */
+.utility-grid-demo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0; }
+.utility-card {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  padding: 20px;
+}
+.utility-card .uc-img {
+  width: 100%; aspect-ratio: 1;
+  background: var(--parchment);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+}
+.utility-card .uc-name { font-size: 15px; font-weight: 600; letter-spacing: -0.374px; }
+.utility-card .uc-price { font-size: 14px; color: var(--ink-48); margin-top: 2px; }
+.utility-card .uc-link { font-size: 14px; color: var(--primary); margin-top: 8px; display: block; }
+
+/* ── Search input demo ── */
+.search-demo {
+  position: relative; max-width: 400px; margin: 16px 0;
+}
+.search-demo input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 9999px;
+  padding: 0 20px 0 44px;
+  font-size: 17px;
+  font-family: inherit;
+  letter-spacing: -0.374px;
+  outline: none;
+  background: var(--canvas);
+}
+.search-demo input:focus { border-color: var(--primary); }
+.search-demo svg {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  opacity: 0.4;
+}
+
+/* ── Chip demo ── */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.chip {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: 9999px;
+  padding: 10px 16px;
+  font-size: 14px; letter-spacing: -0.224px;
+  cursor: pointer;
+}
+.chip.selected { border: 2px solid var(--primary-focus); }
+
+/* ── Do's / Don'ts ── */
+.dos-donts { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 32px 0; }
+.dos-donts h3 { font-size: 17px; font-weight: 600; margin-bottom: 16px; }
+.do-col h3 { color: #1a7f37; }
+.dont-col h3 { color: #cf222e; }
+.rule-list { list-style: none; padding: 0; }
+.rule-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 15px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.rule-list li:last-child { border-bottom: none; }
+.rule-icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-top: 1px; }
+.do-col .rule-icon { background: #d3f4e0; color: #1a7f37; }
+.dont-col .rule-icon { background: #fcd9dc; color: #cf222e; }
+
+/* ── Footer ── */
+.site-footer {
+  background: var(--parchment);
+  padding: 64px;
+  color: var(--ink-80);
+  border-top: 1px solid var(--hairline);
+}
+.footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-bottom: 48px; }
+.footer-col h5 { font-size: 14px; font-weight: 600; letter-spacing: -0.224px; margin-bottom: 12px; }
+.footer-col ul { list-style: none; padding: 0; }
+.footer-col li { margin-bottom: 0; }
+.footer-col a {
+  font-size: 17px; line-height: 2.41;
+  color: var(--ink-80);
+  display: block;
+}
+.footer-col a:hover { color: var(--primary); text-decoration: none; }
+.footer-legal { font-size: 12px; color: var(--ink-48); line-height: 1.4; }
+.footer-legal p { max-width: none; }
+
+/* ── Highlight ── */
+mark { background: #fff176; color: inherit; border-radius: 2px; padding: 0 1px; }
+
+/* ── Responsive ── */
+@media (max-width: 1068px) {
+  .doc-section { padding: 64px 40px; }
+  .site-footer { padding: 48px 40px; }
+  .dos-donts { gap: 20px; }
+  .utility-grid-demo { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 833px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-backdrop.open { display: block; }
+  .main { margin-left: 0; }
+  .g-nav__burger { display: flex; }
+  .g-nav__search-wrap { max-width: 200px; }
+  .footer-grid { grid-template-columns: repeat(2, 1fr); }
+  .section-title { font-size: 32px; }
+  .dos-donts { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .doc-section { padding: 48px 20px; }
+  .site-footer { padding: 40px 20px; }
+  .section-title { font-size: 28px; }
+  .section-lead { font-size: 17px; }
+  .swatch-grid { grid-template-columns: repeat(2, 1fr); }
+  .utility-grid-demo { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .g-nav__search-wrap { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Global Nav -->
+<nav class="g-nav">
+  <button class="g-nav__burger" id="burgerBtn" aria-label="Toggle sidebar">
+    <span></span><span></span><span></span>
+  </button>
+  <span class="g-nav__logo">Apple Design System</span>
+  <div class="g-nav__search-wrap">
+    <svg class="g-nav__search-icon" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.5">
+      <circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/>
+    </svg>
+    <input class="g-nav__search" type="search" id="searchInput" placeholder="Search docs…" aria-label="Search documentation" />
+  </div>
+</nav>
+
+<div class="sidebar-backdrop" id="backdrop"></div>
+
+<div class="layout">
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+
+  <div class="sidebar-group" id="grp-overview">
+    <div class="sidebar-group-title" data-group="grp-overview">
+      Overview
+      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
+    </div>
+    <ul class="sidebar-links">
+      <li><a href="#overview">Introduction</a></li>
+      <li><a href="#overview-characteristics">Key Characteristics</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-group" id="grp-colors">
+    <div class="sidebar-group-title" data-group="grp-colors">
+      Colors
+      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
+    </div>
+    <ul class="sidebar-links">
+      <li><a href="#colors-brand">Brand &amp; Accent</a></li>
+      <li><a href="#colors-surface">Surface</a></li>
+      <li><a href="#colors-text">Text</a></li>
+      <li><a href="#colors-borders">Hairlines &amp; Borders</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-group" id="grp-typography">
+    <div class="sidebar-group-title" data-group="grp-typography">
+      Typography
+      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
+    </div>
+    <ul class="sidebar-links">
+      <li><a href="#type-family">Font Family</a></li>
+      <li><a href="#type-hierarchy">Hierarchy</a></li>
+      <li><a href="#type-principles">Principles</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-group" id="grp-layout">
+    <div class="sidebar-group-title" data-group="grp-layout">
+      Layout
+      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
+    </div>
+    <ul class="sidebar-links">
+      <li><a href="#layout-spacing">Spacing System</a></li>
+      <li><a href="#layout-grid">Grid &amp; Container</a></li>
+      <li><a href="#layout-whitespace">Whitespace Philosophy</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-group" id="grp-elevation">
+    <div class="sidebar-group-title" data-group="grp-elevation">
+      Elevation &amp; Depth
+      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
+    </div>
+    <ul class="sidebar-links">
+      <li><a href="#elevation">Elevation Scale</a></li>
+      <li><a href="#elevation-philosophy">Shadow Philosophy</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-group" id="grp-shapes">
+    <div class="sidebar-group-title" data-group="grp-shapes">
+      Shapes
+      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
+    </div>
+    <ul class="sidebar-links">
+      <li><a href="#shapes-radius">Border Radius Scale</a></li>
+      <li><a href="#shapes-photography">Photography Geometry</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-group" id="grp-components">
+    <div class="sidebar-group-title" data-group="grp-components">
+      Components
+      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
+    </div>
+    <ul class="sidebar-links">
+      <li><a href="#comp-nav">Top Navigation</a></li>
+      <li><a href="#comp-buttons">Buttons</a></li>
+      <li><a href="#comp-cards">Cards &amp; Containers</a></li>
+      <li><a href="#comp-inputs">Inputs &amp; Forms</a></li>
+      <li><a href="#comp-footer">Footer</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-group" id="grp-dosdonts">
+    <div class="sidebar-group-title" data-group="grp-dosdonts">
+      Do's and Don'ts
+      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
+    </div>
+    <ul class="sidebar-links">
+      <li><a href="#dos-donts">Rules</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-group" id="grp-responsive">
+    <div class="sidebar-group-title" data-group="grp-responsive">
+      Responsive
+      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,3 5,7 8,3"/></svg>
+    </div>
+    <ul class="sidebar-links">
+      <li><a href="#responsive-breakpoints">Breakpoints</a></li>
+      <li><a href="#responsive-touch">Touch Targets</a></li>
+      <li><a href="#responsive-collapse">Collapsing Strategy</a></li>
+    </ul>
+  </div>
+
+</aside>
+
+<!-- Main -->
+<main class="main">
+
+<!-- Overview -->
+<section class="doc-section" id="overview">
+  <div class="section-eyebrow">Introduction</div>
+  <h1 class="section-title">Apple Design System</h1>
+  <p class="section-lead">A photography-first interface that turns marketing into a museum gallery. Edge-to-edge product tiles alternate light and dark canvases, framed by SF Pro Display headlines and a single Action Blue interactive color.</p>
+  <p>Apple's web presence is a masterclass in <strong>reverent product photography framed by near-invisible UI</strong>. Every page is a stack of edge-to-edge product tiles — alternating light and dark canvases, each centered on a hero headline, a one-line tagline, two tiny blue pill CTAs, and an impossibly crisp product render. Nothing competes with the product.</p>
+  <p>Density is unusually low even by contemporary SaaS standards. Each tile occupies roughly one viewport, and there is no decorative chrome — no borders, no gradients, no decorative frames, no shadows on headlines. Elevation appears only when a product image rests on a surface (a single soft <code>rgba(0,0,0,0.22) 3px 5px 30px</code> drop for visual weight). The result feels more like a museum gallery: the wall disappears and the artifact takes over.</p>
+  <p>Store and shop surfaces retain the same chassis but switch modes. The product configurator introduces a tight grid of white utility cards at 18px radius with a thin border, paired with a persistent thin sub-nav strip. Across all five analyzed surfaces (homepage, environment, store, iPhone buy page, accessories index) the typographic system, spacing rhythm, and the single blue accent are consistent — one design language expressed at different volumes.</p>
+</section>
+
+<section class="doc-section" id="overview-characteristics">
+  <div class="section-eyebrow">Overview</div>
+  <h2 class="section-title">Key Characteristics</h2>
+  <ul>
+    <li><strong>Photography-first presentation</strong> — UI recedes so the product can speak.</li>
+    <li><strong>Alternating full-bleed tile sections</strong> — white/parchment ↔ near-black, with the color change itself acting as the section divider.</li>
+    <li><strong>Single blue accent</strong> — <code>#0066cc</code> carries every interactive element. No second brand color exists.</li>
+    <li><strong>Two button grammars</strong> — tiny blue pill CTAs (<code>border-radius: 9999px</code>) and compact utility rects (<code>border-radius: 8px</code>).</li>
+    <li><strong>SF Pro Display + SF Pro Text</strong> — negative letter-spacing at display sizes for the signature "Apple tight" headline feel.</li>
+    <li><strong>One drop-shadow in the entire system</strong> — applied only when a product image needs to breathe.</li>
+    <li><strong>Tight two-row nav</strong> — 44px global nav + 52px product-specific frosted sub-nav.</li>
+    <li><strong>Section rhythm</strong> — light hero → dark product tile → light utility tile → dark tile → parchment footer.</li>
+  </ul>
+</section>
+
+<!-- Colors -->
+<section class="doc-section doc-section--dark" id="colors-brand">
+  <div class="section-eyebrow">Colors — Brand &amp; Accent</div>
+  <h2 class="section-title">Brand &amp; Accent</h2>
+  <p class="section-lead">A single interactive color. Every link, every pill CTA, every focus ring roots in one blue.</p>
+  <div class="swatch-grid">
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#0066cc"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Action Blue</div>
+        <div class="swatch-hex"><code>--primary: #0066cc</code></div>
+        <div class="swatch-desc">The single brand-level interactive color. All text links, all blue pill CTAs ("Learn more", "Buy"), and the focus ring root.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#0071e3"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Focus Blue</div>
+        <div class="swatch-hex"><code>--primary-focus: #0071e3</code></div>
+        <div class="swatch-desc">Reserved for the keyboard focus ring on buttons (<code>outline: 2px solid</code>). Marginally brighter sibling of Action Blue.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#2997ff"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Sky Link Blue</div>
+        <div class="swatch-hex"><code>--primary-on-dark: #2997ff</code></div>
+        <div class="swatch-desc">A brighter blue for dark-tile in-copy links. Action Blue would disappear against the near-black surface.</div>
+      </div>
+    </div>
+  </div>
+  <p style="color:var(--body-muted)"><strong style="color:#fff">No decorative gradients.</strong> Atmospheric depth on product photography is inherent to the imagery, not a CSS gradient overlay. Apple is the rare luxury-brand site with zero gradient-based design tokens.</p>
+</section>
+
+<section class="doc-section" id="colors-surface">
+  <div class="section-eyebrow">Colors — Surface</div>
+  <h2 class="section-title">Surface Colors</h2>
+  <p class="section-lead">Eight surface tokens that define every canvas — from pure white to near-black, structured to create rhythm through alternation.</p>
+  <div class="swatch-grid">
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#ffffff; border-bottom:1px solid #e0e0e0;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Pure White</div>
+        <div class="swatch-hex"><code>--canvas: #ffffff</code></div>
+        <div class="swatch-desc">Dominant canvas. Content tiles, utility cards, store tiles, configurator grids.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#f5f5f7; border-bottom:1px solid #e0e0e0;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Parchment</div>
+        <div class="swatch-hex"><code>--parchment: #f5f5f7</code></div>
+        <div class="swatch-desc">Signature Apple off-white. Alternating light tiles, footer, store utility sections.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#fafafc; border-bottom:1px solid #e0e0e0;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Pearl</div>
+        <div class="swatch-hex"><code>--pearl: #fafafc</code></div>
+        <div class="swatch-desc">Near-white fill for secondary "ghost" buttons. Still reads as a button against parchment.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#272729"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Near-Black Tile 1</div>
+        <div class="swatch-hex"><code>--tile-1: #272729</code></div>
+        <div class="swatch-desc">Primary dark-tile surface on the homepage product grid.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#2a2a2c"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Near-Black Tile 2</div>
+        <div class="swatch-hex"><code>--tile-2: #2a2a2c</code></div>
+        <div class="swatch-desc">Micro-step lighter — used where a dark tile sits directly adjacent to Tile 1 for faint separation.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#252527"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Near-Black Tile 3</div>
+        <div class="swatch-hex"><code>--tile-3: #252527</code></div>
+        <div class="swatch-desc">Micro-step darker — bottom of the stack, embedded video/player frames.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#000000"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Pure Black</div>
+        <div class="swatch-hex"><code>--black: #000000</code></div>
+        <div class="swatch-desc">Reserved for true void — video player backgrounds, photographic overlays, the global nav bar background.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#d2d2d7"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Chip Gray</div>
+        <div class="swatch-hex"><code>--chip-gray: #d2d2d7</code></div>
+        <div class="swatch-desc">Translucent gray chip floating over photography. Applied at ~64% alpha in production.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="doc-section doc-section--dark" id="colors-text">
+  <div class="section-eyebrow">Colors — Text</div>
+  <h2 class="section-title">Text Colors</h2>
+  <p class="section-lead">One near-black for light surfaces. One white for dark surfaces. Muted variants for hierarchy only.</p>
+  <div class="swatch-grid">
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#1d1d1f"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Near-Black Ink</div>
+        <div class="swatch-hex"><code>--ink: #1d1d1f</code></div>
+        <div class="swatch-desc">Voice of every headline and body paragraph on light surfaces. Chosen over pure black to keep the page feeling photographic.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#ffffff; border-bottom:1px solid #333;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">On-Dark White</div>
+        <div class="swatch-hex"><code>#ffffff</code></div>
+        <div class="swatch-desc">All text on dark tiles and on the global nav bar.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#cccccc"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Body Muted</div>
+        <div class="swatch-hex"><code>#cccccc</code></div>
+        <div class="swatch-desc">Secondary copy on dark tiles where pure white would be too loud.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#333333"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Ink Muted 80</div>
+        <div class="swatch-hex"><code>--ink-80: #333333</code></div>
+        <div class="swatch-desc">Body text on the white Pearl Button surface — slightly softer than pure black.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#7a7a7a"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Ink Muted 48</div>
+        <div class="swatch-hex"><code>--ink-48: #7a7a7a</code></div>
+        <div class="swatch-desc">Disabled button text and legal fine-print.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="doc-section" id="colors-borders">
+  <div class="section-eyebrow">Colors — Hairlines &amp; Borders</div>
+  <h2 class="section-title">Hairlines &amp; Borders</h2>
+  <div class="swatch-grid">
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#f0f0f0; border-bottom:1px solid #e0e0e0;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Divider Soft</div>
+        <div class="swatch-hex"><code>--divider: #f0f0f0</code></div>
+        <div class="swatch-desc">The "border" tone on secondary buttons — functions as a ring shadow rather than a hard line. Often applied as <code>rgba(0,0,0,0.04)</code>.</div>
+      </div>
+    </div>
+    <div class="swatch-card">
+      <div class="swatch-color" style="background:#e0e0e0; border-bottom:1px solid #ccc;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Hairline</div>
+        <div class="swatch-hex"><code>--hairline: #e0e0e0</code></div>
+        <div class="swatch-desc">The 1px hairline border on store utility cards and configurator chips.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Typography -->
+<section class="doc-section doc-section--dark" id="type-family">
+  <div class="section-eyebrow">Typography — Font Family</div>
+  <h2 class="section-title">Font Family</h2>
+  <p class="section-lead">Two faces. One optimized for display, one for body. Their boundary is unbreakable.</p>
+  <h4 style="color:#fff">Display: SF Pro Display</h4>
+  <p style="color:var(--body-muted)"><code>SF Pro Display, system-ui, -apple-system, sans-serif</code> — Apple's proprietary display face, optimized for sizes ≥ 19px. Defines the voice of every headline.</p>
+  <h4 style="color:#fff">Body / UI: SF Pro Text</h4>
+  <p style="color:var(--body-muted)"><code>SF Pro Text, system-ui, -apple-system, sans-serif</code> — The text-optimized variant used for body copy, captions, buttons, and links below 20px.</p>
+  <h4 style="color:#fff">OpenType Features</h4>
+  <p style="color:var(--body-muted)"><code>font-variant-numeric: numerator</code> is enabled on numeric links. Display sizes rely on tight tracking rather than contextual ligatures.</p>
+  <h4 style="color:#fff">Off-system Substitute</h4>
+  <p style="color:var(--body-muted)">Use <code>system-ui, -apple-system, BlinkMacSystemFont</code> as the first stack entry — on macOS/iOS/Safari this resolves to the real SF Pro. For non-Apple platforms, <strong style="color:#fff">Inter</strong> (Google Fonts, variable) is the closest open-source equivalent. Nudge <code>letter-spacing</code> down by <code>-0.01em</code> at display sizes; tighten <code>line-height</code> by 0.03 for body (Inter's taller x-height needs less leading).</p>
+</section>
+
+<section class="doc-section" id="type-hierarchy">
+  <div class="section-eyebrow">Typography — Hierarchy</div>
+  <h2 class="section-title">Type Scale</h2>
+  <p class="section-lead">16 tokens covering hero display down to micro-legal. The ladder is 300 / 400 / 600 / 700 — weight 500 is deliberately absent.</p>
+
+  <table class="type-table">
+    <tbody>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-family:'SF Pro Display',system-ui,-apple-system,sans-serif;font-size:clamp(28px,4vw,56px);font-weight:600;line-height:1.07;letter-spacing:-0.28px;">Hero Display</span></td>
+        <td>
+          <div class="type-meta">hero-display<br>56px / 600 / lh 1.07 / ls -0.28px<br>SF Pro Display</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Hero headline; the signature "Apple tight" tracking</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-family:'SF Pro Display',system-ui,-apple-system,sans-serif;font-size:clamp(24px,3.5vw,40px);font-weight:600;line-height:1.1;">Display LG</span></td>
+        <td>
+          <div class="type-meta">display-lg<br>40px / 600 / lh 1.10 / ls 0<br>SF Pro Display</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Tile headlines atop every product tile</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-family:'SF Pro Text',system-ui,-apple-system,sans-serif;font-size:clamp(22px,3vw,34px);font-weight:600;line-height:1.47;letter-spacing:-0.374px;">Display MD</span></td>
+        <td>
+          <div class="type-meta">display-md<br>34px / 600 / lh 1.47 / ls -0.374px<br>SF Pro Text</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Section heads (SF Pro Text at display proportions)</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-family:'SF Pro Display',system-ui,-apple-system,sans-serif;font-size:28px;font-weight:400;line-height:1.14;letter-spacing:0.196px;">Lead Copy</span></td>
+        <td>
+          <div class="type-meta">lead<br>28px / 400 / lh 1.14 / ls 0.196px<br>SF Pro Display</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Product tile subcopy</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-family:'SF Pro Text',system-ui,-apple-system,sans-serif;font-size:24px;font-weight:300;line-height:1.5;">Lead Airy</span></td>
+        <td>
+          <div class="type-meta">lead-airy<br>24px / 300 / lh 1.5 / ls 0<br>SF Pro Text</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Environment-page lead paragraphs (the rare weight 300)</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-family:'SF Pro Display',system-ui,-apple-system,sans-serif;font-size:21px;font-weight:600;line-height:1.19;letter-spacing:0.231px;">Tagline</span></td>
+        <td>
+          <div class="type-meta">tagline<br>21px / 600 / lh 1.19 / ls 0.231px<br>SF Pro Display</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Sub-tile tagline; sub-nav category name</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-size:17px;font-weight:600;line-height:1.24;letter-spacing:-0.374px;">Body Strong</span></td>
+        <td>
+          <div class="type-meta">body-strong<br>17px / 600 / lh 1.24 / ls -0.374px<br>SF Pro Text</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Inline strong emphasis</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-size:17px;font-weight:400;line-height:1.47;letter-spacing:-0.374px;">Body Text</span></td>
+        <td>
+          <div class="type-meta">body<br>17px / 400 / lh 1.47 / ls -0.374px<br>SF Pro Text</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Default paragraph — not 16px, 17px</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-size:17px;font-weight:400;line-height:2.41;">Dense Link</span></td>
+        <td>
+          <div class="type-meta">dense-link<br>17px / 400 / lh 2.41 / ls 0<br>SF Pro Text</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Footer / store utility link lists (relaxed leading)</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-size:14px;font-weight:400;line-height:1.43;letter-spacing:-0.224px;">Caption</span></td>
+        <td>
+          <div class="type-meta">caption<br>14px / 400 / lh 1.43 / ls -0.224px<br>SF Pro Text</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Secondary captions, button text</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-size:14px;font-weight:600;line-height:1.29;letter-spacing:-0.224px;">Caption Strong</span></td>
+        <td>
+          <div class="type-meta">caption-strong<br>14px / 600 / lh 1.29 / ls -0.224px<br>SF Pro Text</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Emphasized captions</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-size:18px;font-weight:300;line-height:1.0;">Store Hero CTA</span></td>
+        <td>
+          <div class="type-meta">button-large<br>18px / 300 / lh 1.0 / ls 0<br>SF Pro Text</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Store hero CTAs (the rare weight 300)</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-size:14px;font-weight:400;line-height:1.29;letter-spacing:-0.224px;">Utility Button</span></td>
+        <td>
+          <div class="type-meta">button-utility<br>14px / 400 / lh 1.29 / ls -0.224px<br>SF Pro Text</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Utility/nav button labels</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-size:12px;font-weight:400;line-height:1.0;letter-spacing:-0.12px;">Fine Print / Nav</span></td>
+        <td>
+          <div class="type-meta">fine-print / nav-link<br>12px / 400 / lh 1.0 / ls -0.12px<br>SF Pro Text</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Fine-print, footer body, global nav menu items</div>
+        </td>
+      </tr>
+      <tr class="type-row">
+        <td><span class="type-specimen" style="font-size:10px;font-weight:400;line-height:1.3;letter-spacing:-0.08px;">Micro Legal</span></td>
+        <td>
+          <div class="type-meta">micro-legal<br>10px / 400 / lh 1.3 / ls -0.08px<br>SF Pro Text</div>
+          <div style="font-size:13px;color:var(--ink-48);margin-top:4px;">Micro legal disclaimers</div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="doc-section doc-section--dark" id="type-principles">
+  <div class="section-eyebrow">Typography — Principles</div>
+  <h2 class="section-title">Typographic Principles</h2>
+  <p class="section-lead">Six rules that define the unmistakable Apple reading experience.</p>
+  <h4 style="color:#fff">Negative letter-spacing at display sizes</h4>
+  <p style="color:var(--body-muted)">Every headline at 17px and up carries a slight tracking tighten (<code>-0.12 → -0.374px</code>). This produces the iconic "Apple tight" headline cadence. Never used at 12px or below.</p>
+  <h4 style="color:#fff">Body copy at 17px, not 16px</h4>
+  <p style="color:var(--body-muted)">Apple breaks the SaaS convention and runs paragraph text at 17px. The extra pixel gives the page an unmistakable "reading, not scanning" pace.</p>
+  <h4 style="color:#fff">Weight 300 is real and rare</h4>
+  <p style="color:var(--body-muted)">Used deliberately on <code>button-large</code> (18px/300) and <code>lead-airy</code> (24px/300). It's a light-atmosphere cue reserved for moments where the content should feel airy — not an accident.</p>
+  <h4 style="color:#fff">Weight 600, not 700, for headlines</h4>
+  <p style="color:var(--body-muted)">Apple's headlines sit at weight 600. Weight 700 is reserved for <code>tagline</code> (21px) when a touch more assertion is needed.</p>
+  <h4 style="color:#fff">Line-height is context-specific</h4>
+  <p style="color:var(--body-muted)">Display sizes use 1.07–1.19 (tight). Body uses 1.47. Utility link stacks in the footer use a relaxed 2.41. The 2.41 is not a bug — it's how dense footer link columns breathe.</p>
+  <h4 style="color:#fff">Weight 500 is deliberately absent</h4>
+  <p style="color:var(--body-muted)">The ladder is 300 / 400 / 600 / 700. Mid-weight readings always use 600 — never 500.</p>
+</section>
+
+<!-- Layout -->
+<section class="doc-section" id="layout-spacing">
+  <div class="section-eyebrow">Layout — Spacing System</div>
+  <h2 class="section-title">Spacing System</h2>
+  <p class="section-lead">Base unit: 8px. Structural layout snaps to multiples. Sub-base values (4, 5, 6, 7) are used only for tight typographic adjustments.</p>
+  <div class="spacing-grid">
+    <div class="spacing-row">
+      <span class="spacing-label">xxs — 4px</span>
+      <div class="spacing-bar" style="width:4px"></div>
+      <span class="spacing-value">Tight typographic adjustments</span>
+    </div>
+    <div class="spacing-row">
+      <span class="spacing-label">xs — 8px</span>
+      <div class="spacing-bar" style="width:8px"></div>
+      <span class="spacing-value">Base unit</span>
+    </div>
+    <div class="spacing-row">
+      <span class="spacing-label">sm — 12px</span>
+      <div class="spacing-bar" style="width:12px"></div>
+      <span class="spacing-value">Compact component gaps</span>
+    </div>
+    <div class="spacing-row">
+      <span class="spacing-label">md — 17px</span>
+      <div class="spacing-bar" style="width:17px"></div>
+      <span class="spacing-value">Default body rhythm unit</span>
+    </div>
+    <div class="spacing-row">
+      <span class="spacing-label">lg — 24px</span>
+      <div class="spacing-bar" style="width:24px"></div>
+      <span class="spacing-value">Card padding, grid gutters</span>
+    </div>
+    <div class="spacing-row">
+      <span class="spacing-label">xl — 32px</span>
+      <div class="spacing-bar" style="width:32px"></div>
+      <span class="spacing-value">Section sub-spacing</span>
+    </div>
+    <div class="spacing-row">
+      <span class="spacing-label">xxl — 48px</span>
+      <div class="spacing-bar" style="width:48px"></div>
+      <span class="spacing-value">Generous component separators</span>
+    </div>
+    <div class="spacing-row">
+      <span class="spacing-label">section — 80px</span>
+      <div class="spacing-bar" style="width:80px"></div>
+      <span class="spacing-value">Product tile vertical padding</span>
+    </div>
+  </div>
+  <p>Button padding: 8–11px vertical, 15–22px horizontal. Section vertical padding: 80px inside a product tile; tiles stack edge-to-edge with 0 gap.</p>
+</section>
+
+<section class="doc-section doc-section--dark" id="layout-grid">
+  <div class="section-eyebrow">Layout — Grid &amp; Container</div>
+  <h2 class="section-title">Grid &amp; Container</h2>
+  <p class="section-lead">Max content widths differ by surface type. Product tiles are always full-bleed; utility grids cap at 1440px.</p>
+  <ul style="color:var(--body-muted)">
+    <li><strong style="color:#fff">~980px</strong> — text-heavy sections (environment page)</li>
+    <li><strong style="color:#fff">~1440px</strong> — product grids (store, accessories)</li>
+    <li><strong style="color:#fff">Full-bleed</strong> — product tiles (homepage)</li>
+  </ul>
+  <h4 style="color:#fff; margin-top:32px;">Column Patterns</h4>
+  <p style="color:var(--body-muted)">3–5 column utility card grid on store/accessories. 2-column side-by-side tiles on homepage occasional sections. Single-column centered stack on product tile heroes.</p>
+  <h4 style="color:#fff;">Gutters</h4>
+  <p style="color:var(--body-muted)">20–24px between cards in a utility grid.</p>
+</section>
+
+<section class="doc-section" id="layout-whitespace">
+  <div class="section-eyebrow">Layout — Whitespace Philosophy</div>
+  <h2 class="section-title">Whitespace Philosophy</h2>
+  <p class="section-lead">Apple's whitespace is the product's pedestal.</p>
+  <p>Every tile begins with at least 64px of air above its headline and 48–64px below. Product renders are never crowded; the nearest content to a product image is at least 40px away.</p>
+  <p>The footer is the only area that breaks this — there, Apple goes deliberately dense to make the full information architecture visible at a glance. The contrast between that density and the tile sections above is intentional: the footer signals "information zone," the tiles signal "experience zone."</p>
+</section>
+
+<!-- Elevation -->
+<section class="doc-section doc-section--dark" id="elevation">
+  <div class="section-eyebrow">Elevation &amp; Depth</div>
+  <h2 class="section-title">Elevation Scale</h2>
+  <p class="section-lead">Four levels, three of which use no traditional drop shadow.</p>
+  <div class="elevation-grid">
+    <div>
+      <div class="elev-card" style="border:1px solid #e0e0e0;">
+        <div class="elev-label">Flat</div>
+        <div class="elev-sub">No shadow, no border</div>
+      </div>
+      <p style="font-size:12px;color:var(--body-muted);margin-top:8px;max-width:140px;">Full-bleed tiles, global nav, footer</p>
+    </div>
+    <div>
+      <div class="elev-card" style="border:1px solid rgba(0,0,0,0.08);">
+        <div class="elev-label">Hairline</div>
+        <div class="elev-sub">1px rgba(0,0,0,0.08)</div>
+      </div>
+      <p style="font-size:12px;color:var(--body-muted);margin-top:8px;max-width:140px;">Utility cards, sub-nav separator</p>
+    </div>
+    <div>
+      <div class="elev-card" style="background:rgba(245,245,247,0.8);backdrop-filter:blur(12px);">
+        <div class="elev-label">Blur</div>
+        <div class="elev-sub">backdrop-filter: blur</div>
+      </div>
+      <p style="font-size:12px;color:var(--body-muted);margin-top:8px;max-width:140px;">Sub-nav, iPhone buy floating bar</p>
+    </div>
+    <div>
+      <div class="elev-card" style="box-shadow:rgba(0,0,0,0.22) 3px 5px 30px 0;">
+        <div class="elev-label">Product</div>
+        <div class="elev-sub">Only for imagery</div>
+      </div>
+      <p style="font-size:12px;color:var(--body-muted);margin-top:8px;max-width:140px;">Product renders resting on surface</p>
+    </div>
+  </div>
+</section>
+
+<section class="doc-section" id="elevation-philosophy">
+  <div class="section-eyebrow">Elevation — Shadow Philosophy</div>
+  <h2 class="section-title">Shadow Philosophy</h2>
+  <p class="section-lead">Apple uses exactly one drop-shadow in the entire design system.</p>
+  <p>The single shadow — <code>rgba(0,0,0,0.22) 3px 5px 30px 0</code> — is applied to photographic product imagery only. Never to cards, never to buttons, never to text.</p>
+  <p>Elevation in the UI comes from (a) <strong>surface-color change</strong> (light tile ↔ dark tile) and (b) <strong>backdrop-blur</strong> on sticky bars. The single shadow is about giving the product weight, not about UI hierarchy.</p>
+  <p>Atmospheric imagery on the environment page (photographic vista) supplies mood — no CSS gradient involved. Edge-to-edge tile alternation creates rhythm without borders or shadows.</p>
+</section>
+
+<!-- Shapes -->
+<section class="doc-section doc-section--dark" id="shapes-radius">
+  <div class="section-eyebrow">Shapes</div>
+  <h2 class="section-title">Border Radius Scale</h2>
+  <p class="section-lead">Seven tokens — from zero to pill. Don't mix radii grammars.</p>
+  <div class="radius-grid">
+    <div class="radius-card" style="border-radius:0px;">
+      <span class="radius-label">none</span>
+      <span class="radius-value">0px</span>
+    </div>
+    <div class="radius-card" style="border-radius:5px;">
+      <span class="radius-label">xs</span>
+      <span class="radius-value">5px</span>
+    </div>
+    <div class="radius-card" style="border-radius:8px;">
+      <span class="radius-label">sm</span>
+      <span class="radius-value">8px</span>
+    </div>
+    <div class="radius-card" style="border-radius:11px;">
+      <span class="radius-label">md</span>
+      <span class="radius-value">11px</span>
+    </div>
+    <div class="radius-card" style="border-radius:18px;">
+      <span class="radius-label">lg</span>
+      <span class="radius-value">18px</span>
+    </div>
+    <div class="radius-card" style="border-radius:9999px;">
+      <span class="radius-label">pill</span>
+      <span class="radius-value">9999px</span>
+    </div>
+    <div class="radius-card" style="border-radius:50%;width:80px;height:80px;">
+      <span class="radius-label">full</span>
+      <span class="radius-value">50%</span>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Token</th><th>Value</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td><code>none</code></td><td>0px</td><td>Full-bleed product tiles (no corner rounding — the color change is the divider)</td></tr>
+        <tr><td><code>xs</code></td><td>5px</td><td>Inline links when styled as subtle chips (rare)</td></tr>
+        <tr><td><code>sm</code></td><td>8px</td><td>Dark utility buttons, inline card imagery</td></tr>
+        <tr><td><code>md</code></td><td>11px</td><td>White Pearl Button capsules</td></tr>
+        <tr><td><code>lg</code></td><td>18px</td><td>Store utility cards, accessories grid cards</td></tr>
+        <tr><td><code>pill</code></td><td>9999px</td><td>Primary blue CTAs, sub-nav buy button, configurator chips, search input</td></tr>
+        <tr><td><code>full</code></td><td>9999px / 50%</td><td>Circular control chips floating over photography</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="doc-section" id="shapes-photography">
+  <div class="section-eyebrow">Shapes — Photography Geometry</div>
+  <h2 class="section-title">Photography Geometry</h2>
+  <ul>
+    <li><strong>Hero imagery</strong> — full-bleed, 21:9 or taller on the homepage; 16:9 on environment and shop pages.</li>
+    <li><strong>Product renders</strong> — PNG/WebP with transparency; rest on a surface tile and pick up the system product-shadow.</li>
+    <li><strong>Accessory grid</strong> — square 1:1 crops at <code>rounded.lg</code> (18px) radius, light neutral backgrounds, product centered with 20–40px internal padding.</li>
+    <li><strong>No rounded imagery in hero tiles</strong> — images are full-bleed rectangular. Rounding appears only on inline card imagery.</li>
+    <li><strong>Lazy-loading</strong> via responsive <code>srcset</code> and <code>sizes</code> across all breakpoints; CDN-optimized WebP.</li>
+  </ul>
+</section>
+
+<!-- Components -->
+<section class="doc-section doc-section--dark" id="comp-nav">
+  <div class="section-eyebrow">Components — Navigation</div>
+  <h2 class="section-title">Top Navigation</h2>
+  <p class="section-lead">Persistent ultra-thin black nav bar. Never competes with the product.</p>
+  <h4 style="color:#fff">global-nav</h4>
+  <p style="color:var(--body-muted)">Persistent, pinned to the top. Background <code>#000000</code>, height 44px, text <code>#ffffff</code> in <code>nav-link</code> (12px / 400 / -0.12px tracking). Links spaced ~20px apart, running edge-to-edge. Right-aligned cluster: Search, Bag icons — always visible. Collapses to hamburger at ≤833px.</p>
+  <div class="nav-demo">
+    <span class="logo">⌘</span>
+    <span>Store</span><span>Mac</span><span>iPhone</span><span>iPad</span><span>Watch</span><span>Vision</span>
+    <span style="margin-left:auto">🔍</span><span>🛍</span>
+  </div>
+  <h4 style="color:#fff; margin-top:32px;">sub-nav-frosted</h4>
+  <p style="color:var(--body-muted)">Surface-specific nav below the global nav. Background <code>#f5f5f7</code> at 80% opacity with backdrop-filter blur. Height 52px. Left: product category name in <code>tagline</code> (21px / 600). Right: inline nav links in <code>button-utility</code> (14px), ending in a persistent <code>button-primary</code> ("Buy").</p>
+  <div style="background:rgba(245,245,247,0.9);backdrop-filter:blur(20px);height:52px;display:flex;align-items:center;padding:0 20px;gap:20px;border-radius:8px;margin-top:12px;">
+    <span style="font-size:21px;font-weight:600;letter-spacing:0.231px;color:var(--ink)">iPhone</span>
+    <span style="margin-left:auto;font-size:14px;color:var(--ink-48)">Overview</span>
+    <span style="font-size:14px;color:var(--ink-48)">Switch from Android</span>
+    <span style="font-size:14px;color:var(--ink-48)">Accessories</span>
+    <a class="btn btn-primary" style="font-size:14px;padding:8px 16px;margin-left:8px;">Buy</a>
+  </div>
+</section>
+
+<section class="doc-section" id="comp-buttons">
+  <div class="section-eyebrow">Components — Buttons</div>
+  <h2 class="section-title">Buttons</h2>
+  <p class="section-lead">Seven button variants. The signature grammar: pill for action, rect for utility.</p>
+
+  <h4>button-primary</h4>
+  <p>Background Action Blue <code>#0066cc</code>, text white, <code>font-size: 17px / 400</code>, <code>border-radius: 9999px</code>, padding <code>11px 22px</code>. Active state: <code>transform: scale(0.95)</code>. Focus: <code>outline: 2px solid #0071e3</code>.</p>
+  <div class="component-grid">
+    <a class="btn btn-primary" href="#">Learn more</a>
+    <a class="btn btn-primary" href="#">Buy</a>
+  </div>
+
+  <h4>button-secondary-pill</h4>
+  <p>Background transparent, text Action Blue, 1px solid Action Blue border. Same pill shape — reads as a "ghost pill." Used as the secondary CTA when two blue pills appear together.</p>
+  <div class="component-grid">
+    <a class="btn btn-secondary-pill" href="#">Learn more</a>
+    <a class="btn btn-primary" href="#">Buy</a>
+  </div>
+
+  <h4>button-dark-utility</h4>
+  <p>Background <code>#1d1d1f</code>, text white, <code>font-size: 14px</code>, <code>border-radius: 8px</code>, padding <code>8px 15px</code>. Global nav actions (Sign In, Bag).</p>
+  <div class="component-grid">
+    <a class="btn btn-dark-utility" href="#">Sign In</a>
+    <a class="btn btn-dark-utility" href="#">Bag (0)</a>
+  </div>
+
+  <h4>button-pearl-capsule</h4>
+  <p>Background <code>#fafafc</code>, text <code>#333</code>, <code>border: 3px solid #f0f0f0</code>, <code>border-radius: 11px</code>. Product-card secondary button — the soft border functions as a ring shadow.</p>
+  <div class="component-grid">
+    <a class="btn btn-pearl" href="#">Compare models</a>
+    <a class="btn btn-pearl" href="#">View features</a>
+  </div>
+
+  <h4>button-store-hero</h4>
+  <p>Same Action Blue as <code>button-primary</code>, but <code>font-size: 18px / weight 300</code>, padding <code>14px 28px</code>. The rare weight 300 signals a spacious, store-landing atmosphere.</p>
+  <div class="component-grid">
+    <a class="btn btn-store-hero" href="#">Shop iPhone</a>
+  </div>
+
+  <h4>button-icon-circular</h4>
+  <p>44×44px, background <code>rgba(210,210,215,0.64)</code>, <code>border-radius: 50%</code>. Floats over photography for carousel controls, close buttons, in-image controls.</p>
+  <div class="component-grid">
+    <button class="btn btn-icon-circular">←</button>
+    <button class="btn btn-icon-circular">→</button>
+    <button class="btn btn-icon-circular">✕</button>
+  </div>
+
+  <h4>text-link / text-link-on-dark</h4>
+  <p>Inline body links. On light surfaces: <code>#0066cc</code>. On dark surfaces: <code>#2997ff</code> (Sky Link Blue — Action Blue would disappear against the near-black tile).</p>
+  <div class="component-grid">
+    <a href="#" style="color:var(--primary)">text-link (light surface)</a>
+  </div>
+  <div style="background:var(--tile-1);padding:12px 16px;border-radius:8px;margin-top:4px;">
+    <a href="#" style="color:var(--primary-on-dark)">text-link-on-dark (dark surface)</a>
+  </div>
+</section>
+
+<section class="doc-section doc-section--dark" id="comp-cards">
+  <div class="section-eyebrow">Components — Cards &amp; Containers</div>
+  <h2 class="section-title">Cards &amp; Containers</h2>
+  <p class="section-lead">Eight container variants — from full-bleed product tiles to configurator chips.</p>
+
+  <h4 style="color:#fff">product-tile-light / product-tile-parchment</h4>
+  <p style="color:var(--body-muted)">Full-bleed light tile. <code>rounded: none</code>, vertical padding <code>80px</code>. Centered stack: display-lg headline → lead subcopy → two pill CTAs → product render with system shadow.</p>
+  <div class="tile-demo tile-demo--light">
+    <div class="tile-title">iPhone 17 Pro</div>
+    <div class="tile-sub">Titanium. As powerful as it looks.</div>
+    <div class="tile-btns">
+      <a class="btn btn-primary" href="#">Learn more</a>
+      <a class="btn btn-secondary-pill" href="#">Buy</a>
+    </div>
+  </div>
+  <div class="tile-demo tile-demo--parchment" style="margin-top:8px;">
+    <div class="tile-title">MacBook Pro</div>
+    <div class="tile-sub">Mind-blowing. Head-turning.</div>
+    <div class="tile-btns">
+      <a class="btn btn-primary" href="#">Learn more</a>
+      <a class="btn btn-secondary-pill" href="#">Buy</a>
+    </div>
+  </div>
+
+  <h4 style="color:#fff;margin-top:40px;">product-tile-dark / dark-2 / dark-3</h4>
+  <p style="color:var(--body-muted)">Full-bleed dark tile on <code>#272729</code> / <code>#2a2a2c</code> / <code>#252527</code>. Same content stack but with Sky Link Blue (<code>#2997ff</code>) for inline copy.</p>
+  <div class="tile-demo tile-demo--dark">
+    <div class="tile-title">Apple Watch Series 10</div>
+    <div class="tile-sub">Thinnest. Lightest. Most capable.</div>
+    <div class="tile-btns">
+      <a class="btn btn-primary" href="#">Learn more</a>
+      <a class="btn btn-secondary-pill" style="color:var(--primary-on-dark);border-color:var(--primary-on-dark);" href="#">Buy</a>
+    </div>
+  </div>
+
+  <h4 style="color:#fff;margin-top:40px;">store-utility-card</h4>
+  <p style="color:var(--body-muted)">White card, 1px hairline border, <code>border-radius: 18px</code>, padding <code>24px</code>. 1:1 product image at <code>border-radius: 8px</code>, then <code>body-strong</code> name, <code>body</code> price, and a <code>text-link</code>.</p>
+  <div class="utility-grid-demo" style="margin-top:16px;">
+    <div class="utility-card">
+      <div class="uc-img">📱</div>
+      <div class="uc-name">iPhone 17</div>
+      <div class="uc-price">From $799</div>
+      <a class="uc-link" href="#">Buy →</a>
+    </div>
+    <div class="utility-card">
+      <div class="uc-img">💻</div>
+      <div class="uc-name">MacBook Air</div>
+      <div class="uc-price">From $1,099</div>
+      <a class="uc-link" href="#">Buy →</a>
+    </div>
+    <div class="utility-card">
+      <div class="uc-img">🎧</div>
+      <div class="uc-name">AirPods Pro</div>
+      <div class="uc-price">$249</div>
+      <a class="uc-link" href="#">Buy →</a>
+    </div>
+  </div>
+
+  <h4 style="color:#fff;margin-top:40px;">configurator-option-chip</h4>
+  <p style="color:var(--body-muted)">Pill-shaped tappable cell. White canvas, <code>border-radius: 9999px</code>, padding <code>12px 16px</code>. Selected state: border upgrades to <code>2px solid #0071e3</code>.</p>
+  <div class="chip-row" style="margin-top:12px;">
+    <div class="chip selected">Natural Titanium</div>
+    <div class="chip">Desert Titanium</div>
+    <div class="chip">Black Titanium</div>
+    <div class="chip">White Titanium</div>
+  </div>
+
+  <h4 style="color:#fff;margin-top:40px;">floating-sticky-bar</h4>
+  <p style="color:var(--body-muted)">Floats at the bottom of the viewport during scroll. Background parchment at 80% opacity + <code>backdrop-filter: blur</code>, height 64px. Left: running price total in <code>body</code>. Right: <code>button-primary</code> ("Add to Bag").</p>
+  <div style="background:rgba(245,245,247,0.9);backdrop-filter:blur(20px);height:64px;display:flex;align-items:center;padding:0 32px;border-radius:8px;margin-top:12px;border:1px solid rgba(0,0,0,0.06);">
+    <span style="font-size:17px;letter-spacing:-0.374px;color:var(--ink);">iPhone 17 Pro — <strong>$999</strong></span>
+    <a class="btn btn-primary" href="#" style="margin-left:auto;">Add to Bag</a>
+  </div>
+
+  <h4 style="color:#fff;margin-top:40px;">environment-quote-card</h4>
+  <p style="color:var(--body-muted)">Dark photographic-canvas hero. Background <code>#272729</code> fallback (production: photographic vista). Centered white headline in <code>display-lg</code>, small logo above, single CTA below.</p>
+</section>
+
+<section class="doc-section" id="comp-inputs">
+  <div class="section-eyebrow">Components — Inputs &amp; Forms</div>
+  <h2 class="section-title">Inputs &amp; Forms</h2>
+  <p class="section-lead">Only the search input was surfaced on the analyzed pages. Error and validation states were not documented.</p>
+  <h4>search-input</h4>
+  <p>Background white, text <code>#1d1d1f</code>, <code>font-size: 17px</code>, <code>border: 1px solid rgba(0,0,0,0.08)</code>, <code>border-radius: 9999px</code>, padding <code>12px 20px</code>, height 44px. Matches the pill grammar of the CTA system.</p>
+  <div class="search-demo">
+    <svg viewBox="0 0 16 16" fill="none" stroke="#1d1d1f" stroke-width="1.5" width="14" height="14"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
+    <input type="search" placeholder="Search accessories…" />
+  </div>
+</section>
+
+<section class="doc-section doc-section--dark" id="comp-footer">
+  <div class="section-eyebrow">Components — Footer</div>
+  <h2 class="section-title">Footer</h2>
+  <p class="section-lead">Background parchment <code>#f5f5f7</code>. Deliberately dense — the only section that breaks the tile rhythm to show the full information architecture.</p>
+  <ul style="color:var(--body-muted)">
+    <li><strong style="color:#fff">Background</strong> — <code>#f5f5f7</code> (canvas-parchment), text <code>#333333</code> (ink-muted-80)</li>
+    <li><strong style="color:#fff">Link columns</strong> — <code>dense-link</code> (17px / 400 / 2.41 line-height). The 2.41 leading is what makes dense columns scannable.</li>
+    <li><strong style="color:#fff">Column headings</strong> — <code>caption-strong</code> (14px / 600)</li>
+    <li><strong style="color:#fff">Legal row</strong> — <code>fine-print</code> (12px / 400) with <code>#7a7a7a</code> text</li>
+    <li><strong style="color:#fff">Vertical padding</strong> — 64px</li>
+  </ul>
+</section>
+
+<!-- Do's and Don'ts -->
+<section class="doc-section" id="dos-donts">
+  <div class="section-eyebrow">Do's and Don'ts</div>
+  <h2 class="section-title">Rules</h2>
+  <p class="section-lead">Eight rules each — the non-negotiables of the Apple design language.</p>
+  <div class="dos-donts">
+    <div class="do-col">
+      <h3>✓ Do</h3>
+      <ul class="rule-list">
+        <li><span class="rule-icon">✓</span>Use <code>#0066cc</code> for every interactive element — links, pill CTAs, focus signals — and nothing else.</li>
+        <li><span class="rule-icon">✓</span>Set headlines in <code>hero-display</code> or <code>display-lg</code> with negative letter-spacing (<code>-0.28 → -0.374px</code>).</li>
+        <li><span class="rule-icon">✓</span>Run body copy at 17px / 400 / 1.47 — not 16px. The extra pixel defines the brand's reading pace.</li>
+        <li><span class="rule-icon">✓</span>Alternate <code>product-tile-light</code> and <code>product-tile-dark</code> for full-bleed section rhythm. The color change IS the divider.</li>
+        <li><span class="rule-icon">✓</span>Reserve <code>border-radius: 9999px</code> for the primary blue CTA and any other element that should read as an "action."</li>
+        <li><span class="rule-icon">✓</span>Apply the single product-shadow (<code>rgba(0,0,0,0.22) 3px 5px 30px</code>) only to product renders — never on cards, buttons, or text.</li>
+        <li><span class="rule-icon">✓</span>Use <code>transform: scale(0.95)</code> as the active/press state on every button — it's the system-wide micro-interaction.</li>
+        <li><span class="rule-icon">✓</span>Keep the global nav <code>#000000</code> (true black) — it's the only place pure black appears on most pages.</li>
+      </ul>
+    </div>
+    <div class="dont-col">
+      <h3>✗ Don't</h3>
+      <ul class="rule-list">
+        <li><span class="rule-icon">✗</span>Don't introduce a second accent color. Every "click me" signal is Action Blue.</li>
+        <li><span class="rule-icon">✗</span>Don't add shadows to cards, buttons, or text — shadow is reserved for product imagery only.</li>
+        <li><span class="rule-icon">✗</span>Don't use gradients as decorative backgrounds. Atmosphere comes from photography.</li>
+        <li><span class="rule-icon">✗</span>Don't set body copy at weight 500. Apple's ladder is 300 / 400 / 600 / 700 — 500 is deliberately absent.</li>
+        <li><span class="rule-icon">✗</span>Don't round full-bleed tiles. Tiles are rectangular and edge-to-edge; the color change is the divider.</li>
+        <li><span class="rule-icon">✗</span>Don't tighten line-height below 1.47 for body copy. The editorial leading is part of the brand.</li>
+        <li><span class="rule-icon">✗</span>Don't mix radii grammars — use <code>sm</code> for compact utility, <code>lg</code> for utility cards, <code>pill</code> for pills.</li>
+        <li><span class="rule-icon">✗</span>Don't use <code>#2997ff</code> (Sky Link Blue) on light surfaces — it's the dark-tile-only variant.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Responsive -->
+<section class="doc-section doc-section--dark" id="responsive-breakpoints">
+  <div class="section-eyebrow">Responsive — Breakpoints</div>
+  <h2 class="section-title">Breakpoints</h2>
+  <p class="section-lead">Eight breakpoints. The structural ones that matter for agents: 1440, 1068, 833, 734, 640, 480px.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Width</th><th>Key Changes</th></tr></thead>
+      <tbody>
+        <tr><td>Small phone</td><td>≤ 419px</td><td>Single-column tiles; sub-nav collapses to category + CTA only; hero typography drops to 28px</td></tr>
+        <tr><td>Phone</td><td>420–640px</td><td>Single-column stack; product renders scale to 80% of tile width; hero h1 drops to 34px</td></tr>
+        <tr><td>Large phone</td><td>641–735px</td><td>Tiles transition to tighter padding (48px vertical vs 80px); fine-print wraps</td></tr>
+        <tr><td>Tablet portrait</td><td>736–833px</td><td>Global nav collapses to hamburger; sub-nav hides category chips, keeps primary CTA</td></tr>
+        <tr><td>Tablet landscape</td><td>834–1023px</td><td>Global nav returns fully expanded; 3-column utility grids become 2-column</td></tr>
+        <tr><td>Small desktop</td><td>1024–1068px</td><td>Product tiles use 2/3 width with margin gutters; hero h1 stays at 40px</td></tr>
+        <tr><td>Desktop</td><td>1069–1440px</td><td>Full layout; 4–5 column store grids; 1440px content max</td></tr>
+        <tr><td>Wide desktop</td><td>≥ 1441px</td><td>Content locks at 1440px, margins absorb extra width</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="doc-section" id="responsive-touch">
+  <div class="section-eyebrow">Responsive — Touch Targets</div>
+  <h2 class="section-title">Touch Targets</h2>
+  <ul>
+    <li><strong>Minimum 44×44px</strong> across all interactive elements.</li>
+    <li><code>button-primary</code> lands at ~44×100px — the full pill radius makes the visible hit area more generous than the label suggests.</li>
+    <li><code>button-icon-circular</code> is exactly 44×44px.</li>
+    <li>Global nav utility links are smaller (~32×80px) — they deliberately sit at a tighter target because they're precision desktop actions; the mobile hamburger replaces them at ≤833px.</li>
+  </ul>
+</section>
+
+<section class="doc-section doc-section--dark" id="responsive-collapse">
+  <div class="section-eyebrow">Responsive — Collapsing Strategy</div>
+  <h2 class="section-title">Collapsing Strategy</h2>
+  <p class="section-lead">Each UI zone has a defined collapse pattern. Nothing disappears abruptly — it reconfigures.</p>
+  <h4 style="color:#fff">Global nav</h4>
+  <p style="color:var(--body-muted)">Full horizontal link row on desktop → collapses to Apple logo + hamburger + bag icon at 834px and below.</p>
+  <h4 style="color:#fff">Sub-nav</h4>
+  <p style="color:var(--body-muted)">Category name + inline links + primary CTA → category name + primary CTA only at mobile; inline links move into a hamburger tray.</p>
+  <h4 style="color:#fff">Product tiles</h4>
+  <p style="color:var(--body-muted)">Stack from 2-column to 1-column at 834px; vertical padding tightens from 80px → 48px at small-phone.</p>
+  <h4 style="color:#fff">Utility grids</h4>
+  <p style="color:var(--body-muted)">5-col → 4-col (1440px) → 3-col (1068px) → 2-col (834px) → 1-col (640px).</p>
+  <h4 style="color:#fff">Hero typography</h4>
+  <p style="color:var(--body-muted);margin-bottom:0"><code>hero-display</code> (56px) → <code>display-lg</code> (40px) at 1068px → 34px at 640px → 28px at 419px.</p>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h5>Tokens</h5>
+      <ul>
+        <li><a href="#colors-brand">Brand &amp; Accent</a></li>
+        <li><a href="#colors-surface">Surface Colors</a></li>
+        <li><a href="#colors-text">Text Colors</a></li>
+        <li><a href="#layout-spacing">Spacing System</a></li>
+        <li><a href="#shapes-radius">Border Radius</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Typography</h5>
+      <ul>
+        <li><a href="#type-family">Font Family</a></li>
+        <li><a href="#type-hierarchy">Type Scale</a></li>
+        <li><a href="#type-principles">Principles</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Components</h5>
+      <ul>
+        <li><a href="#comp-nav">Navigation</a></li>
+        <li><a href="#comp-buttons">Buttons</a></li>
+        <li><a href="#comp-cards">Cards</a></li>
+        <li><a href="#comp-inputs">Inputs</a></li>
+        <li><a href="#comp-footer">Footer</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Guidelines</h5>
+      <ul>
+        <li><a href="#elevation">Elevation</a></li>
+        <li><a href="#dos-donts">Do's &amp; Don'ts</a></li>
+        <li><a href="#responsive-breakpoints">Breakpoints</a></li>
+        <li><a href="#responsive-collapse">Collapsing Strategy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-legal">
+    <p>Apple Design System — Analysis &amp; Reference. Documented from: homepage, environment, store, iPhone 17 Pro buy page, accessories index.</p>
+    <p style="margin-top:8px;">Known gaps: form validation and error states not surfaced; dark-mode store card counterparts not documented; backdrop-filter blur radius is platform-dependent.</p>
+  </div>
+</footer>
+
+</main>
+</div>
+
+<script>
+// ── Sidebar collapse ──
+document.querySelectorAll('.sidebar-group-title').forEach(title => {
+  title.addEventListener('click', () => {
+    title.closest('.sidebar-group').classList.toggle('collapsed');
+  });
+});
+
+// ── Mobile burger ──
+const burger = document.getElementById('burgerBtn');
+const sidebar = document.getElementById('sidebar');
+const backdrop = document.getElementById('backdrop');
+function openSidebar() { sidebar.classList.add('open'); backdrop.classList.add('open'); }
+function closeSidebar() { sidebar.classList.remove('open'); backdrop.classList.remove('open'); }
+burger.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+backdrop.addEventListener('click', closeSidebar);
+
+// ── Scroll-spy ──
+const sections = document.querySelectorAll('[id]');
+const sideLinks = document.querySelectorAll('.sidebar-links a');
+let activeLink = null;
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      sideLinks.forEach(a => {
+        const isMatch = a.getAttribute('href') === '#' + id;
+        if (isMatch) {
+          if (activeLink) activeLink.classList.remove('active');
+          a.classList.add('active');
+          activeLink = a;
+          // Ensure parent group is expanded
+          const group = a.closest('.sidebar-group');
+          if (group && group.classList.contains('collapsed')) group.classList.remove('collapsed');
+        }
+      });
+    }
+  });
+}, { rootMargin: '-44px 0px -60% 0px', threshold: 0 });
+sections.forEach(s => observer.observe(s));
+
+// ── Search ──
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  clearHighlights();
+  if (!q) {
+    sideLinks.forEach(a => a.closest('li').classList.remove('hidden'));
+    document.querySelectorAll('.sidebar-group').forEach(g => g.classList.remove('collapsed'));
+    return;
+  }
+  let firstMatch = null;
+  sideLinks.forEach(a => {
+    const text = a.textContent.toLowerCase();
+    const match = text.includes(q);
+    a.closest('li').classList.toggle('hidden', !match);
+    if (match && !firstMatch) firstMatch = a;
+  });
+  // Expand groups that have visible links
+  document.querySelectorAll('.sidebar-group').forEach(group => {
+    const hasVisible = [...group.querySelectorAll('.sidebar-links li')].some(li => !li.classList.contains('hidden'));
+    group.classList.toggle('collapsed', !hasVisible);
+  });
+  // Highlight in content
+  highlightText(q);
+  if (firstMatch) {
+    const target = document.querySelector(firstMatch.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+});
+
+function highlightText(q) {
+  const main = document.querySelector('.main');
+  const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const p = node.parentElement;
+      if (!p || p.closest('script,style,code') || p.tagName === 'MARK') return NodeFilter.FILTER_REJECT;
+      return node.textContent.toLowerCase().includes(q) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node => {
+    const idx = node.textContent.toLowerCase().indexOf(q);
+    if (idx === -1) return;
+    const before = document.createTextNode(node.textContent.slice(0, idx));
+    const mark = document.createElement('mark');
+    mark.textContent = node.textContent.slice(idx, idx + q.length);
+    const after = document.createTextNode(node.textContent.slice(idx + q.length));
+    const frag = document.createDocumentFragment();
+    frag.append(before, mark, after);
+    node.parentNode.replaceChild(frag, node);
+  });
+}
+
+function clearHighlights() {
+  document.querySelectorAll('mark').forEach(m => {
+    const parent = m.parentNode;
+    parent.replaceChild(document.createTextNode(m.textContent), m);
+    parent.normalize();
+  });
+}
+
+// Keyboard shortcut: / to focus search
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement !== searchInput) {
+    e.preventDefault();
+    searchInput.focus();
+    searchInput.select();
+  }
+  if (e.key === 'Escape') searchInput.blur();
+});
+</script>
+</body>
+</html>
